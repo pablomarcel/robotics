@@ -1,0 +1,755 @@
+i wonder if any python libraries has out of the box functionality to deal with rotation kinematics.
+exhibits 1 to 10, equations 2.1 to 2.62
+
+///
+
+what about equations 2.63 to 2.151 (exhibits 1 to 10)
+
+do we have out of the box functionality to tackle those equations?
+
+///
+
+what about equations 2.152 to 2.222 (exhibits 1 to 10)
+
+do we have out of the box functionality to tackle those equations?
+
+///
+
+what about equations 2.223 to 2.320 (exhibits 1 to 10)
+
+do we have out of the box functionality to tackle those equations?
+
+///
+
+what about equations 2.321 to 2.363 (exhibits 1 to 5)
+
+do we have out of the box functionality to tackle those equations?
+
+///
+
+ok, i've installed the libraries you suggested.
+
+since Rotation Kinematics is essential to Robotics, Management asked to build an all encompassing cli tool to tackle these kinds of problesm.
+
+the app should be able to handle equations 2.1 to 2.363.
+
+if you need to break down the app into multiple scripts I am ok with it.
+
+in the past we've used this kind of architecture:
+
+    rot_cli.py
+    rot_core.py
+    rot_io.py
+    rot_design.py
+    rot_utils.py
+
+this is just a suggestion but it does not have to be this way.
+
+also, the scripts are to be stored in a new directory called rotation.
+
+any input files will be stored in rotation/in
+any output files will be stored in rotation/out
+
+you gave me all these suggestions:
+
+    If you want, I can fold a rot_kinematics.py or extend kinematics.py with a --rot sub-CLI that:
+        • builds QZ,α,QY,β,QX,γQ_{Z,\alpha},Q_{Y,\beta},Q_{X,\gamma},
+        • composes them in any order you pass,
+        • transforms points,
+        • optionally computes v=ω×rv=\omega\times r for time-dependent cases, and writes results to intro/out/ just like the other ops.
+
+    If you want, I can extend kinematics.py with a --rot sub-CLI that wraps:
+	• --global-seq / --local-seq (pick any of the 12),
+	• --compose (build QQ and transform points),
+	• --decompose (extract angles for all 12 and flag singular ones),
+	• --repeat (raise to power mm),
+	• --rpy helpers,
+	• and a small “align-to-vector” utility that implements Eq. (2.99–2.106) directly.
+
+    If you’d like, I can fold these into intro/kinematics.py with sub-ops like --op rpy-mat, --op euler-mat, --op angvel-from-rpy, --op euler-rates-from-angvel, etc., using SciPy for numerics and SymPy when you want the exact symbolic forms printed alongside the evaluated numbers.
+
+    If you want, I can drop in a compact helper module (rot_kinematics.py) with:
+	• eulerdot_to_omega / omega_to_eulerdot for common orders (ZYX, ZYZ, XYZ, …),
+	• omega_to_Rdot(R, omega, frame='body'|'space') and its inverse,
+	• finite_difference_R_to_omega(times, R_seq), wired to SciPy/SymPy/SpatialMath so it’s production-ready.
+
+    If you want, I can drop a few unit tests that reproduce the numeric examples (2.329–2.334 and 2.348–2.349) using Rotation to prove parity with the equations.
+
+All these are good ideas. The important thing is that we consolidate all into a glorious, god tier, rotation kinematics kickass app.
+
+So, please go ahead and start building the app.
+
+///
+
+///
+
+///
+
+here are the logs:
+
+(.venv) ➜  robotics git:(develop) ✗ python -c "import rotation; print('ok')"
+ok
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli compose global zyx "30,20,10" --degrees --save R_zyx.csv
+R =
+ [[ 0.813798 -0.469846  0.342020]
+ [ 0.543838  0.823173 -0.163176]
+ [-0.204874  0.318796  0.925417]]
+saved to rotation/out/R_zyx.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli decompose global zyx --from-csv rotation/out/R_zyx.csv --degrees
+angles (deg) =  [ 30.000000  20.000000  10.000000]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli transform global zyx "30,20,10" --degrees --points "1,0,0|0,1,0|0,0,1" --save pts_out.csv
+P' =
+ [[ 0.813798  0.543838 -0.204874]
+ [-0.469846  0.823173  0.318796]
+ [ 0.342020 -0.163176  0.925417]]
+saved to rotation/out/pts_out.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli passive global zyx "30,20,10" --degrees --points "1,0,0|0,1,0|0,0,1"
+coords in body =
+ [[ 0.813798 -0.469846  0.342020]
+ [ 0.543838  0.823173 -0.163176]
+ [-0.204874  0.318796  0.925417]]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+ω =  [-333115.922732 -209718.807875  325946.337957]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli rates global zyx "30,20,10" "0.2, -0.1, 0.05" --degrees --frame space
+qdot =  [-3.205704 -10.272153  13.477868]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli repeat global zyx "15,0,0" 12 --degrees
+R^m =
+ [[-1.000000 -0.000000  0.000000]
+ [ 0.000000 -1.000000  0.000000]
+ [ 0.000000  0.000000  1.000000]]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli align "0.5, -0.2, 0.84"
+R_align =
+ [[ 0.501104 -0.781642 -0.371391]
+ [-0.200441  0.312657 -0.928477]
+ [ 0.841854  0.539705 -0.000000]]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli check --from-csv rotation/out/R_zyx.csv
+ok= True
+det: 0.9999999999999999
+row_norms: [np.float64(1.0), np.float64(1.0), np.float64(1.0)]
+col_norms: [np.float64(0.9999999999999999), np.float64(0.9999999999999999), np.float64(1.0)]
+ortho_err: 1.8847514658256578e-16
+
+please analyze the logs thoroughly and assess if we are correct
+
+///
+
+
+Next steps (easy add-ons)
+	• Add named subcommands that print the closed-form E matrices for RPY (zyx) and proper Euler (zxz, zyz) to mirror the equation numbers one-for-one.
+	• Batch jobs: accept a JSON/YAML “job file” to compose/transform entire sequences.
+	• Unit tests that recreate your numeric exhibits (e.g., 2.329–2.334, 2.348–2.349) to nail parity.
+
+If you want me to wire up any of those, say the word and I’ll extend the CLI accordingly.
+
+///
+
+ok, i just want to make sure we get this right. the current rot_core.py is here:
+
+# =============================
+# File: rotation/rot_core.py
+# =============================
+from __future__ import annotations
+from typing import Dict, Iterable, List, Sequence, Tuple
+
+import numpy as np
+from scipy.spatial.transform import Rotation as R
+
+from .rot_utils import (
+    VALID_ALL, VALID_TB, VALID_PROPER,
+    compose_global, compose_local, decompose,
+    omega_from_rates, rates_from_omega,
+    rotation_power, align_x_to_vector,
+    is_rotmat, save_matrix_csv, save_series_csv,
+)
+
+
+def build_matrix(mode: str, seq: str, angles: Sequence[float], degrees: bool = False) -> R:
+    mode = mode.lower()
+    if mode not in {"global","local"}:
+        raise ValueError("mode must be 'global' or 'local'")
+    if mode == 'global':
+        return compose_global(seq, angles, degrees=degrees)
+    else:
+        return compose_local(seq, angles, degrees=degrees)
+
+
+def transform_points(Robj: R, pts: Sequence[Sequence[float]]) -> np.ndarray:
+    P = np.asarray(pts, float)
+    return Robj.apply(P)
+
+
+def passive_transform(Robj: R, vecs: Sequence[Sequence[float]]) -> np.ndarray:
+    """Change of coordinates (passive): multiply by R^T."""
+    return Robj.inv().apply(np.asarray(vecs, float))
+
+
+def check_matrix(Robj: R) -> Dict:
+    ok, info = is_rotmat(Robj.as_matrix())
+    info["ok"] = ok
+    return info
+
+
+# Euler/RPY tools
+
+def angvel_from_rates(seq: str, angles: Sequence[float], rates: Sequence[float], convention: str = 'global', degrees: bool = False, frame: str = 'body') -> np.ndarray:
+    return omega_from_rates(seq, angles, rates, convention=convention, degrees=degrees, frame=frame)
+
+
+def rates_from_angvel(seq: str, angles: Sequence[float], omega: Sequence[float], convention: str = 'global', degrees: bool = False, frame: str = 'body') -> np.ndarray:
+    return rates_from_omega(seq, angles, omega, convention=convention, degrees=degrees, frame=frame)
+
+
+# Equations 2.84/2.85 style repeat
+
+def repeat_rotation(Robj: R, m: int) -> R:
+    return rotation_power(Robj, m)
+
+
+# Alignment (2.99–2.106)
+
+def align_body_x(u: Sequence[float]) -> R:
+    return align_x_to_vector(u)
+
+
+# Convenience wrappers for save
+
+def save_R(path: str, Robj: R) -> None:
+    save_matrix_csv(path, Robj)
+
+
+def save_series(path: str, t: np.ndarray, data: np.ndarray, header: str) -> None:
+    save_series_csv(path, t, data, header)
+
+please generate the entire upgraded rot_core.py per the latest facts.
+
+///
+
+///
+
+here is the current rot_utils.py:
+
+# =============================
+# File: rotation/rot_utils.py
+# =============================
+from __future__ import annotations
+import math
+import os
+from dataclasses import dataclass
+from typing import Iterable, List, Sequence, Tuple
+
+import numpy as np
+from numpy.typing import ArrayLike
+
+try:
+    from scipy.spatial.transform import Rotation as _R
+except Exception as _e:  # pragma: no cover
+    raise RuntimeError("SciPy is required: pip install scipy") from _e
+
+R = _R  # alias
+
+# ---------- basic helpers ----------
+
+def ensure_dir(p: str) -> None:
+    os.makedirs(p, exist_ok=True)
+
+
+def parse_floats(csv: str) -> List[float]:
+    if isinstance(csv, (list, tuple, np.ndarray)):
+        return [float(x) for x in csv]
+    # allow spaces and commas
+    parts = [s for s in csv.replace(" ", "").split(",") if s != ""]
+    return [float(x) for x in parts]
+
+
+def parse_bool(x: str | bool | None, default: bool = False) -> bool:
+    if isinstance(x, bool):
+        return x
+    if x is None:
+        return default
+    s = str(x).strip().lower()
+    return s in {"1", "true", "t", "yes", "y"}
+
+
+def hat(v: ArrayLike) -> np.ndarray:
+    v = np.asarray(v, dtype=float).reshape(3)
+    return np.array([[0.0, -v[2], v[1]],[v[2], 0.0, -v[0]],[-v[1], v[0], 0.0]], dtype=float)
+
+
+def vee(M: ArrayLike) -> np.ndarray:
+    M = np.asarray(M, dtype=float)
+    return np.array([M[2,1] - M[1,2], M[0,2] - M[2,0], M[1,0] - M[0,1]])*0.5
+
+
+def is_rotmat(Rm: ArrayLike, tol: float = 1e-8) -> Tuple[bool, dict]:
+    M = np.asarray(Rm, dtype=float).reshape(3,3)
+    I = np.eye(3)
+    ortho = np.allclose(M.T @ M, I, atol=tol)
+    det1 = np.isclose(np.linalg.det(M), 1.0, atol=1e-8)
+    rows = [np.linalg.norm(M[i]) for i in range(3)]
+    cols = [np.linalg.norm(M[:,j]) for j in range(3)]
+    return ortho and det1, {
+        "det": float(np.linalg.det(M)),
+        "row_norms": rows,
+        "col_norms": cols,
+        "ortho_err": float(np.linalg.norm(M.T @ M - I)),
+    }
+
+# ---------- rotations & sequences ----------
+
+VALID_TB = ["xyz","xzy","yxz","yzx","zxy","zyx"]            # Tait–Bryan (all different)
+VALID_PROPER = ["zxz","xyx","yzy","zyz","xzx","yxy"]       # proper Euler (first==last)
+VALID_ALL = VALID_TB + VALID_PROPER
+
+
+def _axis_unit(ch: str) -> np.ndarray:
+    if ch.lower() == 'x':
+        return np.array([1.0,0.0,0.0])
+    if ch.lower() == 'y':
+        return np.array([0.0,1.0,0.0])
+    if ch.lower() == 'z':
+        return np.array([0.0,0.0,1.0])
+    raise ValueError(f"bad axis: {ch}")
+
+
+def make_basic(axis: str, angle: float, degrees: bool = False) -> R:
+    ang = math.radians(angle) if degrees else angle
+    return R.from_rotvec(_axis_unit(axis) * ang)
+
+
+def compose_global(seq: str, angles: Sequence[float], degrees: bool = False) -> R:
+    """Global/extrinsic: apply rotations about fixed axes in the listed order.
+    R = R_ax_n * ... * R_ax_1  (SciPy multiplication is left-to-right application)"""
+    seq = seq.lower()
+    if seq not in VALID_ALL:
+        raise ValueError(f"sequence must be one of {VALID_ALL}")
+    if len(angles) != 3:
+        raise ValueError("angles must be length-3")
+    Rlist = [make_basic(ax, ang, degrees=degrees) for ax, ang in zip(seq, angles)]
+    Rtot = Rlist[0]
+    Rtot = Rlist[1] * Rtot
+    Rtot = Rlist[2] * Rtot
+    return Rtot
+
+
+def compose_local(seq: str, angles: Sequence[float], degrees: bool = False) -> R:
+    """Local/intrinsic: rotate about moving/body axes.
+    Equivalent to reversed-order global rotations with reversed angles order."""
+    return compose_global(seq[::-1], angles[::-1], degrees=degrees)
+
+
+def decompose(Robj: R, seq: str, convention: str = 'global', degrees: bool = False) -> np.ndarray:
+    """Return angles for a given sequence. For local sequences, use the reversed
+    trick to match our compose_local semantics."""
+    seq = seq.lower()
+    if convention not in {'global','local'}:
+        raise ValueError("convention must be 'global' or 'local'")
+    if convention == 'global':
+        return Robj.as_euler(seq, degrees=degrees)
+    # local
+    # R = local(seq, a1,a2,a3) == global(rev_seq, a3,a2,a1)
+    # So to extract [a1,a2,a3] from R, get global angles for rev_seq, then reverse
+    ang_rev = Robj.as_euler(seq[::-1], degrees=degrees)
+    return ang_rev[::-1]
+
+
+# ---------- omega ↔ angle-rate (generic, any sequence) ----------
+
+def _omega_from_Rdot(Robj: R, Rdot: np.ndarray, frame: str = 'body') -> np.ndarray:
+    """Compute ω from Rdot using Rdot = Ω R (space frame) or Rdot = R Ω (body frame).
+    Here we adopt the common *space* convention: Rdot = Ω R where Ω^ = ω×.
+    For body, Ω = R.T @ Rdot.
+    """
+    Rm = Robj.as_matrix()
+    if frame == 'space':
+        Om = Rdot @ Rm.T
+    elif frame == 'body':
+        Om = Rm.T @ Rdot
+    else:
+        raise ValueError("frame must be 'space' or 'body'")
+    # ensure skew-symmetric
+    Om = 0.5*(Om - Om.T)
+    return vee(Om)
+
+
+def build_rate_map(seq: str, angles: Sequence[float], convention: str = 'global', degrees: bool = False, frame: str = 'body') -> np.ndarray:
+    """Numerically build the 3x3 matrix M(angles) such that ω = M * qdot for the given
+    Euler/Cardan sequence and convention. This is general and matches 2.169–2.171,
+    2.211–2.222, 2.243–2.249 depending on inputs.
+    frame='body' gives ω components in body; 'space' gives in global.
+    """
+    eps = 1e-8
+    if convention == 'global':
+        R0 = compose_global(seq, angles, degrees=degrees)
+    else:
+        R0 = compose_local(seq, angles, degrees=degrees)
+    M = np.zeros((3,3), float)
+    for j in range(3):
+        dq = np.zeros(3)
+        dq[j] = 1.0  # 1 rad/s nominal
+        dt = 1e-6
+        new_angles = np.array(angles, float) + dq * dt
+        if degrees:
+            new_angles = np.degrees(new_angles)  # if degrees True, angles are in deg
+        if convention == 'global':
+            R1 = compose_global(seq, new_angles if not degrees else new_angles, degrees=degrees)
+        else:
+            R1 = compose_local(seq, new_angles if not degrees else new_angles, degrees=degrees)
+        Rdot = (R1.as_matrix() - R0.as_matrix())/dt
+        M[:, j] = _omega_from_Rdot(R0, Rdot, frame=frame)
+    return M
+
+
+def omega_from_rates(seq: str, angles: Sequence[float], rates: Sequence[float], convention: str = 'global', degrees: bool = False, frame: str = 'body') -> np.ndarray:
+    M = build_rate_map(seq, angles, convention=convention, degrees=degrees, frame=frame)
+    return M @ np.asarray(rates, float).reshape(3)
+
+
+def rates_from_omega(seq: str, angles: Sequence[float], omega: Sequence[float], convention: str = 'global', degrees: bool = False, frame: str = 'body') -> np.ndarray:
+    M = build_rate_map(seq, angles, convention=convention, degrees=degrees, frame=frame)
+    # use pseudo-inverse to handle singularities
+    return np.linalg.pinv(M) @ np.asarray(omega, float).reshape(3)
+
+
+# ---------- repeat/power & alignment ----------
+
+def rotation_power(Robj: R, m: int) -> R:
+    if not isinstance(m, (int, np.integer)):
+        raise ValueError("m must be integer")
+    rotvec = Robj.as_rotvec()
+    ang = np.linalg.norm(rotvec)
+    if ang < 1e-12:
+        return R.identity()
+    axis = rotvec/ang
+    return R.from_rotvec(axis * (float(m) * ang))
+
+
+def align_x_to_vector(u: Sequence[float]) -> R:
+    """Build a rotation whose body x-axis ends up along u, with body y-axis lying in the global (X,Y)-plane (≈ Eq. 2.99–2.106).
+    Implementation: i' = û; choose j' by projecting global K onto plane normal i'; k' = i' × j'. Columns of R are the body axes expressed in global.
+    """
+    u = np.asarray(u, float)
+    if np.linalg.norm(u) < 1e-12:
+        raise ValueError("vector u must be nonzero")
+    i = u/np.linalg.norm(u)
+    K = np.array([0.0,0.0,1.0])
+    j = K - (K @ i) * i
+    if np.linalg.norm(j) < 1e-12:
+        # If u is parallel to K, choose j along global Y
+        j = np.array([0.0,1.0,0.0]) if i[2] > 0 else np.array([0.0,-1.0,0.0])
+    j = j/np.linalg.norm(j)
+    k = np.cross(i, j)
+    # Orthonormalize once just in case
+    j = np.cross(k, i)
+    j = j/np.linalg.norm(j)
+    k = np.cross(i, j)
+    Rm = np.column_stack([i, j, k])  # columns are body axes in global
+    return R.from_matrix(Rm)
+
+
+# ---------- I/O small helpers ----------
+
+def save_matrix_csv(path: str, Robj: R) -> None:
+    ensure_dir(os.path.dirname(path) or ".")
+    np.savetxt(path, Robj.as_matrix(), delimiter=",", fmt="%.9f")
+
+
+def save_series_csv(path: str, t: np.ndarray, data: np.ndarray, header: str = "t, a1, a2, a3") -> None:
+    ensure_dir(os.path.dirname(path) or ".")
+    arr = np.column_stack([t.reshape(-1), data])
+    np.savetxt(path, arr, delimiter=",", header=header, comments="", fmt="%.9f")
+
+please generate the entire upgraded rot_utils.py per the latest facts.
+
+///
+
+///
+
+///
+
+here is the current rot_cli.py:
+
+# =============================
+# File: rotation/rot_cli.py
+# =============================
+from __future__ import annotations
+import argparse
+import os
+from typing import List
+
+import numpy as np
+from scipy.spatial.transform import Rotation as R
+
+from .rot_utils import ensure_dir, parse_floats
+from .rot_design import VALID_ALL, HELP_SEQ
+from . import rot_core as core
+from . import rot_io as rio
+
+
+OUT_DIR = os.path.join("rotation", "out")
+IN_DIR  = os.path.join("rotation", "in")
+ensure_dir(OUT_DIR)
+ensure_dir(IN_DIR)
+
+
+def _angles_arg(s: str, degrees: bool) -> List[float]:
+    vals = parse_floats(s)
+    if len(vals) != 3:
+        raise argparse.ArgumentTypeError("need 3 comma-separated values")
+    return vals
+
+
+def _vec_arg(s: str) -> List[float]:
+    vals = parse_floats(s)
+    if len(vals) != 3:
+        raise argparse.ArgumentTypeError("need 3 comma-separated values")
+    return vals
+
+
+def cli(argv: List[str] | None = None) -> int:
+    p = argparse.ArgumentParser(prog="rot-cli", description="Rotation Kinematics CLI (covers Eq. 2.1–2.363)")
+    sp = p.add_subparsers(dest="cmd", required=True)
+
+    # compose
+    pc = sp.add_parser("compose", help="Build a rotation matrix from a sequence and angles")
+    pc.add_argument("mode", choices=["global","local"], help="Global/extrinsic or Local/intrinsic rotations")
+    pc.add_argument("seq", help=HELP_SEQ)
+    pc.add_argument("angles", type=str, help="comma list of three angles")
+    pc.add_argument("--degrees", action="store_true", help="Angles are degrees (default radians)")
+    pc.add_argument("--save", type=str, default=None, help="CSV path under rotation/out to save matrix")
+
+    # decompose
+    pd = sp.add_parser("decompose", help="Extract angles from a rotation matrix for a given sequence")
+    pd.add_argument("mode", choices=["global","local"])
+    pd.add_argument("seq", help=HELP_SEQ)
+    g = pd.add_mutually_exclusive_group(required=True)
+    g.add_argument("--from-angles", type=str, help="If provided, first compose from these angles (same seq/mode)")
+    g.add_argument("--from-csv", type=str, help="Path to 3x3 CSV matrix")
+    pd.add_argument("--degrees", action="store_true")
+
+    # transform
+    pt = sp.add_parser("transform", help="Active transform points: rG = R rB")
+    pt.add_argument("mode", choices=["global","local"])
+    pt.add_argument("seq", help=HELP_SEQ)
+    pt.add_argument("angles", type=str)
+    pt.add_argument("--degrees", action="store_true")
+    pt.add_argument("--points", type=str, help="CSV of Nx3 points in rotation/in, else a csv list 'x;y;z|...'", default=None)
+    pt.add_argument("--save", type=str, default=None, help="CSV path under rotation/out to save transformed points")
+
+    # passive
+    ppv = sp.add_parser("passive", help="Passive coordinate change: rB = R^T rG")
+    ppv.add_argument("mode", choices=["global","local"])
+    ppv.add_argument("seq", help=HELP_SEQ)
+    ppv.add_argument("angles", type=str)
+    ppv.add_argument("--degrees", action="store_true")
+    ppv.add_argument("--points", type=str, default=None)
+
+    # repeat
+    pr = sp.add_parser("repeat", help="Repeat/Exponentiate a rotation (R^m)")
+    pr.add_argument("mode", choices=["global","local"])
+    pr.add_argument("seq", help=HELP_SEQ)
+    pr.add_argument("angles", type=str)
+    pr.add_argument("m", type=int)
+    pr.add_argument("--degrees", action="store_true")
+
+    # align
+    pa = sp.add_parser("align", help="Build R that aligns body x-axis to vector u and y into XY-plane")
+    pa.add_argument("u", type=str, help="comma list for target vector u")
+
+    # check
+    pk = sp.add_parser("check", help="Check orthogonality/det=1 (2.285–2.293)")
+    pk.add_argument("--from-angles", type=str, help="compose first")
+    pk.add_argument("--mode", choices=["global","local"], default="global")
+    pk.add_argument("--seq", default="zyx")
+    pk.add_argument("--degrees", action="store_true")
+    pk.add_argument("--from-csv", type=str, help="matrix CSV path")
+
+    # angvel from rates
+    pv = sp.add_parser("angvel", help="Compute ω from angle rates for any sequence (2.169/2.170/2.211–2.222/2.243–2.249)")
+    pv.add_argument("mode", choices=["global","local"])
+    pv.add_argument("seq", help=HELP_SEQ)
+    pv.add_argument("angles", type=str)
+    pv.add_argument("rates", type=str, help="comma list of angle rates (rad/s)")
+    pv.add_argument("--frame", choices=["body","space"], default="body")
+    pv.add_argument("--degrees", action="store_true", help="treat *angles* as degrees (rates always rad/s)")
+
+    # rates from angvel
+    pvr = sp.add_parser("rates", help="Compute angle rates from ω (pseudoinverse mapping)")
+    pvr.add_argument("mode", choices=["global","local"])
+    pvr.add_argument("seq", help=HELP_SEQ)
+    pvr.add_argument("angles", type=str)
+    pvr.add_argument("omega", type=str, help="comma list of ω components")
+    pvr.add_argument("--frame", choices=["body","space"], default="body")
+    pvr.add_argument("--degrees", action="store_true")
+
+    args = p.parse_args(argv)
+
+    if args.cmd == 'compose':
+        ang = _angles_arg(args.angles, args.degrees)
+        Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        print("R =\n", np.array2string(Robj.as_matrix(), formatter={'float_kind':lambda x:f"{x: .6f}"}))
+        if args.save:
+            out = os.path.join(OUT_DIR, args.save)
+            core.save_R(out, Robj)
+            print(f"saved to {out}")
+        return 0
+
+    if args.cmd == 'decompose':
+        if args.from_angles:
+            ang = _angles_arg(args.from_angles, args.degrees)
+            Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        else:
+            M = np.loadtxt(args.from_csv, delimiter=",")
+            Robj = R.from_matrix(M)
+        a = core.decompose(Robj, args.seq, args.mode, degrees=args.degrees)
+        unit = "deg" if args.degrees else "rad"
+        print(f"angles ({unit}) = ", np.array2string(a, formatter={'float_kind':lambda x:f"{x: .6f}"}))
+        return 0
+
+    if args.cmd == 'transform':
+        ang = _angles_arg(args.angles, args.degrees)
+        Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        if args.points and os.path.exists(os.path.join(IN_DIR, args.points)):
+            P = rio.read_points_csv(os.path.join(IN_DIR, args.points))
+        elif args.points:
+            rows = [r for r in args.points.split('|') if r]
+            P = np.vstack([parse_floats(r) for r in rows])
+        else:
+            P = np.eye(3)
+        Pg = core.transform_points(Robj, P)
+        print("P' =\n", np.array2string(Pg, formatter={'float_kind':lambda x:f"{x: .6f}"}))
+        if args.save:
+            out = os.path.join(OUT_DIR, args.save)
+            rio.write_points_csv(out, Pg)
+            print(f"saved to {out}")
+        return 0
+
+    if args.cmd == 'passive':
+        ang = _angles_arg(args.angles, args.degrees)
+        Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        if args.points and os.path.exists(os.path.join(IN_DIR, args.points)):
+            P = rio.read_points_csv(os.path.join(IN_DIR, args.points))
+        elif args.points:
+            rows = [r for r in args.points.split('|') if r]
+            P = np.vstack([parse_floats(r) for r in rows])
+        else:
+            P = np.eye(3)
+        Pb = core.passive_transform(Robj, P)
+        print("coords in body =\n", np.array2string(Pb, formatter={'float_kind':lambda x:f"{x: .6f}"}))
+        return 0
+
+    if args.cmd == 'repeat':
+        ang = _angles_arg(args.angles, args.degrees)
+        Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        Rm = core.repeat_rotation(Robj, args.m)
+        print("R^m =\n", np.array2string(Rm.as_matrix(), formatter={'float_kind':lambda x:f"{x: .6f}"}))
+        return 0
+
+    if args.cmd == 'align':
+        u = _vec_arg(args.u)
+        Robj = core.align_body_x(u)
+        print("R_align =\n", np.array2string(Robj.as_matrix(), formatter={'float_kind':lambda x:f"{x: .6f}"}))
+        return 0
+
+    if args.cmd == 'check':
+        if args.from_csv:
+            M = np.loadtxt(args.from_csv, delimiter=",")
+            Robj = R.from_matrix(M)
+        else:
+            if not args.from_angles:
+                p.error("provide --from-angles or --from-csv")
+            ang = _angles_arg(args.from_angles, args.degrees)
+            Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        info = core.check_matrix(Robj)
+        print("ok=", info.pop('ok'))
+        for k,v in info.items():
+            print(f"{k}: {v}")
+        return 0
+
+    if args.cmd == 'angvel':
+        ang = _angles_arg(args.angles, args.degrees)
+        rates = _angles_arg(args.rates, False)
+        w = core.angvel_from_rates(args.seq, ang, rates, convention=args.mode, degrees=args.degrees, frame=args.frame)
+        print("ω = ", np.array2string(w, formatter={'float_kind':lambda x:f"{x: .6f}"}))
+        return 0
+
+    if args.cmd == 'rates':
+        ang = _angles_arg(args.angles, args.degrees)
+        omg = _vec_arg(args.omega)
+        qd = core.rates_from_angvel(args.seq, ang, omg, convention=args.mode, degrees=args.degrees, frame=args.frame)
+        print("qdot = ", np.array2string(qd, formatter={'float_kind':lambda x:f"{x: .6f}"}))
+        return 0
+
+    return 0
+
+
+if __name__ == "__main__":  # pragma: no cover
+    raise SystemExit(cli())
+
+please generate the entire upgraded rot_cli.py per the latest facts.
+
+///
+
+///
+
+///
+
+ok, here are the new logs:
+
+(.venv) ➜  robotics git:(develop) ✗ python -c "import rotation; print('ok')"
+ok
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli compose global zyx "30,20,10" --degrees --save R_zyx.csv
+R =
+ [[ 0.813798 -0.469846  0.342020]
+ [ 0.543838  0.823173 -0.163176]
+ [-0.204874  0.318796  0.925417]]
+saved to rotation/out/R_zyx.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli decompose global zyx --from-csv rotation/out/R_zyx.csv --degrees
+angles (deg) =  [ 30.000000  20.000000  10.000000]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli transform global zyx "30,20,10" --degrees --points "1,0,0|0,1,0|0,0,1" --save pts_out.csv
+P' =
+ [[ 0.813798  0.543838 -0.204874]
+ [-0.469846  0.823173  0.318796]
+ [ 0.342020 -0.163176  0.925417]]
+saved to rotation/out/pts_out.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli passive global zyx "30,20,10" --degrees --points "1,0,0|0,1,0|0,0,1"
+coords in body =
+ [[ 0.813798 -0.469846  0.342020]
+ [ 0.543838  0.823173 -0.163176]
+ [-0.204874  0.318796  0.925417]]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+ω =  [ 0.070380  0.190306  0.393969]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli rates global zyx "30,20,10" "0.2, -0.1, 0.05" --degrees --frame space
+qdot =  [ 0.070880 -0.089798  0.175758]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli repeat global zyx "15,0,0" 12 --degrees
+R^m =
+ [[-1.000000 -0.000000  0.000000]
+ [ 0.000000 -1.000000  0.000000]
+ [ 0.000000  0.000000  1.000000]]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli align "0.5, -0.2, 0.84"
+R_align =
+ [[ 0.501104 -0.781642 -0.371391]
+ [-0.200441  0.312657 -0.928477]
+ [ 0.841854  0.539705 -0.000000]]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli check --from-csv rotation/out/R_zyx.csv
+ok= True
+det: 0.9999999999999999
+row_norms: [1.0, 1.0, 1.0]
+col_norms: [0.9999999999999999, 0.9999999999999999, 1.0]
+ortho_err: 1.8847514658256578e-16
+(.venv) ➜  robotics git:(develop) ✗
+
+are we correct?
+
+///
+
+Management asked to implement the next enhancements:
+
+	• Add named subcommands that print the closed-form E matrices for RPY (zyx) and proper Euler (zxz, zyz) to mirror the equation numbers one-for-one.
+	• Batch jobs: accept a JSON/YAML “job file” to compose/transform entire sequences.
+	• Unit tests that recreate your numeric exhibits (e.g., 2.329–2.334, 2.348–2.349) to nail parity.
+
+Please generate the applicable upgraded scripts per the latest facts.
+
+///
+
+
