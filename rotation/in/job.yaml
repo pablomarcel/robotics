@@ -1,0 +1,23 @@
+tasks:
+  - cmd: compose
+    mode: global
+    seq: zyx
+    angles: [30, 20, 10]
+    degrees: true
+    save: R_zyx.csv
+
+  - cmd: transform
+    mode: global
+    seq: zyx
+    angles: [30, 20, 10]
+    degrees: true
+    points: [[1,0,0],[0,1,0],[0,0,1]]
+    save: pts_out.csv
+
+  - cmd: angvel
+    mode: local
+    seq: zyz
+    angles: [10, 20, 30]
+    rates: [0.1, 0.2, 0.3]
+    degrees: true
+    frame: body

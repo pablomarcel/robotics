@@ -1,0 +1,38 @@
+# pyproject.toml
+[project]
+name = "robotics"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["numpy", "scipy", "sympy", "pyyaml"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-xdist", "pytest-cov"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# Root layout; find packages automatically
+# IMPORTANT: add __init__.py in each package directory you want importable
+# (e.g., rotation/__init__.py, orientation/__init__.py, ...)
+[tool.setuptools.packages.find]
+where = ["."]
+# Strict include list—only these top-level dirs will be treated as packages
+include = [
+  "rotation",
+  "orientation",
+  "motion",
+  "forward",
+  "inverse",
+  "angular",
+  "velocity",
+  "acceleration",
+  "applied",
+  "robot",
+  "path",
+  "time",
+]
+exclude = ["**/tests*", "**/__pycache__*"]
+
+# Keep pytest config in pytest.ini to avoid duplication.
