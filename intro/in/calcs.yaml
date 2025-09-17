@@ -1,0 +1,69 @@
+# A batch of kinematics tasks; any CLI flags override these per task.
+tasks:
+  - op: magnitude
+    v1: "1, 2, 3"
+
+  - op: unit
+    v1: "3, -1, 2"
+
+  - op: natural
+    v1: "1, 2, 3"
+
+  - op: decompose
+    v1: "7, -2, 5"
+
+  - op: dircos
+    v1: "1, 2, 3"
+
+  - op: dot
+    v1: "1, 2, 3"
+    v2: "4, -5, 6"
+
+  - op: cross
+    v1: "1, 0, 0"
+    v2: "0, 1, 0"
+
+  - op: laws
+    v1: "1, 2, 3"
+    v2: "-2, 1, 0.5"
+    v3: "0.7, -1.1, 2"
+
+  - op: triple_scalar
+    v1: "1, 0, 0"
+    v2: "0, 1, 0"
+    v3: "0, 0, 1"
+
+  - op: triple_vector
+    v1: "1, 2, 3"
+    v2: "3, 0, 1"
+    v3: "-1, 4, 2"
+
+  - op: nd_scalar_det
+    v1: "1, 2, 3"
+    v2: "4, 5, 6"
+    v3: "7, 8, 10"
+
+  - op: ortho_check
+    v1: "1, 0, 0"
+    v2: "0, 1, 0"
+    v3: "0, 0, 1"
+
+  - op: gram_schmidt
+    v1: "1, 1, 0"
+    v2: "1, 0, 1"
+    v3: "0, 1, 1"
+
+  - op: rotmat
+    euler: "30, 20, 10"
+    order: "ZYX"
+
+  - op: euler_from_R
+    Rmat: "0.92542,-0.37852,0.0, 0.372,-0.909, -0.190, 0.071,0.173,0.982"  # example
+
+  - op: transform
+    v1: "1, 2, 3"         # B_r
+    Rmat: "1,0,0, 0,0,-1, 0,1,0"   # rotate about X by +90deg
+
+  - op: norm
+    v1: "3, -4, 12"
+    v2: "2, 1, -3"

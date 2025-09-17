@@ -1,0 +1,412 @@
+ok, next, let's switch our attention to the following topics:
+
+    unit vectors
+    magnitude of vectors
+    natural expression of vectors
+    decomposition expression of vectors
+    cosines of angles alpha1, alpha2, alpha3 (directional cosines)
+    cross products of unit vectors
+    dot products of unit vectors
+    vector addition
+    antisymmetric law
+    associative law
+    distributive law
+    triple products
+    generalized n dimensional product
+    orthogonality condition
+    coordinate frame and transformation
+    transformation matrix
+    rotation matrix
+    euler angles
+    vector definition
+    vector addition, inner multiplication and linear space
+    norm of a vector and vector space
+
+since these geometric concepts are the basis of robotics, we need to develop an all encompassing cli tool that would allow us to run any kind of operations with the proper flags.
+
+in addition, we need to implement functionality to read from intro/in/calcs.yaml if we choose to. calcs.yaml would contain the nature of the operation to be performed.
+any results should be pretty logged in the console, but we should give the option to write to file in intro/out/results.txt or results.csv which ever is convenient.
+
+exhibits 1 to 10 show the theory from Reza Jazar.
+
+for logging we have many libraries, even sympy. so we can get creative
+
+So, please go ahead and build kinematics.py
+
+here are the library versions i am using:
+
+ace_tools==0.0
+altair==4.2.0
+async-generator==1.10
+attrs==22.1.0
+blinker==1.5
+bokeh==2.4.3
+boto==2.49.0
+cachetools==5.2.0
+certifi==2022.9.24
+charset-normalizer==2.1.1
+choreographer==1.0.9
+click==8.1.3
+commonmark==0.9.1
+contourpy==1.0.6
+control==0.10.2
+cycler==0.11.0
+decorator==5.1.1
+entrypoints==0.4
+et_xmlfile==2.0.0
+fonttools==4.38.0
+geopandas==1.1.1
+gitdb==4.0.10
+GitPython==3.1.29
+graphviz==0.20.1
+h11==0.14.0
+idna==3.4
+importlib-metadata==5.1.0
+iniconfig==1.1.1
+Jinja2==3.1.2
+jsonschema==4.17.3
+kaleido==1.0.0
+kiwisolver==1.4.4
+logistro==1.1.0
+MarkupSafe==2.1.1
+matplotlib==3.10.3
+mpmath==1.3.0
+networkx==3.5
+numpy==2.3.2
+numpy-financial==1.0.0
+openpyxl==3.1.5
+orjson==3.11.2
+outcome==1.2.0
+packaging==22.0
+pandas==2.3.1
+Pillow==9.3.0
+plotly==5.11.0
+pluggy==1.0.0
+protobuf==3.20.3
+pyarrow==10.0.1
+pydeck==0.8.0
+pyglet==1.5.31
+Pygments==2.13.0
+Pympler==1.0.1
+pyogrio==0.11.1
+pyparsing==3.0.9
+pyproj==3.7.1
+pyrsistent==0.19.2
+PySocks==1.7.1
+pytest==7.2.0
+python-dateutil==2.8.2
+pytz==2022.6
+pytz-deprecation-shim==0.1.0.post0
+PyYAML==6.0
+requests==2.28.1
+rich==12.6.0
+scipy==1.15.3
+selenium==4.7.2
+semver==2.13.0
+shapely==2.1.1
+simplejson==3.20.1
+six==1.16.0
+smmap==5.0.0
+sniffio==1.3.0
+sortedcontainers==2.4.0
+streamlit==1.15.2
+sympy==1.13.3
+tabulate==0.9.0
+tenacity==8.1.0
+toml==0.10.2
+toolz==0.12.0
+tornado==6.2
+trimesh==4.6.13
+trio==0.22.0
+trio-websocket==0.9.2
+typing_extensions==4.4.0
+tzdata==2022.7
+tzlocal==4.2
+urllib3==1.26.13
+validators==0.20.0
+watchdog==2.2.0
+wsproto==1.2.0
+xyzservices==2022.9.0
+z3==0.2.0
+zipp==3.11.0
+
+
+///
+
+cool beans.
+there seems to be a parsing issue with one of the run commands.
+i am using OhMyZsh on Mac, so i wonder if we need to upgrade the code.
+
+here are the logs:
+
+(.venv) ➜  robotics git:(main) ✗ git checkout -b develop
+Switched to a new branch 'develop'
+(.venv) ➜  robotics git:(develop) ✗ pip freeze > requirements.txt
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op dircos --v1 "1,2,3"
+  Directional cosines
+┏━━━━━━━━━━┳━━━━━━━━━━━┓
+┃ Quantity ┃ Value     ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━┩
+│ v1       │ [1, 2, 3] │
+├──────────┼───────────┤
+│ cos α1   │ 0.267261  │
+├──────────┼───────────┤
+│ cos α2   │ 0.534522  │
+├──────────┼───────────┤
+│ cos α3   │ 0.801784  │
+└──────────┴───────────┘
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op cross --v1 "1,2,3" --v2 "4,-5,6" \
+  --out-txt intro/out/results.txt --out-csv intro/out/results.csv
+
+       Cross product
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value        ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━┩
+│ v1       │ [1, 2, 3]    │
+├──────────┼──────────────┤
+│ v2       │ [4, -5, 6]   │
+├──────────┼──────────────┤
+│ v1×v2    │ [27, 6, -13] │
+└──────────┴──────────────┘
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op laws --v1 "1,2,3" --v2 "-2,1,0.5" --v3 "0.7,-1.1,2"
+usage: kinematics.py [-h] [--op OP] [--v1 V1] [--v2 V2] [--v3 V3]
+                     [--Rmat RMAT] [--euler EULER] [--order ORDER]
+                     [--radians] [--from-yaml FROM_YAML] [--out-txt OUT_TXT]
+                     [--out-csv OUT_CSV]
+kinematics.py: error: argument --v2: expected one argument
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op rotmat --euler "30,20,10" --order ZYX
+                          Rotation matrix from Euler
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity     ┃ Value                                                       ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ order        │ ZYX                                                         │
+├──────────────┼─────────────────────────────────────────────────────────────┤
+│ angles       │ [30, 20, 10]                                                │
+├──────────────┼─────────────────────────────────────────────────────────────┤
+│ R(row-major) │ [0.813798, -0.469846, 0.34202, 0.543838, 0.823173,          │
+│              │ -0.163176, -0.204874, 0.318796, 0.925417]                   │
+└──────────────┴─────────────────────────────────────────────────────────────┘
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op transform --v1 "1,2,3" --Rmat "1,0,0, 0,0,-1, 0,1,0"
+             Coordinate transform
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity     ┃ Value                        ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ B_r          │ [1, 2, 3]                    │
+├──────────────┼──────────────────────────────┤
+│ R(row-major) │ [1, 0, 0, 0, 0, -1, 0, 1, 0] │
+├──────────────┼──────────────────────────────┤
+│ G_r = R B_r  │ [1, -3, 2]                   │
+└──────────────┴──────────────────────────────┘
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --from-yaml intro/in/calcs.yaml \
+  --out-txt intro/out/results.txt --out-csv intro/out/results.csv
+
+       Magnitude
+┏━━━━━━━━━━┳━━━━━━━━━━━┓
+┃ Quantity ┃ Value     ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━┩
+│ v1       │ [1, 2, 3] │
+├──────────┼───────────┤
+│ ||v1||   │ 3.74166   │
+└──────────┴───────────┘
+                 Unit vector
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value                           ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ v1       │ [3, -1, 2]                      │
+├──────────┼─────────────────────────────────┤
+│ û        │ [0.801784, -0.267261, 0.534522] │
+└──────────┴─────────────────────────────────┘
+         Natural expression r = r û
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value                          ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ v1       │ [1, 2, 3]                      │
+├──────────┼────────────────────────────────┤
+│ r        │ 3.74166                        │
+├──────────┼────────────────────────────────┤
+│ û        │ [0.267261, 0.534522, 0.801784] │
+└──────────┴────────────────────────────────┘
+Decomposition r = x î + y
+         ĵ + z k̂
+┏━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃ Quantity ┃ Value      ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━┩
+│ v1       │ [7, -2, 5] │
+├──────────┼────────────┤
+│ x        │ 7          │
+├──────────┼────────────┤
+│ y        │ -2         │
+├──────────┼────────────┤
+│ z        │ 5          │
+└──────────┴────────────┘
+  Directional cosines
+┏━━━━━━━━━━┳━━━━━━━━━━━┓
+┃ Quantity ┃ Value     ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━┩
+│ v1       │ [1, 2, 3] │
+├──────────┼───────────┤
+│ cos α1   │ 0.267261  │
+├──────────┼───────────┤
+│ cos α2   │ 0.534522  │
+├──────────┼───────────┤
+│ cos α3   │ 0.801784  │
+└──────────┴───────────┘
+       Dot product
+┏━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃ Quantity ┃ Value      ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━┩
+│ v1       │ [1, 2, 3]  │
+├──────────┼────────────┤
+│ v2       │ [4, -5, 6] │
+├──────────┼────────────┤
+│ v1·v2    │ 12         │
+└──────────┴────────────┘
+     Cross product
+┏━━━━━━━━━━┳━━━━━━━━━━━┓
+┃ Quantity ┃ Value     ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━┩
+│ v1       │ [1, 0, 0] │
+├──────────┼───────────┤
+│ v2       │ [0, 1, 0] │
+├──────────┼───────────┤
+│ v1×v2    │ [0, 0, 1] │
+└──────────┴───────────┘
+        Cross-product laws
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓
+┃ Quantity      ┃ Value          ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━┩
+│ v1            │ [1, 2, 3]      │
+├───────────────┼────────────────┤
+│ v2            │ [-2, 1, 0.5]   │
+├───────────────┼────────────────┤
+│ v3            │ [0.7, -1.1, 2] │
+├───────────────┼────────────────┤
+│ antisymmetric │ True           │
+├───────────────┼────────────────┤
+│ scalar_assoc  │ True           │
+├───────────────┼────────────────┤
+│ distrib_left  │ True           │
+├───────────────┼────────────────┤
+│ distrib_right │ True           │
+└───────────────┴────────────────┘
+ Scalar triple product
+┏━━━━━━━━━━┳━━━━━━━━━━━┓
+┃ Quantity ┃ Value     ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━┩
+│ a        │ [1, 0, 0] │
+├──────────┼───────────┤
+│ b        │ [0, 1, 0] │
+├──────────┼───────────┤
+│ c        │ [0, 0, 1] │
+├──────────┼───────────┤
+│ a·(b×c)  │ 1         │
+└──────────┴───────────┘
+    Vector triple product
+          (bac–cab)
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value           ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
+│ a        │ [1, 2, 3]       │
+├──────────┼─────────────────┤
+│ b        │ [3, 0, 1]       │
+├──────────┼─────────────────┤
+│ c        │ [-1, 4, 2]      │
+├──────────┼─────────────────┤
+│ a×(b×c)  │ [45, -24, 1]    │
+├──────────┼─────────────────┤
+│ bac−cab  │ b(a·c) − c(a·b) │
+└──────────┴─────────────────┘
+Generalized scalar triple
+          (det)
+┏━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃ Quantity ┃ Value      ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━┩
+│ a        │ [1, 2, 3]  │
+├──────────┼────────────┤
+│ b        │ [4, 5, 6]  │
+├──────────┼────────────┤
+│ c        │ [7, 8, 10] │
+├──────────┼────────────┤
+│ det()    │ -3         │
+└──────────┴────────────┘
+  Orthogonality condition
+┏━━━━━━━━━━━━━┳━━━━━━━━━━━┓
+┃ Quantity    ┃ Value     ┃
+┡━━━━━━━━━━━━━╇━━━━━━━━━━━┩
+│ u           │ [1, 0, 0] │
+├─────────────┼───────────┤
+│ v           │ [0, 1, 0] │
+├─────────────┼───────────┤
+│ w           │ [0, 0, 1] │
+├─────────────┼───────────┤
+│ u·v         │ 0         │
+├─────────────┼───────────┤
+│ v·w         │ 0         │
+├─────────────┼───────────┤
+│ w·u         │ 0         │
+├─────────────┼───────────┤
+│ orthogonal? │ True      │
+└─────────────┴───────────┘
+      Orthonormal basis via Gram–Schmidt
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value                           ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ e1       │ [0.707107, 0.707107, 0]         │
+├──────────┼─────────────────────────────────┤
+│ e2       │ [0.408248, -0.408248, 0.816497] │
+├──────────┼─────────────────────────────────┤
+│ e3       │ [-0.57735, 0.57735, 0.57735]    │
+└──────────┴─────────────────────────────────┘
+                          Rotation matrix from Euler
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity     ┃ Value                                                       ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ order        │ ZYX                                                         │
+├──────────────┼─────────────────────────────────────────────────────────────┤
+│ angles       │ [30, 20, 10]                                                │
+├──────────────┼─────────────────────────────────────────────────────────────┤
+│ R(row-major) │ [0.813798, -0.469846, 0.34202, 0.543838, 0.823173,          │
+│              │ -0.163176, -0.204874, 0.318796, 0.925417]                   │
+└──────────────┴─────────────────────────────────────────────────────────────┘
+            Euler angles from R
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value                        ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ order    │ ZYX                          │
+├──────────┼──────────────────────────────┤
+│ Euler    │ [21.8991, -4.07143, 9.99134] │
+└──────────┴──────────────────────────────┘
+             Coordinate transform
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity     ┃ Value                        ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ B_r          │ [1, 2, 3]                    │
+├──────────────┼──────────────────────────────┤
+│ R(row-major) │ [1, 0, 0, 0, 0, -1, 0, 1, 0] │
+├──────────────┼──────────────────────────────┤
+│ G_r = R B_r  │ [1, -3, 2]                   │
+└──────────────┴──────────────────────────────┘
+        Norm & linear-space sanity
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓
+┃ Quantity                  ┃ Value       ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━┩
+│ v1                        │ [3, -4, 12] │
+├───────────────────────────┼─────────────┤
+│ ||v1||                    │ 13          │
+├───────────────────────────┼─────────────┤
+│ v2                        │ [2, 1, -3]  │
+├───────────────────────────┼─────────────┤
+│ ||v1+v2|| ≤ ||v1||+||v2|| │ True        │
+└───────────────────────────┴─────────────┘
+(.venv) ➜  robotics git:(develop) ✗
+
+please review the logs and assess if the results are correct.
+also fix the issue with the command that failed.
+
+so pleas generate the entire upgraded kinematics.py per the latest facts.
+
+///
+
+///
+
+///
