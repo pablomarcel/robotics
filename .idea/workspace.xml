@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented mobius.py and manipulators.py">
-      <change afterPath="$PROJECT_DIR$/intro/in/calcs.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/intro/kinematics.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/intro/prompts/unit_vectors.txt" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented kinematics.py">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intro/kinematics.py" beforeDir="false" afterPath="$PROJECT_DIR$/intro/kinematics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intro/prompts/unit_vectors.txt" beforeDir="false" afterPath="$PROJECT_DIR$/intro/prompts/unit_vectors.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +86,7 @@
       <workItem from="1758067443792" duration="1182000" />
       <workItem from="1758068700995" duration="388000" />
       <workItem from="1758069115398" duration="387000" />
-      <workItem from="1758077477819" duration="2211000" />
+      <workItem from="1758077477819" duration="3782000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -121,7 +120,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758069426045</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="implemented kinematics.py">
+      <option name="closed" value="true" />
+      <created>1758080168512</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1758080168512</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -145,6 +152,7 @@
     <MESSAGE value="implemented manipulator.py" />
     <MESSAGE value="implemented mobius.py" />
     <MESSAGE value="implemented mobius.py and manipulators.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented mobius.py and manipulators.py" />
+    <MESSAGE value="implemented kinematics.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented kinematics.py" />
   </component>
 </project>
