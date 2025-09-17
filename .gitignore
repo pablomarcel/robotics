@@ -88,4 +88,15 @@ Thumbs.db
 rotation/out/
 intro/out/
 # If other modules later mirror this pattern, this catches their out dirs at top-level
-*/out/
+acceleration/out/
+angular/out/
+applied/out/
+control/out/
+forward/out/
+inverse/out/
+motion/out/
+orientation/out/
+path/out/
+robot/out/
+time/out/
+velocity/out/
