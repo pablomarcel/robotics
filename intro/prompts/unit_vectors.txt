@@ -410,3 +410,157 @@ so pleas generate the entire upgraded kinematics.py per the latest facts.
 ///
 
 ///
+
+cool beans, exhibits 1 to 4 show the theory on vector functions.
+
+management asked to enhance our kinematics app to include functionality to handle vector functions.
+
+include vector functions and derivatives.
+
+    velocity
+    acceleration
+    jerk
+
+no need to deal with higher than jerk derivatives for now.
+
+so i consider our app should able to handle these vector functions and derivatives.
+
+please generate the entire upgraded kinematics.py script without breaking any existing functionality per the latest facts.
+
+///
+
+ok here are the logs:
+
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op velocity \
+  --fx "cos(w*t)" --fy "sin(w*t)" --fz "2*t" --params w=1.0 --t 0.5
+
+         v(t) = dr/dt
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value           ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
+│ x(t)     │ -1.0*sin(1.0*t) │
+├──────────┼─────────────────┤
+│ y(t)     │ 1.0*cos(1.0*t)  │
+├──────────┼─────────────────┤
+│ z(t)     │ 2               │
+└──────────┴─────────────────┘
+         velocity(t) at t=0.5
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value                    ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ v(t=0.5) │ [-0.479426, 0.877583, 2] │
+└──────────┴──────────────────────────┘
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op acceleration \
+  --fx "cos(w*t)" --fy "sin(w*t)" --fz "2*t" --params w=1.3 \
+  --t-grid 0 6.283185307179586 101 \
+  --out-csv intro/out/results.csv
+
+        a(t) = d²r/dt²
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value            ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ x(t)     │ -1.69*cos(1.3*t) │
+├──────────┼──────────────────┤
+│ y(t)     │ -1.69*sin(1.3*t) │
+├──────────┼──────────────────┤
+│ z(t)     │ 0                │
+└──────────┴──────────────────┘
+                           Series evaluation error
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value                                                           ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ message  │ too many indices for array: array is 0-dimensional, but 1 were  │
+│          │ indexed                                                         │
+└──────────┴─────────────────────────────────────────────────────────────────┘
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op jerk --fx "A*t**3" --fy "B*sin(t)" --fz "C*exp(t)" --params A=0.1 B=2 C=0.5
+         j(t) = d³r/dt³
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value             ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ x(t)     │ 0.600000000000000 │
+├──────────┼───────────────────┤
+│ y(t)     │ -2.0*cos(t)       │
+├──────────┼───────────────────┤
+│ z(t)     │ 0.5*exp(t)        │
+└──────────┴───────────────────┘
+(.venv) ➜  robotics git:(develop) ✗
+
+please analyze the logs thoroughly and assess what worked and what went wrong.
+
+///
+
+ok, here are the new logs:
+
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op velocity \
+  --fx "cos(w*t)" --fy "sin(w*t)" --fz "2*t" --params w=1.0 --t 0.5
+
+         v(t) = dr/dt
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value           ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
+│ x(t)     │ -1.0*sin(1.0*t) │
+├──────────┼─────────────────┤
+│ y(t)     │ 1.0*cos(1.0*t)  │
+├──────────┼─────────────────┤
+│ z(t)     │ 2               │
+└──────────┴─────────────────┘
+         velocity(t) at t=0.5
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value                    ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ v(t=0.5) │ [-0.479426, 0.877583, 2] │
+└──────────┴──────────────────────────┘
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op acceleration \
+  --fx "cos(w*t)" --fy "sin(w*t)" --fz "2*t" --params w=1.3 \
+  --t-grid 0 6.283185307179586 101 \
+  --out-csv intro/out/results.csv
+
+        a(t) = d²r/dt²
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value            ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ x(t)     │ -1.69*cos(1.3*t) │
+├──────────┼──────────────────┤
+│ y(t)     │ -1.69*sin(1.3*t) │
+├──────────┼──────────────────┤
+│ z(t)     │ 0                │
+└──────────┴──────────────────┘
+           acceleration(t) series
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity     ┃ Value                      ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ preview rows │ 101 total                  │
+├──────────────┼────────────────────────────┤
+│ t=0          │ a=[-1.69, -0, 0]           │
+├──────────────┼────────────────────────────┤
+│ t=0.0628319  │ a=[-1.68437, -0.137888, 0] │
+├──────────────┼────────────────────────────┤
+│ t=0.125664   │ a=[-1.6675, -0.274857, 0]  │
+├──────────────┼────────────────────────────┤
+│ t=6.15752    │ a=[0.253881, -1.67082, 0]  │
+├──────────────┼────────────────────────────┤
+│ t=6.22035    │ a=[0.389358, -1.64454, 0]  │
+├──────────────┼────────────────────────────┤
+│ t=6.28319    │ a=[0.522239, -1.60729, 0]  │
+└──────────────┴────────────────────────────┘
+(.venv) ➜  robotics git:(develop) ✗ python intro/kinematics.py --op jerk --fx "A*t**3" --fy "B*sin(t)" --fz "C*exp(t)" --params A=0.1 B=2 C=0.5
+         j(t) = d³r/dt³
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Quantity ┃ Value             ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ x(t)     │ 0.600000000000000 │
+├──────────┼───────────────────┤
+│ y(t)     │ -2.0*cos(t)       │
+├──────────┼───────────────────┤
+│ z(t)     │ 0.5*exp(t)        │
+└──────────┴───────────────────┘
+(.venv) ➜  robotics git:(develop) ✗
+
+are the results correct?
+
+explain why or why not
+
+///
+
+///
+
