@@ -1,0 +1,44 @@
+Reza Jazar in his book Theory of Applied Robotics claims that there are 72 configurations for 3D industrial manipulators.
+Every link with two options P or R
+axes with three options parallel, orthogonal, or perpendicular.
+then he go ahead and presents a select set of symbolic representations of one of these 72 configurations (exhibit 1).
+
+It occurs to me that we can build an awesome cli tool that would generate each of the 72 configurations in ascii code.
+
+We are building python tools for each of the book chapters. each chapter has its own folder in the pycharm project.
+all the scripts for the current project live in the intro folder.
+any input files therefore should live in the intro/in folder.
+any output files therefore should live in the intro/out folder.
+
+for cli commands keep in mind that the python scripts are stored in the intro directory.
+
+so the cli tool should serve as a filter.
+
+what if we want all configurations that start with P, or R
+what if we want all configurations for which the second joint is P, or R
+what if we want all configurations for which the third joint is P or R
+what if we want all configurations for which the first axis is parallel, orthogonal or perpendicular.
+what if we want all configurations for which the second axis is parallel, orthogonal or perpendicular.
+
+the cli would serve to filter out combos.
+
+also we should have a flag to generate all.
+
+I think we should have the ability to write to a text file in the intro/out directory
+
+also, it occurs to me that the app should be able to read the 3d manipulator from a yaml file in the intro/in directory.
+
+we can call this file intro/in/manipulator.yaml
+
+so, please go ahead and build this kickass manipulator.py cli tool.
+
+in a separate section provide the list of run commands.
+
+also, i found a list of python libraries that help prettify ascii like pyfiglet, rich-pyfiglet, rich, text-pyfiglet.
+
+so I wonder if we could leverage cool python libraries to produce sparkling ascii in this robotics project.
+
+///
+
+
+

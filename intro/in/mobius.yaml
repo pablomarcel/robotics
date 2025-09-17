@@ -1,0 +1,20 @@
+# intro/in/mobius.yaml
+# Defaults for intro/mobius.py (CLI flags override these)
+
+backend: plotly         # mpl | plotly | pyvista
+R: 1.0                  # ring radius
+w: 0.35                 # half-width of the strip
+nu: 400                 # samples along u (angle)
+nv: 60                  # samples along v (width)
+
+# Backend-specific options
+mpl:
+  cmap: "viridis"
+  linewidth: 0.15
+
+plotly:
+  colorscale: "Turbo"
+
+pyvista:
+  cmap: "viridis"
+  smooth_shading: true
