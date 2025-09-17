@@ -742,6 +742,8 @@ are we correct?
 
 ///
 
+now that the rotation kinematics app is working, it is time for the next upgrades.
+
 Management asked to implement the next enhancements:
 
 	• Add named subcommands that print the closed-form E matrices for RPY (zyx) and proper Euler (zxz, zyz) to mirror the equation numbers one-for-one.
@@ -752,4 +754,3103 @@ Please generate the applicable upgraded scripts per the latest facts.
 
 ///
 
+is there any python library that automatically extracts the app architecture based on our scripts.
 
+since we got 5 scripts and all of them are related, i wonder if there is a library that can generate an architecture diagram in ascii or network diagram that allow us to better understand our app or any other app.
+
+here are our 5 scripts
+
+    rot_cli.py
+    rot_core.py
+    rot_design.py
+    rot_io.py
+    rot_utils.py
+
+basically this is a philosophical question that has application in the broader software development field.
+
+///
+
+so, we haven yet set the directories as modules right?
+
+(.venv) ➜  rotation git:(develop) ✗ python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+/Users/pablomontijo/Control/robotics/.venv/bin/python: Error while finding module specification for 'rotation.rot_cli' (ModuleNotFoundError: No module named 'rotation')
+(.venv) ➜  rotation git:(develop) ✗
+
+///
+
+ok, i got issues with pytest:
+
+(.venv) ➜  robotics git:(develop) ✗ cd rotation
+(.venv) ➜  rotation git:(develop) ✗ cd tests
+(.venv) ➜  tests git:(develop) ✗ pytest test_rotation_app.py
+========================================================================== test session starts ===========================================================================
+platform darwin -- Python 3.11.0, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/pablomontijo/Control/robotics/rotation/tests
+collected 0 items / 1 error
+
+================================================================================= ERRORS =================================================================================
+_________________________________________________________________ ERROR collecting test_rotation_app.py __________________________________________________________________
+ImportError while importing test module '/Users/pablomontijo/Control/robotics/rotation/tests/test_rotation_app.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test_rotation_app.py:7: in <module>
+    from rotation import rot_core as core
+E   ModuleNotFoundError: No module named 'rotation'
+======================================================================== short test summary info =========================================================================
+ERROR test_rotation_app.py
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+============================================================================ 1 error in 0.81s ============================================================================
+(.venv) ➜  tests git:(develop) ✗
+
+i tried to run the original command but it did not work, then i cd'd into tests and run pytest directly and it did not work.
+
+so I do not know what to do.
+
+also, the other commands did run but i am not sure if the results are correct. please assess if we are correct.
+
+///
+
+dumb questions:
+
+i created the pytest.ini at the root and set it like this:
+
+# pytest.ini (place at repo root)
+[pytest]
+testpaths = rotation/tests
+
+in the future i will work in the orientatin directory and set tests in the orientation directory.
+
+will the pytest.ini work, and we just append paths?
+
+also, the pytest commands now runs, here are the logs:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest -q rotation/tests/test_rotation_app.py
+.....                                                                                                                                                              [100%]
+5 passed in 1.05s
+(.venv) ➜  robotics git:(develop) ✗
+
+but i remember pytest has goodies to break down the tests in a more granular fashion, like i remember we used to see what was actually going on in each of the tests.
+
+don't we have pytest upgraded run commands?
+
+///
+
+also, i ran the two commands you suggested:
+
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+^[[DE_body for zyx (columns in seq-order [a1=ψ, a2=θ, a3=φ]):
+ω = E(q) q̇
+variables: a1, a2, a3
+Matrix([[0, sin(a1), cos(a1)*cos(a2)], [0, cos(a1), -sin(a1)*cos(a2)], [1, 0, sin(a2)]])
+
+E_body for zyx in RPY-order [φ, θ, ψ] (columns match [φ̇, θ̇, ψ̇]):
+ω = E_rpy(q) q̇
+variables: a3, a2, a1
+Matrix([[cos(a1)*cos(a2), sin(a1), 0], [-sin(a1)*cos(a2), cos(a1), 0], [sin(a2), 0, 1]])
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli angvel local zyx "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+ω =  [ 0.265798  0.220190 -0.018620]
+
+are we cool?
+
+///
+
+ok here is my current pytest.ini:
+
+# pytest.ini (place at repo root)
+[pytest]
+testpaths =
+    rotation/tests
+    orientation/tests
+    motion/tests
+    forward/tests
+    inverse/tests
+    angular/tests
+    velocity/tests
+    acceleration/tests
+    applied/tests
+    robot/tests
+    path/tests
+    time/tests
+
+here is my current rotation/tests/test_rotation_app.py:
+
+# =============================
+# File: rotation/tests/test_rotation_app.py
+# =============================
+import numpy as np
+from scipy.spatial.transform import Rotation as R
+
+from rotation import rot_core as core
+
+def _close(a, b, atol=1e-6):
+    return np.allclose(a, b, atol=atol)
+
+def test_compose_decompose_zyx_30_20_10():
+    ang_deg = [30, 20, 10]
+    Robj = core.build_matrix("global", "zyx", ang_deg, degrees=True)
+    M = Robj.as_matrix()
+    M_ref = np.array([
+        [ 0.813798, -0.469846,  0.342020],
+        [ 0.543838,  0.823173, -0.163176],
+        [-0.204874,  0.318796,  0.925417]
+    ])
+    assert _close(M, M_ref, 3e-6)
+    a_back = core.decompose(Robj, "zyx", "global", degrees=True)
+    assert _close(a_back, np.array(ang_deg), 1e-6)
+
+def test_repeat_12x15deg_about_Z():
+    Robj = core.build_matrix("global", "zyx", [15,0,0], degrees=True)  # Z=15°, Y=0, X=0
+    Rm = core.repeat_rotation(Robj, 12).as_matrix()
+    M_ref = np.diag([-1.0, -1.0, 1.0])
+    assert _close(Rm, M_ref, 1e-6)
+
+def test_transform_basis_rows_returns_Rt():
+    Robj = core.build_matrix("global", "zyx", [30,20,10], degrees=True)
+    P = np.eye(3)
+    Pg = core.transform_points(Robj, P)
+    assert _close(Pg, Robj.as_matrix().T, 1e-6)
+
+def test_angvel_local_zyz_body_matches_log_snapshot():
+    # From your log: ω ≈ [0.070380, 0.190306, 0.393969] deg/s
+    w = core.angvel_from_rates("zyz", [10,20,30], [0.1,0.2,0.3], convention="local", degrees=True, frame="body")
+    w_ref = np.array([0.070380, 0.190306, 0.393969])
+    assert _close(w, w_ref, 3e-6)
+
+def test_align_x_axis_right_handed_unit_det():
+    u = [0.5, -0.2, 0.84]
+    Robj = core.align_body_x(u)
+    M = Robj.as_matrix()
+    # determinant ~ +1, orthonormal
+    assert np.isclose(np.linalg.det(M), 1.0, atol=1e-8)
+    assert _close(M.T @ M, np.eye(3), 1e-8)
+    # x-axis aligned
+    x_body_in_global = M[:,0]
+    u_hat = np.array(u) / np.linalg.norm(u)
+    assert _close(x_body_in_global, u_hat, 1e-8)
+
+I see you mentioned the use of markers
+
+please generate the entire upgraded pytest.ini and test_rotation_app.py per the latest facts.
+
+///
+
+another dumb question, don't we need to update our pyproject.toml because of the facts that now we got more directories with tests folders inside that will contain future test scripts?
+
+here is the current pyproject.toml:
+
+# pyproject.toml
+[project]
+name = "robotics"
+version = "0.0.1"
+requires-python = ">=3.9"
+dependencies = ["numpy", "scipy", "sympy", "pyyaml"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["rotation"]
+
+[tool.pytest.ini_options]
+testpaths = ["rotation/tests"]
+
+also, is pyproject.toml redundant since pytest.ini is working beautifully?
+
+another dumb question, in the future if i run pytest will all the tests trigger and i would see a gazillion of tests results in the console (not necessarily a bad thing, just asking)
+
+///
+
+ok, i run pytest with the current code:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest
+Test session starts (platform: darwin, Python 3.11.0, pytest 7.2.0, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics, configfile: pytest.ini, testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items
+
+ rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10 ✓                                                                                 14% █▌
+ rotation/tests/test_rotation_app.py::test_repeat_12x15deg_about_Z ✓                                                                                        29% ██▉
+ rotation/tests/test_rotation_app.py::test_transform_basis_rows_returns_Rt ✓                                                                                43% ████▍
+ rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_log_snapshot ✓                                                                     57% █████▊
+ rotation/tests/test_rotation_app.py::test_align_x_axis_right_handed_unit_det ✓                                                                             71% ███████▎
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.09794255, -0.17857844,  0.1257428 ]), 5e-07)
+
+rotation/tests/test_rotation_app.py:81: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   86% ████████▋
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyz_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyz_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        q = np.array([0.1, 0.4, -0.2], dtype=float)
+        qdot = np.array([0.05, -0.1, 0.02], dtype=float)
+
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.0177328 , -0.09872288,  0.06842122]), array([ 0.00078414, -0.10187493,  0.06605305]), 5e-07)
+
+rotation/tests/test_rotation_app.py:97: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ⨯                                                                  100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+2.94s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+1.93s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+0.01s call     rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10
+0.00s call     rotation/tests/test_rotation_app.py::test_align_x_axis_right_handed_unit_det
+0.00s call     rotation/tests/test_rotation_app.py::test_transform_basis_rows_returns_Rt
+0.00s call     rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_log_snapshot
+0.00s setup    rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+0.00s call     rotation/tests/test_rotation_app.py::test_repeat_12x15deg_about_Z
+0.00s setup    rotation/tests/test_rotation_app.py::test_repeat_12x15deg_about_Z
+0.00s setup    rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local - assert False
+
+Results (6.17s):
+       5 passed
+       2 failed
+         - rotation/tests/test_rotation_app.py:65 test_closed_form_E_matches_numeric_zyx_body_local
+         - rotation/tests/test_rotation_app.py:83 test_closed_form_E_matches_numeric_zyz_body_local
+
+Here is the current test_rotation_app.py:
+
+# =============================
+# File: rotation/tests/test_rotation_app.py
+# =============================
+import numpy as np
+import pytest
+from scipy.spatial.transform import Rotation as R
+
+from rotation import rot_core as core
+
+def _close(a, b, atol=1e-6):
+    return np.allclose(a, b, atol=atol)
+
+@pytest.mark.rot
+def test_compose_decompose_zyx_30_20_10():
+    ang_deg = [30, 20, 10]
+    Robj = core.build_matrix("global", "zyx", ang_deg, degrees=True)
+    M = Robj.as_matrix()
+    M_ref = np.array([
+        [ 0.813798, -0.469846,  0.342020],
+        [ 0.543838,  0.823173, -0.163176],
+        [-0.204874,  0.318796,  0.925417]
+    ])
+    assert _close(M, M_ref, 3e-6)
+    a_back = core.decompose(Robj, "zyx", "global", degrees=True)
+    assert _close(a_back, np.array(ang_deg), 1e-6)
+
+@pytest.mark.rot
+def test_repeat_12x15deg_about_Z():
+    # 12 * 15° about Z => 180° about Z
+    Robj = core.build_matrix("global", "zyx", [15, 0, 0], degrees=True)  # Z=15°, Y=0, X=0
+    Rm = core.repeat_rotation(Robj, 12).as_matrix()
+    M_ref = np.diag([-1.0, -1.0, 1.0])
+    assert _close(Rm, M_ref, 1e-6)
+
+@pytest.mark.rot
+def test_transform_basis_rows_returns_Rt():
+    Robj = core.build_matrix("global", "zyx", [30, 20, 10], degrees=True)
+    P = np.eye(3)  # row-vectors e1,e2,e3
+    Pg = core.transform_points(Robj, P)
+    assert _close(Pg, Robj.as_matrix().T, 1e-6)
+
+@pytest.mark.rot
+def test_angvel_local_zyz_body_matches_log_snapshot():
+    # From your log: ω ≈ [0.070380, 0.190306, 0.393969] deg/s
+    w = core.angvel_from_rates("zyz", [10, 20, 30], [0.1, 0.2, 0.3],
+                               convention="local", degrees=True, frame="body")
+    w_ref = np.array([0.070380, 0.190306, 0.393969])
+    assert _close(w, w_ref, 3e-6)
+
+@pytest.mark.rot
+def test_align_x_axis_right_handed_unit_det():
+    u = [0.5, -0.2, 0.84]
+    Robj = core.align_body_x(u)
+    M = Robj.as_matrix()
+    # determinant ~ +1, orthonormal
+    assert np.isclose(np.linalg.det(M), 1.0, atol=1e-8)
+    assert _close(M.T @ M, np.eye(3), 1e-8)
+    # x-axis aligned
+    x_body_in_global = M[:, 0]
+    u_hat = np.array(u) / np.linalg.norm(u)
+    assert _close(x_body_in_global, u_hat, 1e-8)
+
+# --- New: Closed-form E(q) vs numeric Jacobian consistency -----------------
+
+@pytest.mark.cf
+def test_closed_form_E_matches_numeric_zyx_body_local():
+    sympy = pytest.importorskip("sympy")
+    from rotation import rot_closedform as cf
+
+    # Use radians everywhere for this check
+    q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+    qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+    # Closed-form E for local/intrinsic ZYX, body-frame ω
+    E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+    E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+    omega_sym = E_num @ qdot
+    omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                       degrees=False, frame='body')
+    assert _close(omega_sym, omega_num, 5e-7)
+
+@pytest.mark.cf
+def test_closed_form_E_matches_numeric_zyz_body_local():
+    sympy = pytest.importorskip("sympy")
+    from rotation import rot_closedform as cf
+
+    q = np.array([0.1, 0.4, -0.2], dtype=float)
+    qdot = np.array([0.05, -0.1, 0.02], dtype=float)
+
+    E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+    E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+    omega_sym = E_num @ qdot
+    omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                       degrees=False, frame='body')
+    assert _close(omega_sym, omega_num, 5e-7)
+
+So, it passed the previous 5 tests but failed the new tests.
+
+here is the current rot_closedform.py:
+
+# =============================
+# File: rotation/rot_closedform.py
+# =============================
+from __future__ import annotations
+from typing import Tuple
+
+import sympy as sp
+
+# Elementary rotations (active) as SymPy matrices
+def _Rx(a): c, s = sp.cos(a), sp.sin(a); return sp.Matrix([[1,0,0],[0,c,-s],[0,s,c]])
+def _Ry(a): c, s = sp.cos(a), sp.sin(a); return sp.Matrix([[c,0,s],[0,1,0],[-s,0,c]])
+def _Rz(a): c, s = sp.cos(a), sp.sin(a); return sp.Matrix([[c,-s,0],[s,c,0],[0,0,1]])
+
+_AX = {'x': _Rx, 'y': _Ry, 'z': _Rz}
+
+def _compose_local(seq: str, q) -> sp.Matrix:
+    """Local/intrinsic: rotate about moving axes. For angles q=(q1,q2,q3) in seq order,
+    R = R_axis3(q3) * R_axis2(q2) * R_axis1(q1)
+    """
+    s = seq.lower()
+    if len(s) != 3: raise ValueError("sequence must have length 3")
+    R1 = _AX[s[0]](q[0])
+    R2 = _AX[s[1]](q[1])
+    R3 = _AX[s[2]](q[2])
+    return R3 * R2 * R1
+
+def _vee(S: sp.Matrix) -> sp.Matrix:
+    """vee: skew(3)->R^3 (symbolic)."""
+    return sp.Matrix([S[2,1], S[0,2], S[1,0]])
+
+def E_matrix(seq: str, convention: str = 'local', frame: str = 'body'
+            ) -> Tuple[sp.Matrix, Tuple[sp.Symbol, sp.Symbol, sp.Symbol]]:
+    """
+    Return symbolic E(q) such that ω = E(q) q̇
+    - convention: 'local' (intrinsic) or 'global' (extrinsic)
+      (Closed form is built here for local; global can be obtained by reversing seq & angles)
+    - frame: 'body' or 'space' for ω components.
+    """
+    seq = seq.lower()
+    if convention not in {'local', 'global'}: raise ValueError("convention must be 'local' or 'global'")
+    if frame not in {'body','space'}: raise ValueError("frame must be 'body' or 'space'")
+
+    # Define angle symbols in the sequence order
+    a1, a2, a3 = sp.symbols('a1 a2 a3', real=True)
+    q = (a1, a2, a3)
+
+    # Build R according to chosen convention. For 'global', use the reverse equivalence.
+    if convention == 'local':
+        R = _compose_local(seq, q)
+    else:
+        # global(seq, a1,a2,a3) == local(seq[::-1], a3,a2,a1)
+        R = _compose_local(seq[::-1], (a3, a2, a1))
+
+    Rt = R.T
+    cols = []
+    for k, ak in enumerate(q):
+        dR = sp.diff(R, ak)
+        if frame == 'space':
+            Om = dR * Rt
+        else:
+            Om = Rt * dR
+        Om = sp.simplify((Om - Om.T) / 2)  # enforce skew
+        cols.append(_vee(Om))
+    E = sp.Matrix.hstack(*cols)
+    return sp.simplify(E), (a1, a2, a3)
+
+def E_matrix_rpy_zyx_body(convention: str = 'local') -> Tuple[sp.Matrix, Tuple[sp.Symbol, sp.Symbol, sp.Symbol, Tuple]]:
+    """
+    Convenience: RPY (ZYX) body-frame ω mapping, with both:
+    - sequence-order angles (a1=ψ about z, a2=θ about y, a3=φ about x)
+    - RPY-order (φ, θ, ψ) reindexed so columns match [φ̇, θ̇, ψ̇].
+    """
+    E_seq, (a1, a2, a3) = E_matrix('zyx', convention=convention, frame='body')  # columns = [ȧ1, ȧ2, ȧ3]
+    ψ, θ, φ = a1, a2, a3
+    # Reindex columns to [φ̇, θ̇, ψ̇] order for classic RPY presentation
+    E_rpy = E_seq[:, [2, 1, 0]]
+    return sp.simplify(E_seq), (a1, a2, a3), sp.simplify(E_rpy), (φ, θ, ψ)
+
+here are the logs from the run commands:
+
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+E_body for zyx (columns in seq-order [a1=ψ, a2=θ, a3=φ]):
+ω = E(q) q̇
+variables: a1, a2, a3
+Matrix([[0, sin(a1), cos(a1)*cos(a2)], [0, cos(a1), -sin(a1)*cos(a2)], [1, 0, sin(a2)]])
+
+E_body for zyx in RPY-order [φ, θ, ψ] (columns match [φ̇, θ̇, ψ̇]):
+ω = E_rpy(q) q̇
+variables: a3, a2, a1
+Matrix([[cos(a1)*cos(a2), sin(a1), 0], [-sin(a1)*cos(a2), cos(a1), 0], [sin(a2), 0, 1]])
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli angvel local zyx "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+ω =  [ 0.265798  0.220190 -0.018620]
+
+also, i do not like the literal word Matrix in these logs.
+
+So, please assess what is going on and propose fixes.
+
+///
+
+///
+
+///
+
+here are the results:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest -m cf -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items / 5 deselected / 2 selected
+
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.12397128, -0.17810013,  0.10102337]), 5e-07)
+
+rotation/tests/test_rotation_app.py:81: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   50% █████
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ✓                                                                  100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+2.83s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+1.87s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+
+Results (5.75s):
+       1 passed
+       1 failed
+         - rotation/tests/test_rotation_app.py:65 test_closed_form_E_matches_numeric_zyx_body_local
+       5 deselected
+(.venv) ➜  robotics git:(develop) ✗ pytest -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items
+
+ rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10 ✓                                                                                 14% █▌
+ rotation/tests/test_rotation_app.py::test_repeat_12x15deg_about_Z ✓                                                                                        29% ██▉
+ rotation/tests/test_rotation_app.py::test_transform_basis_rows_returns_Rt ✓                                                                                43% ████▍
+
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_angvel_local_zyz_body_matches_log_snapshot ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.rot
+    def test_angvel_local_zyz_body_matches_log_snapshot():
+        # From your log: ω ≈ [0.070380, 0.190306, 0.393969] deg/s
+        w = core.angvel_from_rates("zyz", [10, 20, 30], [0.1, 0.2, 0.3],
+                                   convention="local", degrees=True, frame="body")
+        w_ref = np.array([0.070380, 0.190306, 0.393969])
+>       assert _close(w, w_ref, 3e-6)
+E       assert False
+E        +  where False = _close(array([-0.06631759,  0.2147789 ,  0.38190779]), array([0.07038 , 0.190306, 0.393969]), 3e-06)
+
+rotation/tests/test_rotation_app.py:48: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_log_snapshot ⨯                                                                     57% █████▊
+ rotation/tests/test_rotation_app.py::test_align_x_axis_right_handed_unit_det ✓                                                                             71% ███████▎
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.12397128, -0.17810013,  0.10102337]), 5e-07)
+
+rotation/tests/test_rotation_app.py:81: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   86% ████████▋
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ✓                                                                  100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+2.85s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+1.79s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+0.01s call     rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10
+
+(7 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_log_snapshot - assert False
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+
+Results (5.73s):
+       5 passed
+       2 failed
+         - rotation/tests/test_rotation_app.py:42 test_angvel_local_zyz_body_matches_log_snapshot
+         - rotation/tests/test_rotation_app.py:65 test_closed_form_E_matches_numeric_zyx_body_local
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+E_body for zyx (columns in seq-order [a1=ψ, a2=θ, a3=φ]):
+ω = E(q) q̇
+variables: a1, a2, a3
+[
+  [0, sin(a1), cos(a1)*cos(a2)]
+  [0, cos(a1), -sin(a1)*cos(a2)]
+  [1, 0, sin(a2)]
+]
+
+E_body for zyx in RPY-order [φ, θ, ψ] (columns match [φ̇, θ̇, ψ̇]):
+ω = E_rpy(q) q̇
+variables: a3, a2, a1
+[
+  [cos(a1)*cos(a2), sin(a1), 0]
+  [-sin(a1)*cos(a2), cos(a1), 0]
+  [sin(a2), 0, 1]
+]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli angvel local zyx "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+ω =  [-0.002606  0.245914  0.242895]
+(.venv) ➜  robotics git:(develop) ✗
+
+please assess what went wrong.
+
+///
+
+///
+
+///
+
+here is the current rot_closedform.py:
+
+# =============================
+# File: rotation/rot_closedform.py
+# =============================
+from __future__ import annotations
+from typing import Tuple
+
+import sympy as sp
+
+# Elementary rotations (active) as SymPy matrices
+def _Rx(a): c, s = sp.cos(a), sp.sin(a); return sp.Matrix([[1,0,0],[0,c,-s],[0,s,c]])
+def _Ry(a): c, s = sp.cos(a), sp.sin(a); return sp.Matrix([[c,0,s],[0,1,0],[-s,0,c]])
+def _Rz(a): c, s = sp.cos(a), sp.sin(a); return sp.Matrix([[c,-s,0],[s,c,0],[0,0,1]])
+
+_AX = {'x': _Rx, 'y': _Ry, 'z': _Rz}
+
+def _compose_local(seq: str, q) -> sp.Matrix:
+    """Local/intrinsic: rotate about moving axes. For angles q=(q1,q2,q3) in seq order,
+    R = R_axis3(q3) * R_axis2(q2) * R_axis1(q1)
+    """
+    s = seq.lower()
+    if len(s) != 3: raise ValueError("sequence must have length 3")
+    R1 = _AX[s[0]](q[0])
+    R2 = _AX[s[1]](q[1])
+    R3 = _AX[s[2]](q[2])
+    return R3 * R2 * R1
+
+def _vee(S: sp.Matrix) -> sp.Matrix:
+    """vee: skew(3)->R^3 (symbolic)."""
+    return sp.Matrix([S[2,1], S[0,2], S[1,0]])
+
+def E_matrix(seq: str, convention: str = 'local', frame: str = 'body'
+            ) -> Tuple[sp.Matrix, Tuple[sp.Symbol, sp.Symbol, sp.Symbol]]:
+    """
+    Return symbolic E(q) such that ω = E(q) q̇
+    - convention: 'local' (intrinsic) or 'global' (extrinsic)
+      (Closed form is built here for local; global can be obtained by reversing seq & angles)
+    - frame: 'body' or 'space' for ω components.
+    """
+    seq = seq.lower()
+    if convention not in {'local', 'global'}: raise ValueError("convention must be 'local' or 'global'")
+    if frame not in {'body','space'}: raise ValueError("frame must be 'body' or 'space'")
+
+    # Define angle symbols in the sequence order
+    a1, a2, a3 = sp.symbols('a1 a2 a3', real=True)
+    q = (a1, a2, a3)
+
+    # Build R according to chosen convention. For 'global', use the reverse equivalence.
+    if convention == 'local':
+        R = _compose_local(seq, q)
+    else:
+        # global(seq, a1,a2,a3) == local(seq[::-1], a3,a2,a1)
+        R = _compose_local(seq[::-1], (a3, a2, a1))
+
+    Rt = R.T
+    cols = []
+    for k, ak in enumerate(q):
+        dR = sp.diff(R, ak)
+        if frame == 'space':
+            Om = dR * Rt
+        else:
+            Om = Rt * dR
+        Om = sp.simplify((Om - Om.T) / 2)  # enforce skew
+        cols.append(_vee(Om))
+    E = sp.Matrix.hstack(*cols)
+    return sp.simplify(E), (a1, a2, a3)
+
+def E_matrix_rpy_zyx_body(convention: str = 'local') -> Tuple[sp.Matrix, Tuple[sp.Symbol, sp.Symbol, sp.Symbol, Tuple]]:
+    """
+    Convenience: RPY (ZYX) body-frame ω mapping, with both:
+    - sequence-order angles (a1=ψ about z, a2=θ about y, a3=φ about x)
+    - RPY-order (φ, θ, ψ) reindexed so columns match [φ̇, θ̇, ψ̇].
+    """
+    E_seq, (a1, a2, a3) = E_matrix('zyx', convention=convention, frame='body')  # columns = [ȧ1, ȧ2, ȧ3]
+    ψ, θ, φ = a1, a2, a3
+    # Reindex columns to [φ̇, θ̇, ψ̇] order for classic RPY presentation
+    E_rpy = E_seq[:, [2, 1, 0]]
+    return sp.simplify(E_seq), (a1, a2, a3), sp.simplify(E_rpy), (φ, θ, ψ)
+
+you said we needed to upgrade rot_closedform.py, so please generate the entire upgraded rot_closedform.py per the latest facts.
+
+///
+
+///
+
+///
+
+you told me to update rot_utils.py:
+
+# =============================
+# File: rotation/rot_utils.py
+# =============================
+from __future__ import annotations
+
+import math
+import os
+from typing import List, Sequence, Tuple
+
+import numpy as np
+from numpy.typing import ArrayLike
+
+try:
+    from scipy.spatial.transform import Rotation as _R
+except Exception as _e:  # pragma: no cover
+    raise RuntimeError("SciPy is required: pip install scipy") from _e
+
+R = _R  # alias for external modules
+
+# ---------------------------------------------------------------------
+# Basic helpers
+# ---------------------------------------------------------------------
+
+def ensure_dir(p: str) -> None:
+    """Create parent directories for a path if they don't exist."""
+    if p == "":
+        return
+    os.makedirs(p, exist_ok=True)
+
+
+def parse_floats(csv: str | Sequence[float]) -> List[float]:
+    """Parse '1,2,3' or ['1','2','3'] into [1.0, 2.0, 3.0]."""
+    if isinstance(csv, (list, tuple, np.ndarray)):
+        return [float(x) for x in csv]
+    parts = [s for s in str(csv).replace(" ", "").split(",") if s != ""]
+    return [float(x) for x in parts]
+
+
+def parse_bool(x: str | bool | None, default: bool = False) -> bool:
+    if isinstance(x, bool):
+        return x
+    if x is None:
+        return default
+    s = str(x).strip().lower()
+    return s in {"1", "true", "t", "yes", "y"}
+
+
+def hat(v: ArrayLike) -> np.ndarray:
+    """so(3) hat operator: R^3 -> skew(3)."""
+    v = np.asarray(v, dtype=float).reshape(3)
+    return np.array(
+        [[0.0, -v[2], v[1]],
+         [v[2], 0.0, -v[0]],
+         [-v[1], v[0], 0.0]],
+        dtype=float,
+    )
+
+
+def vee(M: ArrayLike) -> np.ndarray:
+    """vee operator: skew(3) -> R^3."""
+    M = np.asarray(M, dtype=float)
+    return np.array(
+        [M[2, 1] - M[1, 2], M[0, 2] - M[2, 0], M[1, 0] - M[0, 1]],
+        dtype=float,
+    ) * 0.5
+
+
+def is_rotmat(Rm: ArrayLike, tol: float = 1e-8) -> Tuple[bool, dict]:
+    """Check orthogonality and det=+1; return diagnostics."""
+    M = np.asarray(Rm, dtype=float).reshape(3, 3)
+    I = np.eye(3)
+    MtM = M.T @ M
+    ortho = np.allclose(MtM, I, atol=tol)
+    det = float(np.linalg.det(M))
+    det1 = np.isclose(det, 1.0, atol=1e-8)
+    rows = [float(np.linalg.norm(M[i])) for i in range(3)]
+    cols = [float(np.linalg.norm(M[:, j])) for j in range(3)]
+    return ortho and det1, {
+        "det": det,
+        "row_norms": rows,
+        "col_norms": cols,
+        "ortho_err": float(np.linalg.norm(MtM - I)),
+    }
+
+# ---------------------------------------------------------------------
+# Sequences
+# ---------------------------------------------------------------------
+
+VALID_TB = ["xyz", "xzy", "yxz", "yzx", "zxy", "zyx"]       # Tait–Bryan
+VALID_PROPER = ["zxz", "xyx", "yzy", "zyz", "xzx", "yxy"]  # Proper Euler
+VALID_ALL = VALID_TB + VALID_PROPER
+
+# ---------------------------------------------------------------------
+# Composition / decomposition (global vs local, aligned with SciPy)
+# ---------------------------------------------------------------------
+
+def compose_global(seq: str, angles: Sequence[float], degrees: bool = False) -> R:
+    """
+    Global/extrinsic composition: fixed axes (lowercase in SciPy).
+    """
+    seq = seq.lower()
+    if seq not in VALID_ALL:
+        raise ValueError(f"sequence must be one of {VALID_ALL}")
+    if len(angles) != 3:
+        raise ValueError("angles must be length-3")
+    return R.from_euler(seq, angles, degrees=degrees)
+
+
+def compose_local(seq: str, angles: Sequence[float], degrees: bool = False) -> R:
+    """
+    Local/intrinsic composition: moving/body axes (UPPERCASE in SciPy).
+    """
+    SEQ = seq.upper()
+    if seq.lower() not in VALID_ALL:
+        raise ValueError(f"sequence must be one of {VALID_ALL}")
+    if len(angles) != 3:
+        raise ValueError("angles must be length-3")
+    return R.from_euler(SEQ, angles, degrees=degrees)
+
+
+def decompose(Robj: R, seq: str, convention: str = "global", degrees: bool = False) -> np.ndarray:
+    """
+    Extract angles for a given sequence and convention, **mirroring** compose_* above.
+    """
+    if convention not in {"global", "local"}:
+        raise ValueError("convention must be 'global' or 'local'")
+    if convention == "global":
+        return Robj.as_euler(seq.lower(), degrees=degrees)
+    else:
+        return Robj.as_euler(seq.upper(), degrees=degrees)
+
+# ---------------------------------------------------------------------
+# ω ↔ q̇ mapping using central differences in radians
+# ---------------------------------------------------------------------
+
+def _omega_from_Rdot(Robj: R, Rdot: np.ndarray, frame: str = 'body') -> np.ndarray:
+    """
+    Recover ω from Rdot:
+      - space frame:  Rdot = Ω_space * R  => Ω_space = Rdot * R^T
+      - body  frame:  Rdot = R * Ω_body   => Ω_body  = R^T * Rdot
+    """
+    Rm = Robj.as_matrix()
+    if frame == 'space':
+        Om = Rdot @ Rm.T
+    elif frame == 'body':
+        Om = Rm.T @ Rdot
+    else:
+        raise ValueError("frame must be 'space' or 'body'")
+    Om = 0.5 * (Om - Om.T)  # enforce skew
+    return vee(Om)
+
+
+def build_rate_map(seq: str, angles: Sequence[float],
+                   convention: str = 'global', degrees: bool = False,
+                   frame: str = 'body') -> np.ndarray:
+    """
+    Numerically build M(q) so that ω = M(q) q̇, using **central difference** in radians.
+    Angles given in degrees are converted to radians internally.
+    """
+    seq_g = seq.lower() if convention == 'global' else seq.upper()
+
+    # Convert angles to radians for numerics
+    ang = np.asarray(angles, float)
+    ang_rad = np.deg2rad(ang) if degrees else ang
+
+    R0 = R.from_euler(seq_g, ang_rad, degrees=False)
+
+    h = 1e-8  # radians
+    M = np.zeros((3, 3), float)
+    for j in range(3):
+        a_plus = ang_rad.copy();  a_plus[j]  += h
+        a_minus = ang_rad.copy(); a_minus[j] -= h
+        R_plus = R.from_euler(seq_g, a_plus,  degrees=False)
+        R_minus = R.from_euler(seq_g, a_minus, degrees=False)
+        Rdot = (R_plus.as_matrix() - R_minus.as_matrix()) / (2.0 * h)
+        M[:, j] = _omega_from_Rdot(R0, Rdot, frame=frame)
+    return M
+
+
+def omega_from_rates(seq: str, angles: Sequence[float], rates: Sequence[float],
+                     convention: str = 'global', degrees: bool = False,
+                     frame: str = 'body') -> np.ndarray:
+    """
+    Map q̇ -> ω. If degrees=True, BOTH angles and rates are interpreted in degrees/deg·s⁻¹,
+    and ω is returned in deg·s⁻¹.
+    """
+    M = build_rate_map(seq, angles, convention=convention, degrees=degrees, frame=frame)
+    qdot = np.asarray(rates, float)
+    if degrees:
+        qdot = np.deg2rad(qdot)
+    w = M @ qdot
+    return np.rad2deg(w) if degrees else w
+
+
+def rates_from_omega(seq: str, angles: Sequence[float], omega: Sequence[float],
+                     convention: str = 'global', degrees: bool = False,
+                     frame: str = 'body') -> np.ndarray:
+    """
+    Map ω -> q̇ via pseudoinverse. If degrees=True, BOTH angles and ω are interpreted
+    in degrees/deg·s⁻¹; returned q̇ is in deg·s⁻¹.
+    """
+    M = build_rate_map(seq, angles, convention=convention, degrees=degrees, frame=frame)
+    w = np.asarray(omega, float)
+    if degrees:
+        w = np.deg2rad(w)
+    qdot = np.linalg.pinv(M) @ w
+    return np.rad2deg(qdot) if degrees else qdot
+
+# ---------------------------------------------------------------------
+# Repeat / power via logarithm map
+# ---------------------------------------------------------------------
+
+def rotation_power(Robj: R, m: int) -> R:
+    """Return R^m for integer m using axis-angle scaling (log/exp on SO(3))."""
+    if not isinstance(m, (int, np.integer)):
+        raise ValueError("m must be integer")
+    rotvec = Robj.as_rotvec()
+    ang = float(np.linalg.norm(rotvec))
+    if ang < 1e-12:
+        return R.identity()
+    axis = rotvec / ang
+    return R.from_rotvec(axis * (float(m) * ang))
+
+# ---------------------------------------------------------------------
+# Alignment: align body x-axis with a target vector
+# ---------------------------------------------------------------------
+
+def align_x_to_vector(u: Sequence[float]) -> R:
+    """
+    Build a rotation whose body x-axis aligns with u, with body y-axis chosen in the
+    global (X,Y)-plane when possible; columns of the returned matrix are the body
+    axes expressed in the global frame (right-handed).
+    """
+    u = np.asarray(u, dtype=float)
+    n = np.linalg.norm(u)
+    if n < 1e-12:
+        raise ValueError("vector u must be nonzero")
+    i = u / n  # body x-axis in global
+    K = np.array([0.0, 0.0, 1.0])
+
+    # pick j by projecting global K to plane normal i
+    j = K - (K @ i) * i
+    if np.linalg.norm(j) < 1e-12:  # u parallel to Z; fall back to Y
+        j = np.array([0.0, 1.0, 0.0]) if i[2] >= 0.0 else np.array([0.0, -1.0, 0.0])
+    j = j / np.linalg.norm(j)
+    k = np.cross(i, j)
+
+    # re-orthonormalize lightly to counter numeric drift
+    j = np.cross(k, i); j = j / np.linalg.norm(j)
+    k = np.cross(i, j)
+
+    Rm = np.column_stack([i, j, k])  # columns are body axes in global
+    return R.from_matrix(Rm)
+
+# ---------------------------------------------------------------------
+# CSV I/O
+# ---------------------------------------------------------------------
+
+def save_matrix_csv(path: str, Robj: R) -> None:
+    """Save a 3×3 matrix to CSV (creates parent directories)."""
+    ensure_dir(os.path.dirname(path) or ".")
+    np.savetxt(path, Robj.as_matrix(), delimiter=",", fmt="%.9f")
+
+
+def save_series_csv(path: str, t: np.ndarray, data: np.ndarray, header: str = "t, a1, a2, a3") -> None:
+    """
+    Save a time series to CSV. Expects t shape (N,), data shape (N, K).
+    """
+    ensure_dir(os.path.dirname(path) or ".")
+    arr = np.column_stack([t.reshape(-1), data])
+    np.savetxt(path, arr, delimiter=",", header=header, comments="", fmt="%.9f")
+
+is this the correct version?
+
+///
+
+///
+
+///
+
+what about test_rotation_app.py?
+
+# =============================
+# File: rotation/tests/test_rotation_app.py
+# =============================
+import numpy as np
+import pytest
+from scipy.spatial.transform import Rotation as R
+
+from rotation import rot_core as core
+
+def _close(a, b, atol=1e-6):
+    return np.allclose(a, b, atol=atol)
+
+@pytest.mark.rot
+def test_compose_decompose_zyx_30_20_10():
+    ang_deg = [30, 20, 10]
+    Robj = core.build_matrix("global", "zyx", ang_deg, degrees=True)
+    M = Robj.as_matrix()
+    M_ref = np.array([
+        [ 0.813798, -0.469846,  0.342020],
+        [ 0.543838,  0.823173, -0.163176],
+        [-0.204874,  0.318796,  0.925417]
+    ])
+    assert _close(M, M_ref, 3e-6)
+    a_back = core.decompose(Robj, "zyx", "global", degrees=True)
+    assert _close(a_back, np.array(ang_deg), 1e-6)
+
+@pytest.mark.rot
+def test_repeat_12x15deg_about_Z():
+    # 12 * 15° about Z => 180° about Z
+    Robj = core.build_matrix("global", "zyx", [15, 0, 0], degrees=True)  # Z=15°, Y=0, X=0
+    Rm = core.repeat_rotation(Robj, 12).as_matrix()
+    M_ref = np.diag([-1.0, -1.0, 1.0])
+    assert _close(Rm, M_ref, 1e-6)
+
+@pytest.mark.rot
+def test_transform_basis_rows_returns_Rt():
+    Robj = core.build_matrix("global", "zyx", [30, 20, 10], degrees=True)
+    P = np.eye(3)  # row-vectors e1,e2,e3
+    Pg = core.transform_points(Robj, P)
+    assert _close(Pg, Robj.as_matrix().T, 1e-6)
+
+@pytest.mark.rot
+def test_angvel_local_zyz_body_matches_log_snapshot():
+    # From your log: ω ≈ [0.070380, 0.190306, 0.393969] deg/s
+    w = core.angvel_from_rates("zyz", [10, 20, 30], [0.1, 0.2, 0.3],
+                               convention="local", degrees=True, frame="body")
+    w_ref = np.array([0.070380, 0.190306, 0.393969])
+    assert _close(w, w_ref, 3e-6)
+
+@pytest.mark.rot
+def test_align_x_axis_right_handed_unit_det():
+    u = [0.5, -0.2, 0.84]
+    Robj = core.align_body_x(u)
+    M = Robj.as_matrix()
+    # determinant ~ +1, orthonormal
+    assert np.isclose(np.linalg.det(M), 1.0, atol=1e-8)
+    assert _close(M.T @ M, np.eye(3), 1e-8)
+    # x-axis aligned
+    x_body_in_global = M[:, 0]
+    u_hat = np.array(u) / np.linalg.norm(u)
+    assert _close(x_body_in_global, u_hat, 1e-8)
+
+# --- New: Closed-form E(q) vs numeric Jacobian consistency -----------------
+
+@pytest.mark.cf
+def test_closed_form_E_matches_numeric_zyx_body_local():
+    sympy = pytest.importorskip("sympy")
+    from rotation import rot_closedform as cf
+
+    # Use radians everywhere for this check
+    q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+    qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+    # Closed-form E for local/intrinsic ZYX, body-frame ω
+    E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+    E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+    omega_sym = E_num @ qdot
+    omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                       degrees=False, frame='body')
+    assert _close(omega_sym, omega_num, 5e-7)
+
+@pytest.mark.cf
+def test_closed_form_E_matches_numeric_zyz_body_local():
+    sympy = pytest.importorskip("sympy")
+    from rotation import rot_closedform as cf
+
+    q = np.array([0.1, 0.4, -0.2], dtype=float)
+    qdot = np.array([0.05, -0.1, 0.02], dtype=float)
+
+    E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+    E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+    omega_sym = E_num @ qdot
+    omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                       degrees=False, frame='body')
+    assert _close(omega_sym, omega_num, 5e-7)
+
+is this the correct version?
+
+///
+
+///
+
+///
+
+we have not made progress, here are the new logs:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest -m cf -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items / 5 deselected / 2 selected
+
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.09794255, -0.17857844,  0.1257428 ]), 5e-07)
+
+rotation/tests/test_rotation_app.py:81: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   50% █████
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyz_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyz_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        q = np.array([0.1, 0.4, -0.2], dtype=float)
+        qdot = np.array([0.05, -0.1, 0.02], dtype=float)
+
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.0177328 , -0.09872288,  0.06842122]), array([ 0.00078414, -0.10187493,  0.06605305]), 5e-07)
+
+rotation/tests/test_rotation_app.py:97: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ⨯                                                                  100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+2.28s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+1.25s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local - assert False
+
+Results (4.76s):
+       2 failed
+         - rotation/tests/test_rotation_app.py:65 test_closed_form_E_matches_numeric_zyx_body_local
+         - rotation/tests/test_rotation_app.py:83 test_closed_form_E_matches_numeric_zyz_body_local
+       5 deselected
+(.venv) ➜  robotics git:(develop) ✗ pytest -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items
+
+ rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10 ✓                                                                                 14% █▌
+ rotation/tests/test_rotation_app.py::test_repeat_12x15deg_about_Z ✓                                                                                        29% ██▉
+ rotation/tests/test_rotation_app.py::test_transform_basis_rows_returns_Rt ✓                                                                                43% ████▍
+ rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_log_snapshot ✓                                                                     57% █████▊
+ rotation/tests/test_rotation_app.py::test_align_x_axis_right_handed_unit_det ✓                                                                             71% ███████▎
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.09794255, -0.17857844,  0.1257428 ]), 5e-07)
+
+rotation/tests/test_rotation_app.py:81: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   86% ████████▋
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyz_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyz_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        q = np.array([0.1, 0.4, -0.2], dtype=float)
+        qdot = np.array([0.05, -0.1, 0.02], dtype=float)
+
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.0177328 , -0.09872288,  0.06842122]), array([ 0.00078414, -0.10187493,  0.06605305]), 5e-07)
+
+rotation/tests/test_rotation_app.py:97: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ⨯                                                                  100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+2.19s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+1.11s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+0.01s call     rotation/tests/test_rotation_app.py::test_align_x_axis_right_handed_unit_det
+
+(7 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local - assert False
+
+Results (4.15s):
+       5 passed
+       2 failed
+         - rotation/tests/test_rotation_app.py:65 test_closed_form_E_matches_numeric_zyx_body_local
+         - rotation/tests/test_rotation_app.py:83 test_closed_form_E_matches_numeric_zyz_body_local
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+E_body for zyx (columns in seq-order [a1=ψ, a2=θ, a3=φ]):
+ω = E(q) q̇
+variables: a1, a2, a3
+[
+  [0, sin(a1), cos(a1)*cos(a2)]
+  [0, cos(a1), -sin(a1)*cos(a2)]
+  [1, 0, sin(a2)]
+]
+
+E_body for zyx in RPY-order [φ, θ, ψ] (columns match [φ̇, θ̇, ψ̇]):
+ω = E_rpy(q) q̇
+variables: a3, a2, a1
+[
+  [cos(a1)*cos(a2), sin(a1), 0]
+  [-sin(a1)*cos(a2), cos(a1), 0]
+  [sin(a2), 0, 1]
+]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli angvel local zyx "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+ω =  [ 0.265798  0.220190 -0.018620]
+(.venv) ➜  robotics git:(develop) ✗
+
+please assess what went wrong and find a fix.
+
+///
+
+after this update one more test failed, here are the new logs:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items
+
+ rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10 ✓                                                                                 14% █▌
+ rotation/tests/test_rotation_app.py::test_repeat_12x15deg_about_Z ✓                                                                                        29% ██▉
+ rotation/tests/test_rotation_app.py::test_transform_basis_rows_returns_Rt ✓                                                                                43% ████▍
+ rotation/tests/test_rotation_app.py::test_align_x_axis_right_handed_unit_det ✓                                                                             57% █████▊
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.09794255, -0.17857844,  0.1257428 ]), 5e-07)
+
+rotation/tests/test_rotation_app.py:73: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   71% ███████▎
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyz_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyz_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        q = np.array([0.1, 0.4, -0.2], dtype=float)         # radians
+        qdot = np.array([0.05, -0.1, 0.02], dtype=float)    # rad/s
+
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.0177328 , -0.09872288,  0.06842122]), array([ 0.00078414, -0.10187493,  0.06605305]), 5e-07)
+
+rotation/tests/test_rotation_app.py:89: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ⨯                                                                   86% ████████▋
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_angvel_local_zyz_body_matches_closed_form_in_degrees ――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.rot
+    def test_angvel_local_zyz_body_matches_closed_form_in_degrees():
+        """
+        Replace brittle numeric snapshot with a closed-form consistency check in degrees.
+        """
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Angles and rates in degrees/deg·s⁻¹
+        q_deg   = np.array([10.0, 20.0, 30.0], dtype=float)
+        qdot_deg = np.array([0.1, 0.2, 0.3], dtype=float)
+
+        # Numeric ω from core (respects degrees=True)
+        omega_num_deg = core.angvel_from_rates("zyz", q_deg, qdot_deg,
+                                               convention="local", degrees=True, frame="body")
+
+        # Closed-form E in radians, then convert to deg/s for comparison
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        subs = {a1: np.deg2rad(q_deg[0]),
+                a2: np.deg2rad(q_deg[1]),
+                a3: np.deg2rad(q_deg[2])}
+        E_num = np.array(E_sym.subs(subs), dtype=float)
+
+        omega_sym_rad = E_num @ np.deg2rad(qdot_deg)
+        omega_sym_deg = np.rad2deg(omega_sym_rad)
+
+>       assert _close(omega_sym_deg, omega_num_deg, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.06631759,  0.2147789 ,  0.38190779]), array([0.07038019, 0.19030609, 0.39396926]), 5e-07)
+
+rotation/tests/test_rotation_app.py:117: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_closed_form_in_degrees ⨯                                                          100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+2.09s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+0.90s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+0.81s call     rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_closed_form_in_degrees
+0.01s call     rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10
+
+(6 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_closed_form_in_degrees - assert False
+
+Results (4.90s):
+       4 passed
+       3 failed
+         - rotation/tests/test_rotation_app.py:57 test_closed_form_E_matches_numeric_zyx_body_local
+         - rotation/tests/test_rotation_app.py:75 test_closed_form_E_matches_numeric_zyz_body_local
+         - rotation/tests/test_rotation_app.py:91 test_angvel_local_zyz_body_matches_closed_form_in_degrees
+(.venv) ➜  robotics git:(develop) ✗ pytest -m cf -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items / 5 deselected / 2 selected
+
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.09794255, -0.17857844,  0.1257428 ]), 5e-07)
+
+rotation/tests/test_rotation_app.py:73: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   50% █████
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyz_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyz_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        q = np.array([0.1, 0.4, -0.2], dtype=float)         # radians
+        qdot = np.array([0.05, -0.1, 0.02], dtype=float)    # rad/s
+
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.0177328 , -0.09872288,  0.06842122]), array([ 0.00078414, -0.10187493,  0.06605305]), 5e-07)
+
+rotation/tests/test_rotation_app.py:89: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ⨯                                                                  100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+1.84s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+0.90s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local - assert False
+
+Results (3.80s):
+       2 failed
+         - rotation/tests/test_rotation_app.py:57 test_closed_form_E_matches_numeric_zyx_body_local
+         - rotation/tests/test_rotation_app.py:75 test_closed_form_E_matches_numeric_zyz_body_local
+       5 deselected
+(.venv) ➜  robotics git:(develop) ✗
+
+///
+
+///
+
+///
+
+here is test_rotation_app.py:
+
+# =============================
+# File: rotation/tests/test_rotation_app.py
+# =============================
+import numpy as np
+import pytest
+from scipy.spatial.transform import Rotation as R
+
+from rotation import rot_core as core
+
+def _close(a, b, atol=1e-6):
+    return np.allclose(a, b, atol=atol)
+
+@pytest.mark.rot
+def test_compose_decompose_zyx_30_20_10():
+    ang_deg = [30, 20, 10]
+    Robj = core.build_matrix("global", "zyx", ang_deg, degrees=True)
+    M = Robj.as_matrix()
+    M_ref = np.array([
+        [ 0.813798, -0.469846,  0.342020],
+        [ 0.543838,  0.823173, -0.163176],
+        [-0.204874,  0.318796,  0.925417]
+    ])
+    assert _close(M, M_ref, 3e-6)
+    a_back = core.decompose(Robj, "zyx", "global", degrees=True)
+    assert _close(a_back, np.array(ang_deg), 1e-6)
+
+@pytest.mark.rot
+def test_repeat_12x15deg_about_Z():
+    # 12 * 15° about Z => 180° about Z
+    Robj = core.build_matrix("global", "zyx", [15, 0, 0], degrees=True)  # Z=15°, Y=0, X=0
+    Rm = core.repeat_rotation(Robj, 12).as_matrix()
+    M_ref = np.diag([-1.0, -1.0, 1.0])
+    assert _close(Rm, M_ref, 1e-6)
+
+@pytest.mark.rot
+def test_transform_basis_rows_returns_Rt():
+    Robj = core.build_matrix("global", "zyx", [30, 20, 10], degrees=True)
+    P = np.eye(3)  # row-vectors e1,e2,e3
+    Pg = core.transform_points(Robj, P)
+    assert _close(Pg, Robj.as_matrix().T, 1e-6)
+
+@pytest.mark.rot
+def test_align_x_axis_right_handed_unit_det():
+    u = [0.5, -0.2, 0.84]
+    Robj = core.align_body_x(u)
+    M = Robj.as_matrix()
+    # determinant ~ +1, orthonormal
+    assert np.isclose(np.linalg.det(M), 1.0, atol=1e-8)
+    assert _close(M.T @ M, np.eye(3), 1e-8)
+    # x-axis aligned
+    x_body_in_global = M[:, 0]
+    u_hat = np.array(u) / np.linalg.norm(u)
+    assert _close(x_body_in_global, u_hat, 1e-8)
+
+# --- Closed-form E(q) vs numeric Jacobian consistency -----------------
+
+@pytest.mark.cf
+def test_closed_form_E_matches_numeric_zyx_body_local():
+    sympy = pytest.importorskip("sympy")
+    from rotation import rot_closedform as cf
+
+    # Use radians everywhere for this check
+    q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+    qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+    # Closed-form E for local/intrinsic ZYX, body-frame ω
+    E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+    E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+    omega_sym = E_num @ qdot
+    omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                       degrees=False, frame='body')
+    assert _close(omega_sym, omega_num, 5e-7)
+
+@pytest.mark.cf
+def test_closed_form_E_matches_numeric_zyz_body_local():
+    sympy = pytest.importorskip("sympy")
+    from rotation import rot_closedform as cf
+
+    q = np.array([0.1, 0.4, -0.2], dtype=float)         # radians
+    qdot = np.array([0.05, -0.1, 0.02], dtype=float)    # rad/s
+
+    E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+    E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+    omega_sym = E_num @ qdot
+    omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                       degrees=False, frame='body')
+    assert _close(omega_sym, omega_num, 5e-7)
+
+@pytest.mark.rot
+def test_angvel_local_zyz_body_matches_closed_form_in_degrees():
+    """
+    Replace brittle numeric snapshot with a closed-form consistency check in degrees.
+    """
+    sympy = pytest.importorskip("sympy")
+    from rotation import rot_closedform as cf
+
+    # Angles and rates in degrees/deg·s⁻¹
+    q_deg   = np.array([10.0, 20.0, 30.0], dtype=float)
+    qdot_deg = np.array([0.1, 0.2, 0.3], dtype=float)
+
+    # Numeric ω from core (respects degrees=True)
+    omega_num_deg = core.angvel_from_rates("zyz", q_deg, qdot_deg,
+                                           convention="local", degrees=True, frame="body")
+
+    # Closed-form E in radians, then convert to deg/s for comparison
+    E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+    subs = {a1: np.deg2rad(q_deg[0]),
+            a2: np.deg2rad(q_deg[1]),
+            a3: np.deg2rad(q_deg[2])}
+    E_num = np.array(E_sym.subs(subs), dtype=float)
+
+    omega_sym_rad = E_num @ np.deg2rad(qdot_deg)
+    omega_sym_deg = np.rad2deg(omega_sym_rad)
+
+    assert _close(omega_sym_deg, omega_num_deg, 5e-7)
+
+here are the logs:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest -m cf -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items / 5 deselected / 2 selected
+
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.09794255, -0.17857844,  0.1257428 ]), 5e-07)
+
+rotation/tests/test_rotation_app.py:73: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   50% █████
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyz_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyz_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        q = np.array([0.1, 0.4, -0.2], dtype=float)         # radians
+        qdot = np.array([0.05, -0.1, 0.02], dtype=float)    # rad/s
+
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.0177328 , -0.09872288,  0.06842122]), array([ 0.00078414, -0.10187493,  0.06605305]), 5e-07)
+
+rotation/tests/test_rotation_app.py:89: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ⨯                                                                  100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+1.96s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+0.90s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local - assert False
+
+Results (3.91s):
+       2 failed
+         - rotation/tests/test_rotation_app.py:57 test_closed_form_E_matches_numeric_zyx_body_local
+         - rotation/tests/test_rotation_app.py:75 test_closed_form_E_matches_numeric_zyz_body_local
+       5 deselected
+(.venv) ➜  robotics git:(develop) ✗
+
+these latest code updates also broke test_angvel_local_zyz_body_matches_closed_form_in_degrees. that function used to work.
+
+here are the new logs:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest -m cf -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items / 5 deselected / 2 selected
+
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.09794255, -0.17857844,  0.1257428 ]), 5e-07)
+
+rotation/tests/test_rotation_app.py:73: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   50% █████
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyz_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyz_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        q = np.array([0.1, 0.4, -0.2], dtype=float)         # radians
+        qdot = np.array([0.05, -0.1, 0.02], dtype=float)    # rad/s
+
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.0177328 , -0.09872288,  0.06842122]), array([ 0.00078414, -0.10187493,  0.06605305]), 5e-07)
+
+rotation/tests/test_rotation_app.py:89: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ⨯                                                                  100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+1.96s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+0.90s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local - assert False
+
+Results (3.91s):
+       2 failed
+         - rotation/tests/test_rotation_app.py:57 test_closed_form_E_matches_numeric_zyx_body_local
+         - rotation/tests/test_rotation_app.py:75 test_closed_form_E_matches_numeric_zyz_body_local
+       5 deselected
+(.venv) ➜  robotics git:(develop) ✗ pytest -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items
+
+ rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10 ✓                                                                                 14% █▌
+ rotation/tests/test_rotation_app.py::test_repeat_12x15deg_about_Z ✓                                                                                        29% ██▉
+ rotation/tests/test_rotation_app.py::test_transform_basis_rows_returns_Rt ✓                                                                                43% ████▍
+ rotation/tests/test_rotation_app.py::test_align_x_axis_right_handed_unit_det ✓                                                                             57% █████▊
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyx_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyx_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Use radians everywhere for this check
+        q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
+        qdot = np.array([0.10, -0.20, 0.05], dtype=float)   # rad/s
+
+        # Closed-form E for local/intrinsic ZYX, body-frame ω
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyx', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyx', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.01718471, -0.20403447,  0.07602872]), array([ 0.09794255, -0.17857844,  0.1257428 ]), 5e-07)
+
+rotation/tests/test_rotation_app.py:73: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ⨯                                                                   71% ███████▎
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_closed_form_E_matches_numeric_zyz_body_local ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.cf
+    def test_closed_form_E_matches_numeric_zyz_body_local():
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        q = np.array([0.1, 0.4, -0.2], dtype=float)         # radians
+        qdot = np.array([0.05, -0.1, 0.02], dtype=float)    # rad/s
+
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        E_num = np.array(E_sym.subs({a1: q[0], a2: q[1], a3: q[2]}), dtype=float)
+
+        omega_sym = E_num @ qdot
+        omega_num = core.angvel_from_rates('zyz', q, qdot, convention='local',
+                                           degrees=False, frame='body')
+>       assert _close(omega_sym, omega_num, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.0177328 , -0.09872288,  0.06842122]), array([ 0.00078414, -0.10187493,  0.06605305]), 5e-07)
+
+rotation/tests/test_rotation_app.py:89: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ⨯                                                                   86% ████████▋
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_angvel_local_zyz_body_matches_closed_form_in_degrees ――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    @pytest.mark.rot
+    def test_angvel_local_zyz_body_matches_closed_form_in_degrees():
+        """
+        Replace brittle numeric snapshot with a closed-form consistency check in degrees.
+        """
+        sympy = pytest.importorskip("sympy")
+        from rotation import rot_closedform as cf
+
+        # Angles and rates in degrees/deg·s⁻¹
+        q_deg   = np.array([10.0, 20.0, 30.0], dtype=float)
+        qdot_deg = np.array([0.1, 0.2, 0.3], dtype=float)
+
+        # Numeric ω from core (respects degrees=True)
+        omega_num_deg = core.angvel_from_rates("zyz", q_deg, qdot_deg,
+                                               convention="local", degrees=True, frame="body")
+
+        # Closed-form E in radians, then convert to deg/s for comparison
+        E_sym, (a1, a2, a3) = cf.E_matrix('zyz', convention='local', frame='body')
+        subs = {a1: np.deg2rad(q_deg[0]),
+                a2: np.deg2rad(q_deg[1]),
+                a3: np.deg2rad(q_deg[2])}
+        E_num = np.array(E_sym.subs(subs), dtype=float)
+
+        omega_sym_rad = E_num @ np.deg2rad(qdot_deg)
+        omega_sym_deg = np.rad2deg(omega_sym_rad)
+
+>       assert _close(omega_sym_deg, omega_num_deg, 5e-7)
+E       assert False
+E        +  where False = _close(array([-0.06631759,  0.2147789 ,  0.38190779]), array([0.07038019, 0.19030609, 0.39396926]), 5e-07)
+
+rotation/tests/test_rotation_app.py:117: AssertionError
+
+ rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_closed_form_in_degrees ⨯                                                          100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+1.92s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+1.46s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+1.46s call     rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_closed_form_in_degrees
+0.01s call     rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10
+
+(6 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local - assert False
+FAILED rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_closed_form_in_degrees - assert False
+
+Results (5.95s):
+       4 passed
+       3 failed
+         - rotation/tests/test_rotation_app.py:57 test_closed_form_E_matches_numeric_zyx_body_local
+         - rotation/tests/test_rotation_app.py:75 test_closed_form_E_matches_numeric_zyz_body_local
+         - rotation/tests/test_rotation_app.py:91 test_angvel_local_zyz_body_matches_closed_form_in_degrees
+(.venv) ➜  robotics git:(develop) ✗
+
+here are the results of the run commands:
+
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+E_body for zyx (columns in seq-order [a1=ψ, a2=θ, a3=φ]):
+ω = E(q) q̇
+variables: a1, a2, a3
+[
+  [0, sin(a1), cos(a1)*cos(a2)]
+  [0, cos(a1), -sin(a1)*cos(a2)]
+  [1, 0, sin(a2)]
+]
+
+E_body for zyx in RPY-order [φ, θ, ψ] (columns match [φ̇, θ̇, ψ̇]):
+ω = E_rpy(q) q̇
+variables: a3, a2, a1
+[
+  [cos(a1)*cos(a2), sin(a1), 0]
+  [-sin(a1)*cos(a2), cos(a1), 0]
+  [sin(a2), 0, 1]
+]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli angvel local zyx "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+ω =  [ 0.265798  0.220190 -0.018620]
+
+please analyze everything and assess what we can do.
+
+here is rot_utils.py:
+
+# =============================
+# File: rotation/rot_utils.py
+# =============================
+from __future__ import annotations
+
+import math
+import os
+from typing import List, Sequence, Tuple
+
+import numpy as np
+from numpy.typing import ArrayLike
+
+try:
+    from scipy.spatial.transform import Rotation as _R
+except Exception as _e:  # pragma: no cover
+    raise RuntimeError("SciPy is required: pip install scipy") from _e
+
+R = _R  # alias for external modules
+
+# ---------------------------------------------------------------------
+# Basic helpers
+# ---------------------------------------------------------------------
+
+def ensure_dir(p: str) -> None:
+    """Create parent directories for a path if they don't exist."""
+    if p == "":
+        return
+    os.makedirs(p, exist_ok=True)
+
+
+def parse_floats(csv: str | Sequence[float]) -> List[float]:
+    """Parse '1,2,3' or ['1','2','3'] into [1.0, 2.0, 3.0]."""
+    if isinstance(csv, (list, tuple, np.ndarray)):
+        return [float(x) for x in csv]
+    parts = [s for s in str(csv).replace(" ", "").split(",") if s != ""]
+    return [float(x) for x in parts]
+
+
+def parse_bool(x: str | bool | None, default: bool = False) -> bool:
+    if isinstance(x, bool):
+        return x
+    if x is None:
+        return default
+    s = str(x).strip().lower()
+    return s in {"1", "true", "t", "yes", "y"}
+
+
+def hat(v: ArrayLike) -> np.ndarray:
+    """so(3) hat operator: R^3 -> skew(3)."""
+    v = np.asarray(v, dtype=float).reshape(3)
+    return np.array(
+        [[0.0, -v[2], v[1]],
+         [v[2], 0.0, -v[0]],
+         [-v[1], v[0], 0.0]],
+        dtype=float,
+    )
+
+
+def vee(M: ArrayLike) -> np.ndarray:
+    """vee operator: skew(3) -> R^3."""
+    M = np.asarray(M, dtype=float)
+    return np.array(
+        [M[2, 1] - M[1, 2], M[0, 2] - M[2, 0], M[1, 0] - M[0, 1]],
+        dtype=float,
+    ) * 0.5
+
+
+def is_rotmat(Rm: ArrayLike, tol: float = 1e-8) -> Tuple[bool, dict]:
+    """Check orthogonality and det=+1; return diagnostics."""
+    M = np.asarray(Rm, dtype=float).reshape(3, 3)
+    I = np.eye(3)
+    MtM = M.T @ M
+    ortho = np.allclose(MtM, I, atol=tol)
+    det = float(np.linalg.det(M))
+    det1 = np.isclose(det, 1.0, atol=1e-8)
+    rows = [float(np.linalg.norm(M[i])) for i in range(3)]
+    cols = [float(np.linalg.norm(M[:, j])) for j in range(3)]
+    return ortho and det1, {
+        "det": det,
+        "row_norms": rows,
+        "col_norms": cols,
+        "ortho_err": float(np.linalg.norm(MtM - I)),
+    }
+
+# ---------------------------------------------------------------------
+# Sequences
+# ---------------------------------------------------------------------
+
+VALID_TB = ["xyz", "xzy", "yxz", "yzx", "zxy", "zyx"]       # Tait–Bryan
+VALID_PROPER = ["zxz", "xyx", "yzy", "zyz", "xzx", "yxy"]  # Proper Euler
+VALID_ALL = VALID_TB + VALID_PROPER
+
+# ---------------------------------------------------------------------
+# Composition / decomposition with a single, consistent convention
+# ---------------------------------------------------------------------
+
+def compose_global(seq: str, angles: Sequence[float], degrees: bool = False) -> R:
+    """
+    Global/extrinsic composition: fixed axes (SciPy lower-case).
+    """
+    seq = seq.lower()
+    if seq not in VALID_ALL:
+        raise ValueError(f"sequence must be one of {VALID_ALL}")
+    if len(angles) != 3:
+        raise ValueError("angles must be length-3")
+    return R.from_euler(seq, angles, degrees=degrees)
+
+
+def compose_local(seq: str, angles: Sequence[float], degrees: bool = False) -> R:
+    """
+    Local/intrinsic composition: moving/body axes.
+    We adopt the *textbook identity* used in rot_closedform:
+        local(seq, a1,a2,a3) == global(seq[::-1], a3,a2,a1)
+    i.e., reverse sequence AND angle order so each angle stays with its axis.
+    """
+    seq_rev = seq.lower()[::-1]
+    ang_rev = list(angles)[::-1]
+    return compose_global(seq_rev, ang_rev, degrees=degrees)
+
+
+def decompose(Robj: R, seq: str, convention: str = "global", degrees: bool = False) -> np.ndarray:
+    """
+    Extract angles for a given sequence and convention, mirroring compose_* above.
+    For 'local', invert the same identity:
+        R = local(seq, a1,a2,a3)  <=>  R = global(seq_rev, a3,a2,a1)
+    So we extract on seq_rev and then reverse the angle order back.
+    """
+    seq = seq.lower()
+    if convention not in {"global", "local"}:
+        raise ValueError("convention must be 'global' or 'local'")
+
+    if convention == "global":
+        return Robj.as_euler(seq, degrees=degrees)
+    else:
+        seq_rev = seq[::-1]
+        a_rev = Robj.as_euler(seq_rev, degrees=degrees)
+        return a_rev[::-1]
+
+# ---------------------------------------------------------------------
+# ω ↔ q̇ mapping using central differences in radians
+# ---------------------------------------------------------------------
+
+def _omega_from_Rdot(Robj: R, Rdot: np.ndarray, frame: str = 'body') -> np.ndarray:
+    """
+    Recover ω from Rdot:
+      - space frame:  Rdot = Ω_space * R  => Ω_space = Rdot * R^T
+      - body  frame:  Rdot = R * Ω_body   => Ω_body  = R^T * Rdot
+    """
+    Rm = Robj.as_matrix()
+    if frame == 'space':
+        Om = Rdot @ Rm.T
+    elif frame == 'body':
+        Om = Rm.T @ Rdot
+    else:
+        raise ValueError("frame must be 'space' or 'body'")
+    Om = 0.5 * (Om - Om.T)  # enforce skew
+    return vee(Om)
+
+
+def build_rate_map(seq: str, angles: Sequence[float],
+                   convention: str = 'global', degrees: bool = False,
+                   frame: str = 'body') -> np.ndarray:
+    """
+    Numerically build M(q) so that ω = M(q) q̇, using **central difference** in radians.
+    Angles given in degrees are converted to radians internally.
+
+    IMPORTANT: We compose rotations via compose_global/compose_local so the
+    numeric Jacobian matches the same convention used by rot_closedform.E_matrix.
+    """
+    # Convert to radians for numerics
+    ang = np.asarray(angles, float)
+    q_rad = np.deg2rad(ang) if degrees else ang
+
+    make = compose_global if convention == 'global' else compose_local
+
+    R0 = make(seq, q_rad, degrees=False)
+    h = 1e-8  # radians
+    M = np.zeros((3, 3), float)
+    for j in range(3):
+        qp = q_rad.copy();  qp[j] += h
+        qm = q_rad.copy();  qm[j] -= h
+        Rp = make(seq, qp, degrees=False)
+        Rm = make(seq, qm, degrees=False)
+        Rdot = (Rp.as_matrix() - Rm.as_matrix()) / (2.0 * h)
+        M[:, j] = _omega_from_Rdot(R0, Rdot, frame=frame)
+    return M
+
+
+def omega_from_rates(seq: str, angles: Sequence[float], rates: Sequence[float],
+                     convention: str = 'global', degrees: bool = False,
+                     frame: str = 'body') -> np.ndarray:
+    """
+    Map q̇ -> ω. If degrees=True, BOTH angles and rates are interpreted in degrees/deg·s⁻¹,
+    and ω is returned in deg·s⁻¹.
+    """
+    M = build_rate_map(seq, angles, convention=convention, degrees=degrees, frame=frame)
+    qdot = np.asarray(rates, float)
+    if degrees:
+        qdot = np.deg2rad(qdot)
+    w = M @ qdot
+    return np.rad2deg(w) if degrees else w
+
+
+def rates_from_omega(seq: str, angles: Sequence[float], omega: Sequence[float],
+                     convention: str = 'global', degrees: bool = False,
+                     frame: str = 'body') -> np.ndarray:
+    """
+    Map ω -> q̇ via pseudoinverse. If degrees=True, BOTH angles and ω are interpreted
+    in degrees/deg·s⁻¹; returned q̇ is in deg·s⁻¹.
+    """
+    M = build_rate_map(seq, angles, convention=convention, degrees=degrees, frame=frame)
+    w = np.asarray(omega, float)
+    if degrees:
+        w = np.deg2rad(w)
+    qdot = np.linalg.pinv(M) @ w
+    return np.rad2deg(qdot) if degrees else qdot
+
+# ---------------------------------------------------------------------
+# Repeat / power via logarithm map
+# ---------------------------------------------------------------------
+
+def rotation_power(Robj: R, m: int) -> R:
+    """Return R^m for integer m using axis-angle scaling (log/exp on SO(3))."""
+    if not isinstance(m, (int, np.integer)):
+        raise ValueError("m must be integer")
+    rotvec = Robj.as_rotvec()
+    ang = float(np.linalg.norm(rotvec))
+    if ang < 1e-12:
+        return R.identity()
+    axis = rotvec / ang
+    return R.from_rotvec(axis * (float(m) * ang))
+
+# ---------------------------------------------------------------------
+# Alignment: align body x-axis with a target vector
+# ---------------------------------------------------------------------
+
+def align_x_to_vector(u: Sequence[float]) -> R:
+    """
+    Build a rotation whose body x-axis aligns with u, with body y-axis chosen in the
+    global (X,Y)-plane when possible; columns of the returned matrix are the body
+    axes expressed in the global frame (right-handed).
+    """
+    u = np.asarray(u, dtype=float)
+    n = np.linalg.norm(u)
+    if n < 1e-12:
+        raise ValueError("vector u must be nonzero")
+    i = u / n  # body x-axis in global
+    K = np.array([0.0, 0.0, 1.0])
+
+    # pick j by projecting global K to plane normal i
+    j = K - (K @ i) * i
+    if np.linalg.norm(j) < 1e-12:  # u parallel to Z; fall back to Y
+        j = np.array([0.0, 1.0, 0.0]) if i[2] >= 0.0 else np.array([0.0, -1.0, 0.0])
+    j = j / np.linalg.norm(j)
+    k = np.cross(i, j)
+
+    # re-orthonormalize lightly to counter numeric drift
+    j = np.cross(k, i); j = j / np.linalg.norm(j)
+    k = np.cross(i, j)
+
+    Rm = np.column_stack([i, j, k])  # columns are body axes in global
+    return R.from_matrix(Rm)
+
+# ---------------------------------------------------------------------
+# CSV I/O
+# ---------------------------------------------------------------------
+
+def save_matrix_csv(path: str, Robj: R) -> None:
+    """Save a 3×3 matrix to CSV (creates parent directories)."""
+    ensure_dir(os.path.dirname(path) or ".")
+    np.savetxt(path, Robj.as_matrix(), delimiter=",", fmt="%.9f")
+
+
+def save_series_csv(path: str, t: np.ndarray, data: np.ndarray, header: str = "t, a1, a2, a3") -> None:
+    """
+    Save a time series to CSV. Expects t shape (N,), data shape (N, K).
+    """
+    ensure_dir(os.path.dirname(path) or ".")
+    arr = np.column_stack([t.reshape(-1), data])
+    np.savetxt(path, arr, delimiter=",", header=header, comments="", fmt="%.9f")
+
+here is rot_closedform.py:
+
+# =============================
+# File: rotation/rot_closedform.py
+# =============================
+from __future__ import annotations
+from typing import Tuple
+
+import sympy as sp
+
+# -----------------------------------------------------------------------------
+# Elementary active rotations (symbolic)
+# -----------------------------------------------------------------------------
+def _Rx(a: sp.Symbol) -> sp.Matrix:
+    c, s = sp.cos(a), sp.sin(a)
+    return sp.Matrix([[1, 0, 0],
+                      [0, c, -s],
+                      [0, s,  c]])
+
+def _Ry(a: sp.Symbol) -> sp.Matrix:
+    c, s = sp.cos(a), sp.sin(a)
+    return sp.Matrix([[ c, 0, s],
+                      [ 0, 1, 0],
+                      [-s, 0, c]])
+
+def _Rz(a: sp.Symbol) -> sp.Matrix:
+    c, s = sp.cos(a), sp.sin(a)
+    return sp.Matrix([[c, -s, 0],
+                      [s,  c, 0],
+                      [0,  0, 1]])
+
+_AX = {'x': _Rx, 'y': _Ry, 'z': _Rz}
+
+
+# -----------------------------------------------------------------------------
+# Composition helpers
+# -----------------------------------------------------------------------------
+def _compose_local(seq: str, q: Tuple[sp.Symbol, sp.Symbol, sp.Symbol]) -> sp.Matrix:
+    """
+    Local/intrinsic composition: rotate about moving axes in the sequence order.
+    If seq = a1 a2 a3 (e.g., 'zyx') and q = (a1,a2,a3), then:
+        R = R_axis3(q3) * R_axis2(q2) * R_axis1(q1)
+    (rightmost acts first).
+    """
+    s = seq.lower()
+    if len(s) != 3:
+        raise ValueError("sequence must have length 3")
+    R1 = _AX[s[0]](q[0])
+    R2 = _AX[s[1]](q[1])
+    R3 = _AX[s[2]](q[2])
+    return R3 * R2 * R1
+
+
+def _vee(S: sp.Matrix) -> sp.Matrix:
+    """vee: skew(3) -> R^3 (symbolic). Assumes S is skew-symmetric."""
+    return sp.Matrix([S[2, 1], S[0, 2], S[1, 0]])
+
+
+# -----------------------------------------------------------------------------
+# Closed-form E(q) such that ω = E(q) q̇
+# -----------------------------------------------------------------------------
+def E_matrix(
+    seq: str,
+    convention: str = 'local',
+    frame: str = 'body',
+    simplify: bool = True,
+) -> Tuple[sp.Matrix, Tuple[sp.Symbol, sp.Symbol, sp.Symbol]]:
+    """
+    Return symbolic E(q) such that ω = E(q) q̇ for a 3-angle sequence.
+
+    Args
+    ----
+    seq : str
+        One of the standard 3-letter Euler/Tait–Bryan sequences, e.g., 'zyx', 'zxz', 'zyz', etc.
+    convention : {'local','global'}
+        - 'local' (intrinsic): angles applied about the *moving/body* axes in the listed order.
+        - 'global' (extrinsic): angles applied about the *fixed/space* axes in the listed order.
+          Using the standard equivalence:
+              global(seq, a1,a2,a3) == local(seq[::-1], a3,a2,a1)
+    frame : {'body','space'}
+        Frame in which the angular velocity components are expressed:
+        - 'body'  → Ω_b = Rᵀ Ṙ ,  ω = vee(Ω_b)
+        - 'space' → Ω_s = Ṙ Rᵀ ,  ω = vee(Ω_s)
+    simplify : bool
+        If True, apply SymPy simplification to the result. Set False to speed up very large expressions.
+
+    Returns
+    -------
+    E : sp.Matrix(3,3)
+        Symbolic E(q) with columns corresponding to [ȧ1, ȧ2, ȧ3] in the *sequence* order passed.
+    (a1, a2, a3) : tuple of sp.Symbol
+        The symbolic angle variables used in E.
+
+    Notes
+    -----
+    - This function constructs R(q) symbolically and then computes Ω via Ṙ.
+    - For 'global', we map via the intrinsic equivalent:
+          R_global(seq, a1,a2,a3) ≡ R_local(seq[::-1], a3,a2,a1)
+      so the returned E still has columns aligned to the *original* (a1,a2,a3) labels.
+    """
+    seq = seq.lower()
+    if convention not in {'local', 'global'}:
+        raise ValueError("convention must be 'local' or 'global'")
+    if frame not in {'body', 'space'}:
+        raise ValueError("frame must be 'body' or 'space'")
+
+    # Define angle symbols in the given sequence order
+    a1, a2, a3 = sp.symbols('a1 a2 a3', real=True)
+    q = (a1, a2, a3)
+
+    # Build R according to chosen convention
+    if convention == 'local':
+        R = _compose_local(seq, q)
+        # columns in E will be [ȧ1, ȧ2, ȧ3]
+        label_subs = {a1: a1, a2: a2, a3: a3}
+    else:
+        # global(seq, a1,a2,a3) == local(seq[::-1], a3,a2,a1)
+        R = _compose_local(seq[::-1], (a3, a2, a1))
+        # but we keep the labels (a1,a2,a3) for the *input* seq when differentiating
+        label_subs = {a1: a1, a2: a2, a3: a3}
+
+    Rt = R.T
+    cols = []
+    for ak in q:
+        dR = sp.diff(R, ak)
+        if frame == 'space':
+            Om = dR * Rt
+        else:
+            Om = Rt * dR
+        # Enforce skew and extract vee
+        Om = (Om - Om.T) / 2
+        cols.append(_vee(Om))
+
+    E = sp.Matrix.hstack(*cols)
+
+    if simplify:
+        E = sp.simplify(E)
+
+    return E, (a1, a2, a3)
+
+
+# -----------------------------------------------------------------------------
+# RPY (ZYX) convenience: sequence order vs. classic RPY order
+# -----------------------------------------------------------------------------
+def E_matrix_rpy_zyx_body(
+    convention: str = 'local',
+    simplify: bool = True,
+) -> Tuple[sp.Matrix, Tuple[sp.Symbol, sp.Symbol, sp.Symbol],
+           sp.Matrix, Tuple[sp.Symbol, sp.Symbol, sp.Symbol]]:
+    """
+    Convenience for RPY (ZYX) in the body frame, returning BOTH:
+      1) E in *sequence* order [a1=ψ (about z), a2=θ (about y), a3=φ (about x)]
+      2) E reindexed to classic RPY column order [φ, θ, ψ] (columns aligned to [φ̇, θ̇, ψ̇])
+
+    Returns
+    -------
+    (E_seq, (a1,a2,a3), E_rpy, (φ,θ,ψ))
+    """
+    E_seq, (a1, a2, a3) = E_matrix('zyx', convention=convention, frame='body', simplify=simplify)
+    ψ, θ, φ = a1, a2, a3
+    # Reindex columns to [φ̇, θ̇, ψ̇]
+    E_rpy = E_seq[:, [2, 1, 0]]
+    if simplify:
+        E_rpy = sp.simplify(E_rpy)
+    return E_seq, (a1, a2, a3), E_rpy, (φ, θ, ψ)
+
+
+# -----------------------------------------------------------------------------
+# Optional extras (kept general for future growth)
+# -----------------------------------------------------------------------------
+def E_matrix_proper(
+    seq: str,
+    convention: str = 'local',
+    frame: str = 'body',
+    simplify: bool = True,
+) -> Tuple[sp.Matrix, Tuple[sp.Symbol, sp.Symbol, sp.Symbol]]:
+    """
+    Convenience wrapper for proper Euler sequences (e.g., 'zxz', 'zyz').
+    Equivalent to calling E_matrix directly; provided for readability.
+    """
+    s = seq.lower()
+    if s not in {'zxz', 'zyz', 'xyx', 'xzx', 'yxy', 'yzy'}:
+        raise ValueError("E_matrix_proper expects a proper Euler sequence like 'zxz' or 'zyz'")
+    return E_matrix(s, convention=convention, frame=frame, simplify=simplify)
+
+here is rot_cli.py:
+
+# =============================
+# File: rotation/rot_cli.py
+# =============================
+from __future__ import annotations
+import argparse
+import os
+from typing import List, Any, Dict
+
+import numpy as np
+from scipy.spatial.transform import Rotation as R
+
+from .rot_utils import ensure_dir, parse_floats
+from .rot_design import VALID_ALL, HELP_SEQ
+from . import rot_core as core
+from . import rot_io as rio
+from . import rot_closedform as cf
+
+OUT_DIR = os.path.join("rotation", "out")
+IN_DIR  = os.path.join("rotation", "in")
+ensure_dir(OUT_DIR); ensure_dir(IN_DIR)
+
+def _angles_arg(s: str, degrees: bool) -> List[float]:
+    vals = parse_floats(s)
+    if len(vals) != 3:
+        raise argparse.ArgumentTypeError("need 3 comma-separated values")
+    return vals
+
+def _vec_arg(s: str) -> List[float]:
+    vals = parse_floats(s)
+    if len(vals) != 3:
+        raise argparse.ArgumentTypeError("need 3 comma-separated values")
+    return vals
+
+def _fmt_ndarray(arr: np.ndarray) -> str:
+    return np.array2string(arr, formatter={'float_kind':lambda x:f"{x: .6f}"})
+
+def _print_sympy_matrix(M, names: List[str], title: str):
+    # Pretty print without the "Matrix(...)" wrapper
+    try:
+        import sympy as sp
+    except Exception:
+        print(title)
+        print("variables:", ", ".join(names))
+        print(M)
+        return
+    rows = []
+    for i in range(M.rows):
+        row_elems = [sp.sstr(sp.simplify(M[i, j])) for j in range(M.cols)]
+        rows.append("  [" + ", ".join(row_elems) + "]")
+    print(title)
+    print("variables:", ", ".join(names))
+    print("[\n" + "\n".join(rows) + "\n]")
+
+def _run_one_task(t: Dict[str, Any]) -> None:
+    """Execute a single batch task dict."""
+    cmd = t.get("cmd")
+    if cmd == "compose":
+        Robj = core.build_matrix(t["mode"], t["seq"], t["angles"], degrees=bool(t.get("degrees", False)))
+        print(_fmt_ndarray(Robj.as_matrix()))
+        if "save" in t:
+            path = os.path.join(OUT_DIR, t["save"]); core.save_R(path, Robj); print(f"saved -> {path}")
+    elif cmd == "transform":
+        Robj = core.build_matrix(t["mode"], t["seq"], t["angles"], degrees=bool(t.get("degrees", False)))
+        if "points_file" in t:
+            P = rio.read_points_csv(os.path.join(IN_DIR, t["points_file"]))
+        else:
+            P = np.array(t.get("points", []), dtype=float)
+            if P.size == 0: P = np.eye(3)
+        Pg = core.transform_points(Robj, P)
+        print(_fmt_ndarray(Pg))
+        if "save" in t:
+            path = os.path.join(OUT_DIR, t["save"]); rio.write_points_csv(path, Pg); print(f"saved -> {path}")
+    elif cmd == "passive":
+        Robj = core.build_matrix(t["mode"], t["seq"], t["angles"], degrees=bool(t.get("degrees", False)))
+        P = np.array(t.get("points", []), dtype=float)
+        if P.size == 0: P = np.eye(3)
+        Pb = core.passive_transform(Robj, P); print(_fmt_ndarray(Pb))
+    elif cmd == "angvel":
+        w = core.angvel_from_rates(
+            t["seq"], t["angles"], t["rates"],
+            convention=t["mode"], degrees=bool(t.get("degrees", False)),
+            frame=t.get("frame","body"),
+        )
+        print(_fmt_ndarray(w))
+    elif cmd == "rates":
+        qdot = core.rates_from_angvel(
+            t["seq"], t["angles"], t["omega"],
+            convention=t["mode"], degrees=bool(t.get("degrees", False)),
+            frame=t.get("frame","body"),
+        )
+        print(_fmt_ndarray(qdot))
+    elif cmd == "repeat":
+        Robj = core.build_matrix(t["mode"], t["seq"], t["angles"], degrees=bool(t.get("degrees", False)))
+        Rm = core.repeat_rotation(Robj, int(t["m"])); print(_fmt_ndarray(Rm.as_matrix()))
+    elif cmd == "align":
+        Robj = core.align_body_x(t["u"]); print(_fmt_ndarray(Robj.as_matrix()))
+    else:
+        raise ValueError(f"Unknown batch cmd: {cmd}")
+
+def cli(argv: List[str] | None = None) -> int:
+    p = argparse.ArgumentParser(prog="rot-cli", description="Rotation Kinematics CLI (Eq. 2.1–2.363 + extras)")
+    sp = p.add_subparsers(dest="cmd", required=True)
+
+    # compose
+    pc = sp.add_parser("compose", help="Build a rotation matrix from a sequence and angles")
+    pc.add_argument("mode", choices=["global","local"], help="Global/extrinsic or Local/intrinsic rotations")
+    pc.add_argument("seq", help=HELP_SEQ)
+    pc.add_argument("angles", type=str, help="comma list of three angles")
+    pc.add_argument("--degrees", action="store_true", help="Angles are degrees (default radians)")
+    pc.add_argument("--save", type=str, default=None, help="CSV path under rotation/out to save matrix")
+
+    # decompose
+    pd = sp.add_parser("decompose", help="Extract angles from a rotation matrix for a given sequence")
+    pd.add_argument("mode", choices=["global","local"])
+    pd.add_argument("seq", help=HELP_SEQ)
+    g = pd.add_mutually_exclusive_group(required=True)
+    g.add_argument("--from-angles", type=str, help="If provided, first compose from these angles (same seq/mode)")
+    g.add_argument("--from-csv", type=str, help="Path to 3x3 CSV matrix")
+    pd.add_argument("--degrees", action="store_true")
+
+    # transform
+    pt = sp.add_parser("transform", help="Active transform points: rG = R rB")
+    pt.add_argument("mode", choices=["global","local"])
+    pt.add_argument("seq", help=HELP_SEQ)
+    pt.add_argument("angles", type=str)
+    pt.add_argument("--degrees", action="store_true")
+    pt.add_argument("--points", type=str, help="CSV of Nx3 points in rotation/in, else a csv list 'x;y;z|...'", default=None)
+    pt.add_argument("--save", type=str, default=None, help="CSV path under rotation/out to save transformed points")
+
+    # passive
+    ppv = sp.add_parser("passive", help="Passive coordinate change: rB = R^T rG")
+    ppv.add_argument("mode", choices=["global","local"])
+    ppv.add_argument("seq", help=HELP_SEQ)
+    ppv.add_argument("angles", type=str)
+    ppv.add_argument("--degrees", action="store_true")
+    ppv.add_argument("--points", type=str, default=None)
+
+    # repeat
+    pr = sp.add_parser("repeat", help="Repeat/Exponentiate a rotation (R^m)")
+    pr.add_argument("mode", choices=["global","local"])
+    pr.add_argument("seq", help=HELP_SEQ)
+    pr.add_argument("angles", type=str)
+    pr.add_argument("m", type=int)
+    pr.add_argument("--degrees", action="store_true")
+
+    # align
+    pa = sp.add_parser("align", help="Build R that aligns body x-axis to vector u and y into XY-plane")
+    pa.add_argument("u", type=str, help="comma list for target vector u")
+
+    # check
+    pk = sp.add_parser("check", help="Check orthogonality/det=1")
+    pk.add_argument("--from-angles", type=str, help="compose first")
+    pk.add_argument("--mode", choices=["global","local"], default="global")
+    pk.add_argument("--seq", default="zyx")
+    pk.add_argument("--degrees", action="store_true")
+    pk.add_argument("--from-csv", type=str, help="matrix CSV path")
+
+    # Closed-form E matrices
+    pe = sp.add_parser("E", help="Closed-form E(q) such that ω = E(q) q̇")
+    pe.add_argument("seq", choices=["zyx","zxz","zyz"], help="RPY ZYX or proper Euler ZXZ/ZYZ")
+    pe.add_argument("--convention", choices=["local","global"], default="local", help="Angle convention")
+    pe.add_argument("--frame", choices=["body","space"], default="body", help="Frame of ω")
+    pe.add_argument("--rpy-order", action="store_true",
+                    help="For zyx only: also print RPY order [φ,θ,ψ] columns instead of seq-order [ψ,θ,φ]")
+
+    # Batch jobs
+    pb = sp.add_parser("batch", help="Run a JSON/YAML job file with multiple tasks")
+    pb.add_argument("file", type=str, help="Path under rotation/in to a .json/.yaml/.yml file")
+
+    # angvel from rates
+    pv = sp.add_parser("angvel", help="Compute ω from angle rates for any sequence")
+    pv.add_argument("mode", choices=["global","local"])
+    pv.add_argument("seq", help=HELP_SEQ)
+    pv.add_argument("angles", type=str)
+    pv.add_argument("rates", type=str, help="comma list of angle rates (units follow --degrees)")
+    pv.add_argument("--frame", choices=["body","space"], default="body")
+    pv.add_argument("--degrees", action="store_true",
+                    help="Interpret BOTH angles and rates in degrees/deg·s⁻¹ (default radians/rad·s⁻¹)")
+
+    # rates from angvel
+    pvr = sp.add_parser("rates", help="Compute angle rates from ω (pseudoinverse mapping)")
+    pvr.add_argument("mode", choices=["global","local"])
+    pvr.add_argument("seq", help=HELP_SEQ)
+    pvr.add_argument("angles", type=str)
+    pvr.add_argument("omega", type=str, help="comma list of ω components (units follow --degrees)")
+    pvr.add_argument("--frame", choices=["body","space"], default="body")
+    pvr.add_argument("--degrees", action="store_true",
+                     help="Interpret BOTH angles and ω in degrees/deg·s⁻¹ (default radians/rad·s⁻¹)")
+
+    args = p.parse_args(argv)
+
+    if args.cmd == 'compose':
+        ang = _angles_arg(args.angles, args.degrees)
+        Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        print("R =\n", _fmt_ndarray(Robj.as_matrix()))
+        if args.save:
+            out = os.path.join(OUT_DIR, args.save); core.save_R(out, Robj); print(f"saved to {out}")
+        return 0
+
+    if args.cmd == 'decompose':
+        if args.from_angles:
+            ang = _angles_arg(args.from_angles, args.degrees)
+            Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        else:
+            M = np.loadtxt(args.from_csv, delimiter=",")
+            Robj = R.from_matrix(M)
+        a = core.decompose(Robj, args.seq, args.mode, degrees=args.degrees)
+        unit = "deg" if args.degrees else "rad"
+        print(f"angles ({unit}) = ", _fmt_ndarray(a))
+        return 0
+
+    if args.cmd == 'transform':
+        ang = _angles_arg(args.angles, args.degrees)
+        Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        if args.points and os.path.exists(os.path.join(IN_DIR, args.points)):
+            P = rio.read_points_csv(os.path.join(IN_DIR, args.points))
+        elif args.points:
+            rows = [r for r in args.points.split('|') if r]
+            P = np.vstack([parse_floats(r) for r in rows])
+        else:
+            P = np.eye(3)
+        Pg = core.transform_points(Robj, P)
+        print("P' =\n", _fmt_ndarray(Pg))
+        if args.save:
+            out = os.path.join(OUT_DIR, args.save); rio.write_points_csv(out, Pg); print(f"saved to {out}")
+        return 0
+
+    if args.cmd == 'passive':
+        ang = _angles_arg(args.angles, args.degrees)
+        Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        if args.points and os.path.exists(os.path.join(IN_DIR, args.points)):
+            P = rio.read_points_csv(os.path.join(IN_DIR, args.points))
+        elif args.points:
+            rows = [r for r in args.points.split('|') if r]
+            P = np.vstack([parse_floats(r) for r in rows])
+        else:
+            P = np.eye(3)
+        Pb = core.passive_transform(Robj, P)
+        print("coords in body =\n", _fmt_ndarray(Pb))
+        return 0
+
+    if args.cmd == 'repeat':
+        ang = _angles_arg(args.angles, args.degrees)
+        Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        Rm = core.repeat_rotation(Robj, args.m)
+        print("R^m =\n", _fmt_ndarray(Rm.as_matrix()))
+        return 0
+
+    if args.cmd == 'align':
+        u = _vec_arg(args.u)
+        Robj = core.align_body_x(u)
+        print("R_align =\n", _fmt_ndarray(Robj.as_matrix()))
+        return 0
+
+    if args.cmd == 'check':
+        if args.from_csv:
+            M = np.loadtxt(args.from_csv, delimiter=",")
+            Robj = R.from_matrix(M)
+        else:
+            if not args.from_angles:
+                p.error("provide --from-angles or --from-csv")
+            ang = _angles_arg(args.from_angles, args.degrees)
+            Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
+        info = core.check_matrix(Robj)
+        print("ok=", info.pop('ok'))
+        for k,v in info.items(): print(f"{k}: {v}")
+        return 0
+
+    if args.cmd == 'E':
+        seq = args.seq
+        if seq == 'zyx':
+            E_seq, (a1,a2,a3), E_rpy, (phi,theta,psi) = cf.E_matrix_rpy_zyx_body(convention=args.convention)
+            _print_sympy_matrix(E_seq, [str(a1), str(a2), str(a3)],
+                                "E_body for zyx (columns in seq-order [a1=ψ, a2=θ, a3=φ]):\nω = E(q) q̇")
+            if args.rpy_order:
+                print()
+                _print_sympy_matrix(E_rpy, [str(phi), str(theta), str(psi)],
+                                    "E_body for zyx in RPY-order [φ, θ, ψ] (columns match [φ̇, θ̇, ψ̇]):\nω = E_rpy(q) q̇")
+        else:
+            E, (a1,a2,a3) = cf.E_matrix(seq, convention=args.convention, frame=args.frame)
+            title = f"E_{args.frame} for {seq} (columns in seq-order [a1, a2, a3]):\nω = E(q) q̇"
+            _print_sympy_matrix(E, [str(a1), str(a2), str(a3)], title)
+        return 0
+
+    if args.cmd == 'batch':
+        job_path = os.path.join(IN_DIR, args.file)
+        job = rio.read_job(job_path)
+        tasks = job.get("tasks", [])
+        if not isinstance(tasks, list) or not tasks:
+            raise SystemExit("Batch file must contain a top-level 'tasks' list.")
+        for i, t in enumerate(tasks, 1):
+            print(f"\n--- Task {i}/{len(tasks)}: {t.get('cmd','?')} ---")
+            _run_one_task(t)
+        return 0
+
+    if args.cmd == 'angvel':
+        ang = _angles_arg(args.angles, args.degrees)
+        rates = _angles_arg(args.rates, args.degrees)  # units follow --degrees
+        w = core.angvel_from_rates(args.seq, ang, rates, convention=args.mode, degrees=args.degrees, frame=args.frame)
+        print("ω = ", _fmt_ndarray(w))
+        return 0
+
+    if args.cmd == 'rates':
+        ang = _angles_arg(args.angles, args.degrees)
+        omg = _vec_arg(args.omega)  # units follow --degrees
+        qd = core.rates_from_angvel(args.seq, ang, omg, convention=args.mode, degrees=args.degrees, frame=args.frame)
+        print("qdot = ", _fmt_ndarray(qd))
+        return 0
+
+    return 0
+
+if __name__ == "__main__":  # pragma: no cover
+    raise SystemExit(cli())
+
+here is rot_core.py:
+
+# =============================
+# File: rotation/rot_core.py
+# =============================
+from __future__ import annotations
+from typing import Dict, Sequence
+
+import numpy as np
+from scipy.spatial.transform import Rotation as R
+
+from .rot_utils import (
+    VALID_ALL, VALID_TB, VALID_PROPER,   # kept for external use if others import from here
+    compose_global, compose_local, decompose,
+    rotation_power, align_x_to_vector,
+    is_rotmat, save_matrix_csv, save_series_csv,
+)
+
+# ---------------------------------------------------------------------
+# Core builders / validators
+# ---------------------------------------------------------------------
+
+def build_matrix(mode: str, seq: str, angles: Sequence[float], degrees: bool = False) -> R:
+    """
+    Build a scipy Rotation for a given convention ('global'|'local'), sequence, and angles.
+    Angles are interpreted in degrees if degrees=True, otherwise radians.
+    """
+    mode = mode.lower()
+    if mode not in {"global", "local"}:
+        raise ValueError("mode must be 'global' or 'local'")
+    if mode == 'global':
+        return compose_global(seq, angles, degrees=degrees)
+    else:
+        return compose_local(seq, angles, degrees=degrees)
+
+
+def transform_points(Robj: R, pts: Sequence[Sequence[float]]) -> np.ndarray:
+    """Active transform of row-stacked points/vectors using Rotation.apply."""
+    P = np.asarray(pts, float)
+    return Robj.apply(P)
+
+
+def passive_transform(Robj: R, vecs: Sequence[Sequence[float]]) -> np.ndarray:
+    """
+    Passive change of coordinates (global -> body): multiply by R^T.
+    Implemented via Rotation.inv().apply on row-stacked vectors.
+    """
+    return Robj.inv().apply(np.asarray(vecs, float))
+
+
+def check_matrix(Robj: R) -> Dict:
+    """Return orthogonality diagnostics for a Rotation."""
+    ok, info = is_rotmat(Robj.as_matrix())
+    info["ok"] = ok
+    return info
+
+
+# ---------------------------------------------------------------------
+# Euler / RPY: ω  <->  q̇  (fixed & body frames, any proper sequence)
+# ---------------------------------------------------------------------
+
+def _vee(S: np.ndarray) -> np.ndarray:
+    """vee: so(3)->R^3 for a (nearly) skew-symmetric matrix S."""
+    return np.array([S[2, 1], S[0, 2], S[1, 0]], dtype=float)
+
+
+def _rotation_matrix(seq: str, q_rad: Sequence[float], convention: str = 'global') -> np.ndarray:
+    """
+    Build a 3x3 rotation matrix for given sequence and angles (radians).
+    convention: 'global' (extrinsic) or 'local' (intrinsic).
+    """
+    convention = convention.lower()
+    if convention not in {"global", "local"}:
+        raise ValueError("convention must be 'global' or 'local'")
+    if convention == 'global':
+        return compose_global(seq, q_rad, degrees=False).as_matrix()
+    else:
+        return compose_local(seq, q_rad, degrees=False).as_matrix()
+
+
+def _omega_jacobian_numeric(
+    seq: str,
+    q_rad: np.ndarray,
+    convention: str = 'global',
+    frame: str = 'space',
+    eps: float = 1e-8,
+) -> np.ndarray:
+    """
+    Build numeric Jacobian M(q) so that omega = M(q) @ qdot.
+    - q_rad in radians
+    - frame: 'space' (ω in global) uses Ω = Ṙ Rᵀ ; 'body' (ω in body) uses Ω = Rᵀ Ṙ
+    Central difference is used for robustness and correctness.
+    """
+    frame = frame.lower()
+    if frame not in {"space", "body"}:
+        raise ValueError("frame must be 'space' or 'body'")
+
+    R0 = _rotation_matrix(seq, q_rad, convention)
+    cols = []
+
+    for i in range(3):
+        dq = np.zeros(3)
+        dq[i] = eps
+        Rp = _rotation_matrix(seq, q_rad + dq, convention)
+        Rm = _rotation_matrix(seq, q_rad - dq, convention)
+        Rdot = (Rp - Rm) / (2.0 * eps)
+
+        if frame == 'space':
+            Omega = Rdot @ R0.T
+        else:  # 'body'
+            Omega = R0.T @ Rdot
+
+        # enforce skew to suppress numeric noise
+        Omega = 0.5 * (Omega - Omega.T)
+        cols.append(_vee(Omega))
+
+    return np.column_stack(cols)  # 3x3
+
+
+def angvel_from_rates(
+    seq: str,
+    angles: Sequence[float],
+    rates: Sequence[float],
+    convention: str = 'global',
+    degrees: bool = False,
+    frame: str = 'body',
+) -> np.ndarray:
+    """
+    Map generalized angle rates q̇ -> angular velocity ω.
+
+    Parameters
+    ----------
+    seq : str
+        Proper Euler / Tait-Bryan sequence (e.g., 'zyx', 'zyz', 'xyz', ...).
+    angles : (3,)
+        Angles (deg if degrees=True, else rad).
+    rates : (3,)
+        Angle rates q̇ (deg/s if degrees=True, else rad/s).
+    convention : {'global','local'}
+        'global' for extrinsic rotations, 'local' for intrinsic rotations.
+    degrees : bool
+        Interpret angles and rates in degrees/deg/s when True.
+    frame : {'space','body'}
+        Frame of ω. 'space' returns ω in global frame; 'body' in body frame.
+
+    Returns
+    -------
+    ω : (3,)
+        Angular velocity (deg/s if degrees=True, else rad/s).
+    """
+    q = np.deg2rad(angles) if degrees else np.asarray(angles, float)
+    qdot = np.deg2rad(rates) if degrees else np.asarray(rates, float)
+
+    M = _omega_jacobian_numeric(seq, q, convention=convention, frame=frame)
+    omega = M @ qdot
+
+    return np.rad2deg(omega) if degrees else omega
+
+
+def rates_from_angvel(
+    seq: str,
+    angles: Sequence[float],
+    omega: Sequence[float],
+    convention: str = 'global',
+    degrees: bool = False,
+    frame: str = 'body',
+    rcond: float = 1e-12,
+) -> np.ndarray:
+    """
+    Map angular velocity ω -> generalized rates q̇ using a pseudoinverse.
+
+    Parameters
+    ----------
+    omega : (3,)
+        Angular velocity (deg/s if degrees=True, else rad/s).
+    rcond : float
+        Cutoff for small singular values in the pseudoinverse; helps near singularities.
+
+    Returns
+    -------
+    q̇ : (3,)
+        Angle rates (deg/s if degrees=True, else rad/s).
+    """
+    q = np.deg2rad(angles) if degrees else np.asarray(angles, float)
+    w = np.deg2rad(omega) if degrees else np.asarray(omega, float)
+
+    M = _omega_jacobian_numeric(seq, q, convention=convention, frame=frame)
+    qdot = np.linalg.pinv(M, rcond=rcond) @ w
+
+    return np.rad2deg(qdot) if degrees else qdot
+
+
+# ---------------------------------------------------------------------
+# Equations 2.84/2.85 style repeat (power of a rotation)
+# ---------------------------------------------------------------------
+
+def repeat_rotation(Robj: R, m: int) -> R:
+    """Return R^m using the logarithm/exponential map (stable for integer m)."""
+    return rotation_power(Robj, m)
+
+
+# ---------------------------------------------------------------------
+# Alignment (2.99–2.106): align body x-axis with a given vector u
+# ---------------------------------------------------------------------
+
+def align_body_x(u: Sequence[float]) -> R:
+    """Return a Rotation that aligns the body x-axis with vector u (right-handed)."""
+    return align_x_to_vector(u)
+
+
+# ---------------------------------------------------------------------
+# Convenience wrappers for CSV I/O
+# ---------------------------------------------------------------------
+
+def save_R(path: str, Robj: R) -> None:
+    """Save a rotation matrix to CSV at rotation/out/<path>."""
+    save_matrix_csv(path, Robj)
+
+
+def save_series(path: str, t: np.ndarray, data: np.ndarray, header: str) -> None:
+    """Save a time series (t, data[*,3]) to CSV at rotation/out/<path> with a header."""
+    save_series_csv(path, t, data, header)
+
+here is rot_design.py:
+
+# =============================
+# File: rotation/rot_design.py
+# =============================
+"""Design-time constants and small helpers for the CLI.
+Covers: the 12 global (Tait–Bryan) and 6 proper Euler sequences, local/global mapping,
+and a few named presets from the chapter examples."""
+
+VALID_TB = ["xyz","xzy","yxz","yzx","zxy","zyx"]
+VALID_PROPER = ["zxz","xyx","yzy","zyz","xzx","yxy"]
+VALID_ALL = VALID_TB + VALID_PROPER
+
+# Named presets that mirror textbook examples
+PRESETS = {
+    # Example 19/20: roll–pitch–yaw in global axes
+    "rpy_global": {"mode": "global", "seq": "xyz", "angles_deg": [0.0, 0.0, 0.0]},
+}
+
+HELP_SEQ = (
+    "Sequence of axes. Tait–Bryan: xyz,xzy,yxz,yzx,zxy,zyx. Proper Euler: zxz,xyx,yzy,zyz,xzx,yxy."
+)
+
+///
+
+///
+
+///
+
+are we cool now?
+
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli angvel local zyx "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+
+ω =  [ 0.265798  0.220190 -0.018620]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+E_body for zyx (columns in seq-order [a1=ψ, a2=θ, a3=φ]):
+ω = E(q) q̇
+variables: a1, a2, a3
+[
+  [-sin(a2), 0, 1]
+  [sin(a3)*cos(a2), cos(a3), 0]
+  [cos(a2)*cos(a3), -sin(a3), 0]
+]
+
+E_body for zyx in RPY-order [φ, θ, ψ] (columns match [φ̇, θ̇, ψ̇]):
+ω = E_rpy(q) q̇
+variables: a3, a2, a1
+[
+  [1, 0, -sin(a2)]
+  [0, cos(a3), sin(a3)*cos(a2)]
+  [0, -sin(a3), cos(a2)*cos(a3)]
+]
+(.venv) ➜  robotics git:(develop) ✗ pytest -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items
+
+ rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10 ✓                                                                                 14% █▌
+ rotation/tests/test_rotation_app.py::test_repeat_12x15deg_about_Z ✓                                                                                        29% ██▉
+ rotation/tests/test_rotation_app.py::test_transform_basis_rows_returns_Rt ✓                                                                                43% ████▍
+ rotation/tests/test_rotation_app.py::test_align_x_axis_right_handed_unit_det ✓                                                                             57% █████▊
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ✓                                                                   71% ███████▎
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ✓                                                                   86% ████████▋
+ rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_closed_form_in_degrees ✓                                                          100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+1.44s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+0.91s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+0.83s call     rotation/tests/test_rotation_app.py::test_angvel_local_zyz_body_matches_closed_form_in_degrees
+0.01s call     rotation/tests/test_rotation_app.py::test_compose_decompose_zyx_30_20_10
+
+(6 durations < 0.005s hidden.  Use -vv to show these durations.)
+
+Results (3.57s):
+       7 passed
+(.venv) ➜  robotics git:(develop) ✗ pytest -m cf -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+testpaths: rotation/tests, orientation/tests, motion/tests, forward/tests, inverse/tests, angular/tests, velocity/tests, acceleration/tests, applied/tests, robot/tests, path/tests, time/tests, control/tests
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 7 items / 5 deselected / 2 selected
+
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local ✓                                                                   50% █████
+ rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local ✓                                                                  100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+1.49s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyx_body_local
+0.89s call     rotation/tests/test_rotation_app.py::test_closed_form_E_matches_numeric_zyz_body_local
+
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
+
+Results (2.71s):
+       2 passed
+       5 deselected
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+E_body for zyx (columns in seq-order [a1=ψ, a2=θ, a3=φ]):
+ω = E(q) q̇
+variables: a1, a2, a3
+[
+  [-sin(a2), 0, 1]
+  [sin(a3)*cos(a2), cos(a3), 0]
+  [cos(a2)*cos(a3), -sin(a3), 0]
+]
+
+E_body for zyx in RPY-order [φ, θ, ψ] (columns match [φ̇, θ̇, ψ̇]):
+ω = E_rpy(q) q̇
+variables: a3, a2, a1
+[
+  [1, 0, -sin(a2)]
+  [0, cos(a3), sin(a3)*cos(a2)]
+  [0, -sin(a3), cos(a2)*cos(a3)]
+]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli E zxz --convention local --frame body
+E_body for zxz (columns in seq-order [a1, a2, a3]):
+ω = E(q) q̇
+variables: a1, a2, a3
+[
+  [sin(a2)*sin(a3), cos(a3), 0]
+  [sin(a2)*cos(a3), -sin(a3), 0]
+  [cos(a2), 0, 1]
+]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli E zyz --convention local --frame space
+E_space for zyz (columns in seq-order [a1, a2, a3]):
+ω = E(q) q̇
+variables: a1, a2, a3
+[
+  [0, -sin(a1), sin(a2)*cos(a1)]
+  [0, cos(a1), sin(a1)*sin(a2)]
+  [1, 0, cos(a2)]
+]
+(.venv) ➜  robotics git:(develop) ✗ python -m rotation.rot_cli batch job.yaml
+
+--- Task 1/3: compose ---
+[[ 0.813798 -0.469846  0.342020]
+ [ 0.543838  0.823173 -0.163176]
+ [-0.204874  0.318796  0.925417]]
+saved -> rotation/out/R_zyx.csv
+
+--- Task 2/3: transform ---
+[[ 0.813798  0.543838 -0.204874]
+ [-0.469846  0.823173  0.318796]
+ [ 0.342020 -0.163176  0.925417]]
+saved -> rotation/out/pts_out.csv
+
+--- Task 3/3: angvel ---
+[ 0.070380  0.190306  0.393969]
+(.venv) ➜  robotics git:(develop) ✗
+
+///
+
+///
+
+///
+
+cool beans.
+
+also, i need a .gitignore for my project.
+
+///
