@@ -4,10 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented kinematics.py">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="updated kinematics.py&#10;added vector functions">
+      <change afterPath="$PROJECT_DIR$/rotation/prompts/rotation_kinematics.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/rot_cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/rot_core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/rot_design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/rot_io.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/rot_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intro/kinematics.py" beforeDir="false" afterPath="$PROJECT_DIR$/intro/kinematics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intro/prompts/unit_vectors.txt" beforeDir="false" afterPath="$PROJECT_DIR$/intro/prompts/unit_vectors.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,22 +49,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/intro/prompts" />
@@ -86,7 +91,8 @@
       <workItem from="1758067443792" duration="1182000" />
       <workItem from="1758068700995" duration="388000" />
       <workItem from="1758069115398" duration="387000" />
-      <workItem from="1758077477819" duration="3782000" />
+      <workItem from="1758077477819" duration="4131000" />
+      <workItem from="1758127377996" duration="5298000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -128,7 +134,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758080168512</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="updated kinematics.py&#10;added vector functions">
+      <option name="closed" value="true" />
+      <created>1758081934791</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1758081934791</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -153,6 +167,7 @@
     <MESSAGE value="implemented mobius.py" />
     <MESSAGE value="implemented mobius.py and manipulators.py" />
     <MESSAGE value="implemented kinematics.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented kinematics.py" />
+    <MESSAGE value="updated kinematics.py&#10;added vector functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated kinematics.py&#10;added vector functions" />
   </component>
 </project>
