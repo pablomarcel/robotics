@@ -1,0 +1,6 @@
+[
+  {"op": "matrix-from-axis", "params": {"phi": 0.5, "axis": [0,0,1]}},
+  {"op": "compose-axis", "params": {"phi1": 0.4, "axis1": [1,0,0], "phi2": 0.7, "axis2": [0,0,1]}},
+  {"op": "from-quat", "params": {"quat": [0.92388, 0, 0.38268, 0]}},
+  {"op": "euler-to-matrix", "params": {"angles":[0.3,0.2,0.1], "order":"ZYX"}}
+]
