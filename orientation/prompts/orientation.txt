@@ -1,0 +1,1429 @@
+do we have python libraries that can handle equations 3.1 to 3.79 with out of the box functionality?
+
+///
+
+what about exhibits 1 to 8, equations 3.344 to 3.434
+
+do we have python libraries that can handle these equations?
+
+///
+
+ok we need an all encompassing app to tackle orientation kinematics within our robotics project.
+all the scripts will be stored in the orientation module
+any input files will be stored in orientation/in directory
+any output files will be stored in the orientation/out directory
+tests should be stored in the orientation/tests/ directory
+any tools should be stored in the orientation/tools directory
+any potential combination of user input should be captured in the cli run commands
+The important thing to remember in this app is we are switching to object-oriented programming and test driven development.
+So we are going to build a beautiful architecture, with crisp classes and methods and all the goodies that come with oo aproach.
+The proposed architecture would be something like this:
+
+    app.py
+    apis.py
+    cli.py
+    core.py
+    design.py
+    io.py
+    utils.py
+
+it does not have to be like this. If you find redundancies that is ok. The important thing is that we break this up for easy understanding, testing and debugging.
+keep in mind that we will implement TDD with pytest. So the classes and methods should be testable.
+
+Also, when the app is done we want to generate a class diagram. So keep in mind which libraries we can leverage to create a sparkling, cute class diagram.
+Also, if the classes need documentation, let's do that. Perhaps later we can implement a sphinx project to generate the documentation.
+
+So, please go ahead and build this glorious, architecture sound, god tier, kickass app to meet the project requirements and tackle orientation kinematics math from equation 3.1 to 3.434.
+
+///
+
+///
+
+///
+
+that is ok, but no code has been generated so far.
+
+i need you to generate the code.
+
+please start with cli.py.
+
+also, implement your suggestion about this:
+
+If you want me to add more CLI verbs (Euler angles in/out, Rodrigues in/out, exponential maps, random SO(3) sampling, batch file I/O), say the word and I’ll extend cli.py plus tests.
+
+///
+
+how is this object-oriented?
+
+did not I tell you from now on, we are following a strict object oriented approach?
+
+this is what you generated:
+
+"""
+orientation.cli
+---------------
+Command-line interface for the Orientation Kinematics toolkit.
+
+Examples
+--------
+# Basic builds/conversions
+python -m orientation.cli matrix-from-axis --axis 0 0 1 --phi 1.5708
+python -m orientation.cli compose-axis --phi1 0.4 --axis1 1 0 0 --phi2 0.7 --axis2 0 0 1
+python -m orientation.cli to-quat --matrix 1 0 0 0 1 0 0 0 1
+python -m orientation.cli from-quat --quat 0.92388 0 0.38268 0
+
+# Euler angles I/O (order default ZYX == yaw, pitch, roll)
+python -m orientation.cli euler-to-matrix --angles 0.3 0.2 0.1 --order ZYX
+python -m orientation.cli matrix-to-euler --matrix 0.936 0.289 -0.198 -0.275 0.957 0.090 0.212 -0.033 0.977 --order ZYX --deg
+
+# Rodrigues & exponential map
+python -m orientation.cli rodrigues-to-matrix --w 0.1 0.2 0.3
+python -m orientation.cli matrix-to-rodrigues --matrix 1 0 0 0 1 0 0 0 1
+python -m orientation.cli expmap --omega 0.2 0.0 0.0
+
+# Utilities
+python -m orientation.cli random-so3 --n 3
+python -m orientation.cli diagram
+python -m orientation.cli batch --in jobs.json --out results.json
+"""
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Iterable, List
+
+import numpy as np
+
+# Internal imports
+from .core import SO3, AxisAngle, RodriguesVector, Quaternion
+from .utils import normalize, skew, expm_so3, project_to_so3
+from .design import generate_diagram
+from .io import OUT_DIR, IN_DIR, write_json, write_matrix_csv
+
+
+# -------- helpers --------
+
+def _vec3(values: Iterable[str]) -> np.ndarray:
+    v = list(map(float, values))
+    if len(v) != 3:
+        raise argparse.ArgumentTypeError("Expected 3 values for a 3-vector.")
+    return np.array(v, dtype=float)
+
+
+def _mat9(values: Iterable[str]) -> np.ndarray:
+    m = list(map(float, values))
+    if len(m) != 9:
+        raise argparse.ArgumentTypeError("Expected 9 numbers for a 3x3 matrix (row major).")
+    return np.array(m, dtype=float).reshape(3, 3)
+
+
+def _print_matrix(M: np.ndarray):
+    np.set_printoptions(precision=6, suppress=True)
+    print(M)
+
+
+def _save_option(p: argparse.ArgumentParser):
+    p.add_argument("--save", type=str, help="Optional filename to save matrix/array (CSV to orientation/out).")
+
+
+def _maybe_save_matrix(name: str | None, M: np.ndarray):
+    if not name:
+        return
+    write_matrix_csv(name, M)
+    print(f"Saved CSV -> {OUT_DIR / name}")
+
+
+# -------- CLI verbs --------
+
+def cmd_matrix_from_axis(args: argparse.Namespace):
+    u = _vec3(args.axis)
+    R = AxisAngle(args.phi, u).as_matrix()
+    _print_matrix(R)
+    _maybe_save_matrix(args.save, R)
+
+
+def cmd_compose_axis(args: argparse.Namespace):
+    R = (
+        SO3.from_axis_angle(args.phi2, _vec3(args.axis2)).R
+        @ SO3.from_axis_angle(args.phi1, _vec3(args.axis1)).R
+    )
+    _print_matrix(R)
+    _maybe_save_matrix(args.save, R)
+
+
+def cmd_to_quat(args: argparse.Namespace):
+    Rm = _mat9(args.matrix)
+    q = Quaternion.from_matrix(Rm)
+    print(f"{q.e0} {q.e1} {q.e2} {q.e3}")
+
+
+def cmd_from_quat(args: argparse.Namespace):
+    e0, e1, e2, e3 = map(float, args.quat)
+    q = Quaternion(e0, e1, e2, e3)
+    R = q.as_matrix()
+    _print_matrix(R)
+    _maybe_save_matrix(args.save, R)
+
+
+def cmd_rodrigues_to_matrix(args: argparse.Namespace):
+    R = RodriguesVector(_vec3(args.w)).as_matrix()
+    _print_matrix(R)
+    _maybe_save_matrix(args.save, R)
+
+
+def cmd_matrix_to_rodrigues(args: argparse.Namespace):
+    aa = AxisAngle.from_matrix(_mat9(args.matrix))
+    w = aa.to_rodrigues().w
+    print(f"{w[0]} {w[1]} {w[2]}")
+
+
+def cmd_euler_to_matrix(args: argparse.Namespace):
+    # interpret angles in radians; if --deg provided, convert
+    a = np.array(list(map(float, args.angles)), dtype=float)
+    if args.deg:
+        a = np.deg2rad(a)
+    order = args.order.upper()
+    # Build by successive local rotations using core.SO3
+    axes = dict(X=np.array([1, 0, 0.0]), Y=np.array([0, 1, 0.0]), Z=np.array([0, 0, 1.0]))
+    R = np.eye(3)
+    for ang, k in zip(a, order):
+        R = SO3.from_axis_angle(ang, axes[k]).R @ R
+    _print_matrix(R)
+    _maybe_save_matrix(args.save, R)
+
+
+def cmd_matrix_to_euler(args: argparse.Namespace):
+    R = _mat9(args.matrix)
+    order = args.order.upper()
+    # Simple numeric extraction via search (keeps us SciPy-free for now)
+    # We minimize || R_target - R(order, angles) ||_F over angles.
+    def build(angles):
+        axes = dict(X=np.array([1, 0, 0.0]), Y=np.array([0, 1, 0.0]), Z=np.array([0, 0, 1.0]))
+        Rb = np.eye(3)
+        for ang, k in zip(angles, order):
+            Rb = SO3.from_axis_angle(ang, axes[k]).R @ Rb
+        return Rb
+
+    # small Gauss-Newton
+    x = np.zeros(3)
+    for _ in range(60):
+        Rb = build(x)
+        r = (Rb - R).ravel()
+        J = np.zeros((9, 3))
+        h = 1e-6
+        for i in range(3):
+            dx = x.copy(); dx[i] += h
+            J[:, i] = (build(dx) - Rb).ravel() / h
+        step, *_ = np.linalg.lstsq(J, -r, rcond=None)
+        x += step
+        if np.linalg.norm(step) < 1e-10:
+            break
+    ang = np.rad2deg(x) if args.deg else x
+    print(f"{ang[0]} {ang[1]} {ang[2]}")
+
+
+def cmd_expmap(args: argparse.Namespace):
+    omega = _vec3(args.omega)
+    R = expm_so3(omega)
+    _print_matrix(R)
+    _maybe_save_matrix(args.save, R)
+
+
+def cmd_random_so3(args: argparse.Namespace):
+    n = int(args.n)
+    out = []
+    for _ in range(n):
+        # Uniform random quaternion → SO(3)
+        u1, u2, u3 = np.random.rand(3)
+        q = Quaternion(
+            np.sqrt(1 - u1) * np.sin(2 * np.pi * u2) * 0 +  # keep scalar-first; build properly below
+            0,
+            0, 0, 0
+        )
+        # Use Shoemake method for random quat
+        q = Quaternion(
+            np.sqrt(1-u1) * np.cos(2*np.pi*u2),
+            np.sqrt(1-u1) * np.sin(2*np.pi*u2),
+            np.sqrt(u1)   * np.cos(2*np.pi*u3),
+            np.sqrt(u1)   * np.sin(2*np.pi*u3),
+        )
+        R = q.as_matrix()
+        out.append(R.tolist())
+    data = {"rotations": out}
+    if args.out:
+        write_json(args.out, data)
+        print(f"Wrote {len(out)} rotations -> {OUT_DIR / args.out}")
+    else:
+        print(json.dumps(data, indent=2))
+
+
+def cmd_diagram(args: argparse.Namespace):
+    dot, mmd = generate_diagram(Path(args.out))
+    print(f"Wrote diagram files:\n - {dot}\n - {mmd}")
+
+
+def cmd_batch(args: argparse.Namespace):
+    """
+    Batch runner.
+
+    Input JSON (in orientation/in/) should be a list of jobs, e.g.:
+
+    [
+      {"op": "matrix-from-axis", "params": {"phi": 0.5, "axis": [0,0,1]}},
+      {"op": "compose-axis", "params": {"phi1": 0.4, "axis1": [1,0,0], "phi2": 0.7, "axis2": [0,0,1]}},
+      {"op": "from-quat", "params": {"quat": [0.92388, 0, 0.38268, 0]}}
+    ]
+    """
+    spec_path = IN_DIR / args.infile
+    jobs = json.loads(spec_path.read_text())
+    results: List[dict] = []
+
+    # Dispatch table to reuse single-op handlers
+    for j in jobs:
+        op = j.get("op", "")
+        p = j.get("params", {})
+        if op == "matrix-from-axis":
+            R = AxisAngle(p["phi"], np.array(p["axis"])).as_matrix()
+            results.append({"op": op, "result": R.tolist()})
+        elif op == "compose-axis":
+            R = (
+                SO3.from_axis_angle(p["phi2"], np.array(p["axis2"])).R
+                @ SO3.from_axis_angle(p["phi1"], np.array(p["axis1"])).R
+            )
+            results.append({"op": op, "result": R.tolist()})
+        elif op == "to-quat":
+            q = Quaternion.from_matrix(np.array(p["matrix"]).reshape(3, 3))
+            results.append({"op": op, "result": [q.e0, q.e1, q.e2, q.e3]})
+        elif op == "from-quat":
+            q = Quaternion(*p["quat"])
+            results.append({"op": op, "result": q.as_matrix().tolist()})
+        elif op == "rodrigues-to-matrix":
+            R = RodriguesVector(np.array(p["w"])).as_matrix()
+            results.append({"op": op, "result": R.tolist()})
+        elif op == "matrix-to-rodrigues":
+            aa = AxisAngle.from_matrix(np.array(p["matrix"]).reshape(3,3))
+            results.append({"op": op, "result": aa.to_rodrigues().w.tolist()})
+        elif op == "euler-to-matrix":
+            order = p.get("order", "ZYX").upper()
+            ang = np.array(p["angles"], dtype=float)
+            if p.get("deg", False):
+                ang = np.deg2rad(ang)
+            axes = dict(X=np.array([1,0,0.0]), Y=np.array([0,1,0.0]), Z=np.array([0,0,1.0]))
+            R = np.eye(3)
+            for a, k in zip(ang, order):
+                R = SO3.from_axis_angle(a, axes[k]).R @ R
+            results.append({"op": op, "result": R.tolist()})
+        elif op == "expmap":
+            R = expm_so3(np.array(p["omega"], dtype=float))
+            results.append({"op": op, "result": R.tolist()})
+        else:
+            results.append({"op": op, "error": f"unknown op '{op}'"})
+
+    write_json(args.outfile, {"results": results})
+    print(f"Wrote batch results -> {OUT_DIR / args.outfile}")
+
+
+# -------- parser wiring --------
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="orientation", description="Orientation Kinematics CLI")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    s = sub.add_parser("matrix-from-axis", help="Build rotation matrix from axis-angle")
+    s.add_argument("--axis", nargs=3, required=True)
+    s.add_argument("--phi", type=float, required=True)
+    _save_option(s)
+    s.set_defaults(func=cmd_matrix_from_axis)
+
+    s2 = sub.add_parser("compose-axis", help="Compose two axis-angle rotations (R2 * R1)")
+    s2.add_argument("--phi1", type=float, required=True); s2.add_argument("--axis1", nargs=3, required=True)
+    s2.add_argument("--phi2", type=float, required=True); s2.add_argument("--axis2", nargs=3, required=True)
+    _save_option(s2)
+    s2.set_defaults(func=cmd_compose_axis)
+
+    s3 = sub.add_parser("to-quat", help="Matrix → quaternion (e0 e1 e2 e3)")
+    s3.add_argument("--matrix", nargs=9, required=True)
+    s3.set_defaults(func=cmd_to_quat)
+
+    s4 = sub.add_parser("from-quat", help="Quaternion → rotation matrix")
+    s4.add_argument("--quat", nargs=4, required=True)
+    _save_option(s4)
+    s4.set_defaults(func=cmd_from_quat)
+
+    s5 = sub.add_parser("rodrigues-to-matrix", help="Rodrigues vector w → rotation matrix")
+    s5.add_argument("--w", nargs=3, required=True)
+    _save_option(s5)
+    s5.set_defaults(func=cmd_rodrigues_to_matrix)
+
+    s6 = sub.add_parser("matrix-to-rodrigues", help="Rotation matrix → Rodrigues vector w")
+    s6.add_argument("--matrix", nargs=9, required=True)
+    s6.set_defaults(func=cmd_matrix_to_rodrigues)
+
+    s7 = sub.add_parser("euler-to-matrix", help="Euler angles → rotation matrix")
+    s7.add_argument("--angles", nargs=3, required=True, help="Three angles in radians by default.")
+    s7.add_argument("--order", type=str, default="ZYX", help="Axis order, e.g., ZYX or XYZ.")
+    s7.add_argument("--deg", action="store_true", help="Interpret input angles as degrees.")
+    _save_option(s7)
+    s7.set_defaults(func=cmd_euler_to_matrix)
+
+    s8 = sub.add_parser("matrix-to-euler", help="Rotation matrix → Euler angles")
+    s8.add_argument("--matrix", nargs=9, required=True)
+    s8.add_argument("--order", type=str, default="ZYX")
+    s8.add_argument("--deg", action="store_true", help="Print angles in degrees.")
+    s8.set_defaults(func=cmd_matrix_to_euler)
+
+    s9 = sub.add_parser("expmap", help="Exponential map: exp(omega^) → rotation matrix")
+    s9.add_argument("--omega", nargs=3, required=True)
+    _save_option(s9)
+    s9.set_defaults(func=cmd_expmap)
+
+    s10 = sub.add_parser("random-so3", help="Generate N random SO(3) rotations (uniform)")
+    s10.add_argument("--n", type=int, default=1)
+    s10.add_argument("--out", type=str, help="Optional JSON filename (written to orientation/out).")
+    s10.set_defaults(func=cmd_random_so3)
+
+    s11 = sub.add_parser("diagram", help="Generate class diagram (DOT & Mermaid) into orientation/out")
+    s11.add_argument("--out", type=str, default=str(OUT_DIR))
+    s11.set_defaults(func=cmd_diagram)
+
+    s12 = sub.add_parser("batch", help="Run a JSON batch of operations from orientation/in")
+    s12.add_argument("--in", dest="infile", required=True, help="Input JSON in orientation/in/")
+    s12.add_argument("--out", dest="outfile", required=True, help="Output JSON in orientation/out/")
+    s12.set_defaults(func=cmd_batch)
+
+    return p
+
+
+def main(argv: List[str] | None = None):
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()
+
+///
+
+///
+
+///
+what about app.py? do we need to build this or is it redundant?
+
+please continue with apis.py
+it must be object oriented.
+
+///
+
+ok, let's proceed with the test scripts or script.
+how many test scripts will we build?
+
+///
+
+fabulous progress:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest orientation/tests -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 26 items
+
+ orientation/tests/test_apis_service.py::test_euler_in_out_orders ✓                                                                         4% ▍
+ orientation/tests/test_apis_service.py::test_expmap_equivalence ✓                                                                          8% ▊
+ orientation/tests/test_apis_service.py::test_random_so3_shapes_and_orthogonality ✓                                                        12% █▎
+ orientation/tests/test_cli.py::test_cli_matrix_from_axis_and_to_quat ✓                                                                    15% █▋
+ orientation/tests/test_core_axisangle.py::test_axisangle_roundtrip_general ✓                                                              19% █▉
+ orientation/tests/test_core_axisangle.py::test_axisangle_near_zero ✓                                                                      23% ██▍
+ orientation/tests/test_core_axisangle.py::test_axisangle_near_pi ✓                                                                        27% ██▊
+ orientation/tests/test_core_axisangle.py::test_axisangle_compose_matches_so3_compose ✓                                                    31% ███▏
+ orientation/tests/test_core_quaternion.py::test_quaternion_matrix_equivalence ✓                                                           35% ███▌
+ orientation/tests/test_core_quaternion.py::test_quaternion_from_matrix_roundtrip ✓                                                        38% ███▉
+ orientation/tests/test_core_quaternion.py::test_quaternion_multiply_equals_composition ✓                                                  42% ████▎
+ orientation/tests/test_core_quaternion.py::test_quaternion_rotate_vector ✓                                                                46% ████▋
+ orientation/tests/test_core_rodrigues.py::test_quaternion_matrix_equivalence ✓                                                            50% █████
+ orientation/tests/test_core_rodrigues.py::test_quaternion_from_matrix_roundtrip ✓                                                         54% █████▍
+ orientation/tests/test_core_rodrigues.py::test_quaternion_multiply_equals_composition ✓                                                   58% █████▊
+ orientation/tests/test_core_rodrigues.py::test_quaternion_rotate_vector ✓                                                                 62% ██████▎
+
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_group_ops_and_conversions ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    def test_group_ops_and_conversions():
+        a1 = SO3.from_axis_angle(0.2, [1,0,0])
+        a2 = SO3.from_axis_angle(0.3, [0,1,0])
+        c = a2.compose(a1)
+        inv = c.inverse()
+        I = c.compose(inv).R
+        assert np.allclose(I, np.eye(3), atol=1e-10)
+        # conversions
+        q = c.to_quaternion()
+        rv = c.to_rodrigues()
+        aa = c.to_axis_angle()
+        assert np.allclose(SO3.from_quaternion(q).R, c.R, atol=1e-10)
+>       assert np.allclose(SO3.from_rodrigues(rv.w).R, c.R, atol=1e-10)
+E       assert False
+E        +  where False = <function allclose at 0x10d0318f0>(array([[ 0.952433,  0.061525,  0.298472],\n       [ 0.001002,  0.978771, -0.204955],\n       [-0.304746,  0.195505,  0.932152]]), array([[ 0.955336,  0.058711,  0.289629],\n       [ 0.      ,  0.980067, -0.198669],\n       [-0.29552 ,  0.189796,  0.936293]]), atol=1e-10)
+E        +    where <function allclose at 0x10d0318f0> = np.allclose
+E        +    and   array([[ 0.952433,  0.061525,  0.298472],\n       [ 0.001002,  0.978771, -0.204955],\n       [-0.304746,  0.195505,  0.932152]]) = SO3(R=array([[ 0.952433,  0.061525,  0.298472],\n       [ 0.001002,  0.978771, -0.204955],\n       [-0.304746,  0.195505,  0.932152]])).R
+E        +      where SO3(R=array([[ 0.952433,  0.061525,  0.298472],\n       [ 0.001002,  0.978771, -0.204955],\n       [-0.304746,  0.195505,  0.932152]])) = <function SO3.from_rodrigues at 0x10d5ffec0>(array([ 0.100335,  0.151135, -0.015164]))
+E        +        where <function SO3.from_rodrigues at 0x10d5ffec0> = SO3.from_rodrigues
+E        +        and   array([ 0.100335,  0.151135, -0.015164]) = RodriguesVector(w=array([ 0.100335,  0.151135, -0.015164])).w
+E        +    and   array([[ 0.955336,  0.058711,  0.289629],\n       [ 0.      ,  0.980067, -0.198669],\n       [-0.29552 ,  0.189796,  0.936293]]) = SO3(R=array([[ 0.955336,  0.058711,  0.289629],\n       [ 0.      ,  0.980067, -0.198669],\n       [-0.29552 ,  0.189796,  0.936293]])).R
+
+orientation/tests/test_core_so3.py:16: AssertionError
+
+ orientation/tests/test_core_so3.py::test_group_ops_and_conversions ⨯                                                                      65% ██████▋
+ orientation/tests/test_core_so3.py::test_orthogonality_det ✓                                                                              69% ██████▉
+ orientation/tests/test_design_io.py::test_diagram_generation ✓                                                                            73% ███████▍
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_io_manager_roundtrip ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+tmp_path = PosixPath('/private/var/folders/l3/tz9ybx2j5g73b_mbhtgftts80000gn/T/pytest-of-pablomontijo/pytest-0/test_io_manager_roundtrip0')
+
+    def test_io_manager_roundtrip(tmp_path: Path):
+        pcm = PathConfig(base_dir=tmp_path)
+        io = IOManager(pcm)
+        # JSON
+        io.write_json("foo.json", {"a": 1})
+>       assert io.read_json("foo.json")["a"] == 1
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+orientation/tests/test_design_io.py:23:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+orientation/io.py:95: in read_json
+    return json.loads(path.read_text(encoding="utf-8"))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/private/var/folders/l3/tz9ybx2j5g73b_mbhtgftts80000gn/T/pytest-of-pablomontijo/pytest-0/test_io_manager_roundtrip0/in/foo.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/private/var/folders/l3/tz9ybx2j5g73b_mbhtgftts80000gn/T/pytest-of-pablomontijo/pytest-0/test_io_manager_roundtrip0/in/foo.json'
+
+/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pathlib.py:1044: FileNotFoundError
+
+ orientation/tests/test_design_io.py::test_io_manager_roundtrip ⨯                                                                          77% ███████▊
+ orientation/tests/test_utils.py::test_normalize_and_eps ✓                                                                                 81% ████████▏
+ orientation/tests/test_utils.py::test_skew_vex_roundtrip ✓                                                                                85% ████████▌
+ orientation/tests/test_utils.py::test_vers_safe_acos ✓                                                                                    88% ████████▉
+ orientation/tests/test_utils.py::test_expm_so3_small_angle_first_order ✓                                                                  92% █████████▎
+ orientation/tests/test_utils.py::test_expm_so3_matches_axis_angle ✓                                                                       96% █████████▋
+ orientation/tests/test_utils.py::test_project_to_so3 ✓                                                                                   100% ██████████
+================================================================= slowest 10 durations ==================================================================
+0.01s call     orientation/tests/test_apis_service.py::test_euler_in_out_orders
+0.01s call     orientation/tests/test_cli.py::test_cli_matrix_from_axis_and_to_quat
+0.01s setup    orientation/tests/test_design_io.py::test_diagram_generation
+0.01s call     orientation/tests/test_apis_service.py::test_expmap_equivalence
+0.01s call     orientation/tests/test_design_io.py::test_io_manager_roundtrip
+0.01s call     orientation/tests/test_utils.py::test_project_to_so3
+
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
+================================================================ short test summary info ================================================================
+FAILED orientation/tests/test_core_so3.py::test_group_ops_and_conversions - assert False
+FAILED orientation/tests/test_design_io.py::test_io_manager_roundtrip - FileNotFoundError: [Errno 2] No such file or directory: '/private/var/folders/l3/tz9ybx2j5g73b_mbhtgftts80000gn/T/pytest-of-pablomontijo/pytest-0/te...
+
+Results (1.27s):
+      24 passed
+       2 failed
+         - orientation/tests/test_core_so3.py:4 test_group_ops_and_conversions
+         - orientation/tests/test_design_io.py:18 test_io_manager_roundtrip
+(.venv) ➜  robotics git:(develop) ✗
+
+however, two tests failed. would you please analyze thoroughly and assess what went wrong with test_core_so3.py and test_design_io.py?
+perhaps our code is incorrect?
+
+///
+
+///
+
+///
+
+great progress, one failed test was fixed. one more test to go:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest orientation/tests -q
+
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 26 items
+
+ orientation/tests/test_apis_service.py::test_euler_in_out_orders ✓                                                                         4% ▍
+ orientation/tests/test_apis_service.py::test_expmap_equivalence ✓                                                                          8% ▊
+ orientation/tests/test_apis_service.py::test_random_so3_shapes_and_orthogonality ✓                                                        12% █▎
+ orientation/tests/test_cli.py::test_cli_matrix_from_axis_and_to_quat ✓                                                                    15% █▋
+ orientation/tests/test_core_axisangle.py::test_axisangle_roundtrip_general ✓                                                              19% █▉
+ orientation/tests/test_core_axisangle.py::test_axisangle_near_zero ✓                                                                      23% ██▍
+ orientation/tests/test_core_axisangle.py::test_axisangle_near_pi ✓                                                                        27% ██▊
+ orientation/tests/test_core_axisangle.py::test_axisangle_compose_matches_so3_compose ✓                                                    31% ███▏
+ orientation/tests/test_core_quaternion.py::test_quaternion_matrix_equivalence ✓                                                           35% ███▌
+ orientation/tests/test_core_quaternion.py::test_quaternion_from_matrix_roundtrip ✓                                                        38% ███▉
+ orientation/tests/test_core_quaternion.py::test_quaternion_multiply_equals_composition ✓                                                  42% ████▎
+ orientation/tests/test_core_quaternion.py::test_quaternion_rotate_vector ✓                                                                46% ████▋
+ orientation/tests/test_core_rodrigues.py::test_quaternion_matrix_equivalence ✓                                                            50% █████
+ orientation/tests/test_core_rodrigues.py::test_quaternion_from_matrix_roundtrip ✓                                                         54% █████▍
+ orientation/tests/test_core_rodrigues.py::test_quaternion_multiply_equals_composition ✓                                                   58% █████▊
+ orientation/tests/test_core_rodrigues.py::test_quaternion_rotate_vector ✓                                                                 62% ██████▎
+
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_group_ops_and_conversions ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    def test_group_ops_and_conversions():
+        a1 = SO3.from_axis_angle(0.2, [1,0,0])
+        a2 = SO3.from_axis_angle(0.3, [0,1,0])
+        c = a2.compose(a1)
+        inv = c.inverse()
+        I = c.compose(inv).R
+        assert np.allclose(I, np.eye(3), atol=1e-10)
+        # conversions
+        q = c.to_quaternion()
+        rv = c.to_rodrigues()
+        aa = c.to_axis_angle()
+        assert np.allclose(SO3.from_quaternion(q).R, c.R, atol=1e-10)
+>       assert np.allclose(SO3.from_rodrigues(rv.w).R, c.R, atol=1e-10)
+E       assert False
+E        +  where False = <function allclose at 0x10a63a3f0>(array([[ 0.952433,  0.061525,  0.298472],\n       [ 0.001002,  0.978771, -0.204955],\n       [-0.304746,  0.195505,  0.932152]]), array([[ 0.955336,  0.058711,  0.289629],\n       [ 0.      ,  0.980067, -0.198669],\n       [-0.29552 ,  0.189796,  0.936293]]), atol=1e-10)
+E        +    where <function allclose at 0x10a63a3f0> = np.allclose
+E        +    and   array([[ 0.952433,  0.061525,  0.298472],\n       [ 0.001002,  0.978771, -0.204955],\n       [-0.304746,  0.195505,  0.932152]]) = SO3(R=array([[ 0.952433,  0.061525,  0.298472],\n       [ 0.001002,  0.978771, -0.204955],\n       [-0.304746,  0.195505,  0.932152]])).R
+E        +      where SO3(R=array([[ 0.952433,  0.061525,  0.298472],\n       [ 0.001002,  0.978771, -0.204955],\n       [-0.304746,  0.195505,  0.932152]])) = <function SO3.from_rodrigues at 0x10ac07ce0>(array([ 0.100335,  0.151135, -0.015164]))
+E        +        where <function SO3.from_rodrigues at 0x10ac07ce0> = SO3.from_rodrigues
+E        +        and   array([ 0.100335,  0.151135, -0.015164]) = RodriguesVector(w=array([ 0.100335,  0.151135, -0.015164])).w
+E        +    and   array([[ 0.955336,  0.058711,  0.289629],\n       [ 0.      ,  0.980067, -0.198669],\n       [-0.29552 ,  0.189796,  0.936293]]) = SO3(R=array([[ 0.955336,  0.058711,  0.289629],\n       [ 0.      ,  0.980067, -0.198669],\n       [-0.29552 ,  0.189796,  0.936293]])).R
+
+orientation/tests/test_core_so3.py:16: AssertionError
+
+ orientation/tests/test_core_so3.py::test_group_ops_and_conversions ⨯                                                                      65% ██████▋
+ orientation/tests/test_core_so3.py::test_orthogonality_det ✓                                                                              69% ██████▉
+ orientation/tests/test_design_io.py::test_diagram_generation ✓                                                                            73% ███████▍
+ orientation/tests/test_design_io.py::test_io_manager_roundtrip ✓                                                                          77% ███████▊
+ orientation/tests/test_utils.py::test_normalize_and_eps ✓                                                                                 81% ████████▏
+ orientation/tests/test_utils.py::test_skew_vex_roundtrip ✓                                                                                85% ████████▌
+ orientation/tests/test_utils.py::test_vers_safe_acos ✓                                                                                    88% ████████▉
+ orientation/tests/test_utils.py::test_expm_so3_small_angle_first_order ✓                                                                  92% █████████▎
+ orientation/tests/test_utils.py::test_expm_so3_matches_axis_angle ✓                                                                       96% █████████▋
+ orientation/tests/test_utils.py::test_project_to_so3 ✓                                                                                   100% ██████████
+================================================================= slowest 10 durations ==================================================================
+0.02s call     orientation/tests/test_apis_service.py::test_euler_in_out_orders
+0.01s call     orientation/tests/test_apis_service.py::test_expmap_equivalence
+0.01s setup    orientation/tests/test_design_io.py::test_diagram_generation
+0.01s call     orientation/tests/test_cli.py::test_cli_matrix_from_axis_and_to_quat
+
+(6 durations < 0.005s hidden.  Use -vv to show these durations.)
+================================================================ short test summary info ================================================================
+FAILED orientation/tests/test_core_so3.py::test_group_ops_and_conversions - assert False
+
+Results (1.05s):
+      25 passed
+       1 failed
+         - orientation/tests/test_core_so3.py:4 test_group_ops_and_conversions
+(.venv) ➜  robotics git:(develop) ✗
+
+what do we do next?
+
+///
+
+///
+
+///
+
+great news:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest orientation/tests -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 26 items
+
+ orientation/tests/test_apis_service.py::test_euler_in_out_orders ✓                                                                         4% ▍
+ orientation/tests/test_apis_service.py::test_expmap_equivalence ✓                                                                          8% ▊
+ orientation/tests/test_apis_service.py::test_random_so3_shapes_and_orthogonality ✓                                                        12% █▎
+ orientation/tests/test_cli.py::test_cli_matrix_from_axis_and_to_quat ✓                                                                    15% █▋
+ orientation/tests/test_core_axisangle.py::test_axisangle_roundtrip_general ✓                                                              19% █▉
+ orientation/tests/test_core_axisangle.py::test_axisangle_near_zero ✓                                                                      23% ██▍
+ orientation/tests/test_core_axisangle.py::test_axisangle_near_pi ✓                                                                        27% ██▊
+ orientation/tests/test_core_axisangle.py::test_axisangle_compose_matches_so3_compose ✓                                                    31% ███▏
+ orientation/tests/test_core_quaternion.py::test_quaternion_matrix_equivalence ✓                                                           35% ███▌
+ orientation/tests/test_core_quaternion.py::test_quaternion_from_matrix_roundtrip ✓                                                        38% ███▉
+ orientation/tests/test_core_quaternion.py::test_quaternion_multiply_equals_composition ✓                                                  42% ████▎
+ orientation/tests/test_core_quaternion.py::test_quaternion_rotate_vector ✓                                                                46% ████▋
+ orientation/tests/test_core_rodrigues.py::test_quaternion_matrix_equivalence ✓                                                            50% █████
+ orientation/tests/test_core_rodrigues.py::test_quaternion_from_matrix_roundtrip ✓                                                         54% █████▍
+ orientation/tests/test_core_rodrigues.py::test_quaternion_multiply_equals_composition ✓                                                   58% █████▊
+ orientation/tests/test_core_rodrigues.py::test_quaternion_rotate_vector ✓                                                                 62% ██████▎
+ orientation/tests/test_core_so3.py::test_group_ops_and_conversions ✓                                                                      65% ██████▋
+ orientation/tests/test_core_so3.py::test_orthogonality_det ✓                                                                              69% ██████▉
+ orientation/tests/test_design_io.py::test_diagram_generation ✓                                                                            73% ███████▍
+ orientation/tests/test_design_io.py::test_io_manager_roundtrip ✓                                                                          77% ███████▊
+ orientation/tests/test_utils.py::test_normalize_and_eps ✓                                                                                 81% ████████▏
+ orientation/tests/test_utils.py::test_skew_vex_roundtrip ✓                                                                                85% ████████▌
+ orientation/tests/test_utils.py::test_vers_safe_acos ✓                                                                                    88% ████████▉
+ orientation/tests/test_utils.py::test_expm_so3_small_angle_first_order ✓                                                                  92% █████████▎
+ orientation/tests/test_utils.py::test_expm_so3_matches_axis_angle ✓                                                                       96% █████████▋
+ orientation/tests/test_utils.py::test_project_to_so3 ✓                                                                                   100% ██████████
+================================================================= slowest 10 durations ==================================================================
+0.03s call     orientation/tests/test_apis_service.py::test_euler_in_out_orders
+0.01s setup    orientation/tests/test_design_io.py::test_diagram_generation
+0.01s call     orientation/tests/test_cli.py::test_cli_matrix_from_axis_and_to_quat
+0.01s call     orientation/tests/test_apis_service.py::test_expmap_equivalence
+0.01s call     orientation/tests/test_design_io.py::test_io_manager_roundtrip
+
+(5 durations < 0.005s hidden.  Use -vv to show these durations.)
+
+Results (0.82s):
+      26 passed
+(.venv) ➜  robotics git:(develop) ✗
+
+what do we do next?
+
+do we run cli commands?
+
+please provide a full list of run commands
+
+///
+
+///
+
+///
+
+ok, of all the run commands, three failed, i think two of them have malformed text.
+
+i am using OhMyZsh on Mac.
+
+here is the first that failed:
+
+6) matrix-to-rodrigues — matrix → Rodrigues vector ww
+
+python -m orientation.cli matrix-to-rodrigues --matrix 1 0 0  0 1 0  0 0 1
+
+I wonder if we got coverage in the tests for this use case. If not, let's add a test in one of the test scripts to evaluate this use case.
+
+the other two commands that failed:
+
+Compose two turns, get quaternion:
+
+python -m orientation.cli to-quat --matrix $(tr '\n' ' ' < orientation/out/R_comp.csv)
+
+Rodrigues round-trip:
+
+python -m orientation.cli matrix-to-rodrigues --matrix $(tr '\n' ' ' < orientation/out/Rw.csv)
+
+Like I said, I think these last two commands are malformed.
+
+Anyways, here are the complete logs:
+
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli matrix-from-axis --axis 0 0 1 --phi 1.57079632679
+[[ 0. -1.  0.]
+ [ 1.  0.  0.]
+ [ 0.  0.  1.]]
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli matrix-from-axis --axis 1 0 0 --phi 0.3 --save R_x.csv
+[[ 1.        0.        0.      ]
+ [ 0.        0.955336 -0.29552 ]
+ [ 0.        0.29552   0.955336]]
+Saved CSV -> /Users/pablomontijo/Control/robotics/orientation/out/R_x.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli compose-axis \
+  --phi1 0.4 --axis1 1 0 0 \
+  --phi2 0.7 --axis2 0 0 1 \
+  --save R_comp.csv
+
+[[ 0.764842 -0.593364  0.25087 ]
+ [ 0.644218  0.704466 -0.297844]
+ [ 0.        0.389418  0.921061]]
+Saved CSV -> /Users/pablomontijo/Control/robotics/orientation/out/R_comp.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli to-quat --matrix 1 0 0  0 1 0  0 0 1
+1.0 0.0 0.0 0.0
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli from-quat --quat 0.9238795 0 0.3826834 0 --save R_q.csv
+[[ 0.707107  0.        0.707107]
+ [ 0.        1.        0.      ]
+ [-0.707107  0.        0.707107]]
+Saved CSV -> /Users/pablomontijo/Control/robotics/orientation/out/R_q.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli rodrigues-to-matrix --w 0.1 0.2 0.3 --save R_rod.csv
+[[ 0.77193  -0.491228  0.403509]
+ [ 0.561404  0.824561 -0.070175]
+ [-0.298246  0.280702  0.912281]]
+Saved CSV -> /Users/pablomontijo/Control/robotics/orientation/out/R_rod.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli matrix-to-rodrigues --matrix 1 0 0  0 1 0  0 0 1
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/pablomontijo/Control/robotics/orientation/cli.py", line 415, in <module>
+    main()
+  File "/Users/pablomontijo/Control/robotics/orientation/cli.py", line 411, in main
+    OrientationCLI().run(argv)
+  File "/Users/pablomontijo/Control/robotics/orientation/cli.py", line 403, in run
+    cmd.run(args, self.ctx)
+  File "/Users/pablomontijo/Control/robotics/orientation/cli.py", line 172, in run
+    aa = AxisAngle.from_matrix(ctx.mat9(args.matrix))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/pablomontijo/Control/robotics/orientation/core.py", line 136, in from_matrix
+    u = _unit(w + 1e-16)  # avoid zero divide; direction arbitrary if zero
+        ^^^^^^^^^^^^^^^^
+  File "/Users/pablomontijo/Control/robotics/orientation/core.py", line 56, in _unit
+    raise ValueError("Zero-length vector cannot be normalized.")
+ValueError: Zero-length vector cannot be normalized.
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli euler-to-matrix --angles 0.3 0.2 0.1 --order ZYX
+[[ 0.936293 -0.289629  0.198669]
+ [ 0.312992  0.944702 -0.097843]
+ [-0.159345  0.153792  0.97517 ]]
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli euler-to-matrix --angles 10 5 2 --order XYZ --deg --save R_eul.csv
+[[ 0.995588 -0.019244  0.09184 ]
+ [ 0.034767  0.984736 -0.170547]
+ [-0.087156  0.172987  0.98106 ]]
+Saved CSV -> /Users/pablomontijo/Control/robotics/orientation/out/R_eul.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli matrix-to-euler --matrix 0.936293 0.289629 -0.198669 -0.275096 0.957826 0.077458 0.218351 -0.000000 0.975870 --order ZYX
+-0.2981396859623946 -0.20541948990264167 -0.0719410518146086
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli matrix-to-euler --matrix 1 0 0 0 0 -1 0 1 0 --order ZXZ --deg
+1.253776534186286e-13 90.00000000000001 1.2535571764650444e-13
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli expmap --omega 0.2 0.0 0.0 --save R_exp.csv
+[[ 1.        0.        0.      ]
+ [ 0.        0.980067 -0.198669]
+ [ 0.        0.198669  0.980067]]
+Saved CSV -> /Users/pablomontijo/Control/robotics/orientation/out/R_exp.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli random-so3 --n 5
+{
+  "rotations": [
+    [
+      [
+        -0.12453535809199212,
+        0.7621926574241027,
+        -0.6352584494154193
+      ],
+      [
+        -0.9871806444413153,
+        -0.030764659024582697,
+        0.15661389145133497
+      ],
+      [
+        0.09982644852607257,
+        0.6466188125347768,
+        0.7562531265725692
+      ]
+    ],
+    [
+      [
+        0.6279115197033338,
+        0.21787808282333854,
+        0.7471654866554505
+      ],
+      [
+        -0.03292351674045382,
+        0.966592269055181,
+        -0.2541956479725755
+      ],
+      [
+        -0.7775880435483115,
+        0.13501306021264353,
+        0.6141077333031448
+      ]
+    ],
+    [
+      [
+        0.09325830058900753,
+        -0.9880326702562339,
+        -0.12285899184669831
+      ],
+      [
+        -0.263941560092862,
+        0.09444830598068855,
+        -0.959903313023309
+      ],
+      [
+        0.960019657208641,
+        0.1219465456817654,
+        -0.25197479590087707
+      ]
+    ],
+    [
+      [
+        -0.9000971277207512,
+        -0.027403920893595952,
+        -0.43482661577749715
+      ],
+      [
+        0.3893799165008835,
+        -0.49835326835563026,
+        -0.7746142914670666
+      ],
+      [
+        -0.1954697963743213,
+        -0.8665408501847552,
+        0.4592368818664969
+      ]
+    ],
+    [
+      [
+        0.11770421784808094,
+        0.9760445782582251,
+        0.18298278157656087
+      ],
+      [
+        0.14307219753148095,
+        0.16567351779544526,
+        -0.9757472171596471
+      ],
+      [
+        -0.9826881821790088,
+        0.14102931168379917,
+        -0.12014437086983887
+      ]
+    ]
+  ]
+}
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli random-so3 --n 100 --out random_100.json
+Wrote 100 rotations -> /Users/pablomontijo/Control/robotics/orientation/out/random_100.json
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli diagram
+Wrote diagram files:
+ - /Users/pablomontijo/Control/robotics/orientation/out/class_diagram.dot
+ - /Users/pablomontijo/Control/robotics/orientation/out/class_diagram.mmd
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli diagram --out ./orientation/out
+Wrote diagram files:
+ - orientation/out/class_diagram.dot
+ - orientation/out/class_diagram.mmd
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli batch --in jobs.json --out results.json
+Wrote batch results -> /Users/pablomontijo/Control/robotics/orientation/out/results.json
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli euler-to-matrix --angles 30 15 -10 --order ZYX --deg --save demo_rpy.csv
+[[ 0.836516 -0.482963  0.258819]
+ [ 0.453482  0.87534   0.167731]
+ [-0.307563 -0.02294   0.951251]]
+Saved CSV -> /Users/pablomontijo/Control/robotics/orientation/out/demo_rpy.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli compose-axis --phi1 0.25 --axis1 1 0 0 --phi2 0.5 --axis2 0 0 1 --save R_comp.csv
+[[ 0.877583 -0.464521  0.118612]
+ [ 0.479426  0.850301 -0.217117]
+ [ 0.        0.247404  0.968912]]
+Saved CSV -> /Users/pablomontijo/Control/robotics/orientation/out/R_comp.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli to-quat --matrix $(tr '\n' ' ' < orientation/out/R_comp.csv)
+usage: orientation to-quat [-h] --matrix MATRIX MATRIX MATRIX MATRIX MATRIX
+                           MATRIX MATRIX MATRIX MATRIX
+orientation to-quat: error: argument --matrix: expected 9 arguments
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli rodrigues-to-matrix --w 0.05 0.1 -0.02 --save Rw.csv
+[[ 0.979465  0.049363  0.195478]
+ [-0.029618  0.994274 -0.102675]
+ [-0.199427  0.094777  0.975318]]
+Saved CSV -> /Users/pablomontijo/Control/robotics/orientation/out/Rw.csv
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli matrix-to-rodrigues --matrix $(tr '\n' ' ' < orientation/out/Rw.csv)
+usage: orientation matrix-to-rodrigues [-h] --matrix MATRIX MATRIX MATRIX
+                                       MATRIX MATRIX MATRIX MATRIX MATRIX
+                                       MATRIX
+orientation matrix-to-rodrigues: error: argument --matrix: expected 9 arguments
+(.venv) ➜  robotics git:(develop) ✗
+
+Please analyze the logs thoroughly and assess what went wrong.
+
+///
+
+///
+
+///
+
+I do not want to mess up the from_matrix method. Please generate the entire upgraded from_matrix method.
+
+here is the unmodified current method:
+
+    # Robust matrix → axis-angle using Eqs. (3.10)-(3.11) and trace relation.
+    @staticmethod
+    def from_matrix(R: np.ndarray) -> "AxisAngle":
+        R = np.asarray(R, dtype=float).reshape(3, 3)
+        # Ensure orthogonal (help numerical stability)
+        R = _project_to_so3(R)
+        tr = float(np.trace(R))
+        # angle from trace: tr = 1 + 2 cos φ
+        cos_phi = np.clip(0.5 * (tr - 1.0), -1.0, 1.0)
+        phi = float(np.arccos(cos_phi))
+
+        if phi < 1e-8:
+            # Very small angle: use first-order approximation of skew
+            # û~ ≈ (R - R^T) / (2 sin φ) → when φ→0, (R - R^T)/2
+            w = np.array([R[2, 1] - R[1, 2],
+                          R[0, 2] - R[2, 0],
+                          R[1, 0] - R[0, 1]]) / 2.0
+            u = _unit(w + 1e-16)  # avoid zero divide; direction arbitrary if zero
+            return AxisAngle(phi=0.0, u=u)
+
+        if abs(PI - phi) < 1e-6:
+            # Near π: diagonal elements determine axis (stable branch)
+            A = (R + np.eye(3)) / 2.0
+            u = np.sqrt(np.maximum(np.diag(A), 0.0))
+            # Fix signs using off-diagonals
+            if A[0, 1] < 0:
+                u[1] = -u[1] if u[0] * u[1] != 0 else u[1]
+            if A[0, 2] < 0:
+                u[2] = -u[2] if u[0] * u[2] != 0 else u[2]
+            if _norm(u) < EPS:
+                u = np.array([1.0, 0.0, 0.0])  # fallback
+            return AxisAngle(phi=phi, u=_unit(u))
+
+        # General case (Eq. 3.10): û~ = (R - R^T) / (2 sin φ)
+        u_tilde = (R - R.T) / (2.0 * np.sin(phi))
+        u = np.array([u_tilde[2, 1], u_tilde[0, 2], u_tilde[1, 0]])
+        return AxisAngle(phi=phi, u=_unit(u))
+
+///
+
+///
+
+///
+
+the update to the from_matrix method did work.
+
+however option A to fix the two failed commands did not work:
+
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli to-quat \
+  --matrix $(tr ',\n' '  ' < orientation/out/R_comp.csv | xargs)
+usage: orientation to-quat [-h] --matrix MATRIX MATRIX MATRIX MATRIX MATRIX MATRIX MATRIX MATRIX MATRIX
+orientation to-quat: error: argument --matrix: expected 9 arguments
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli matrix-to-rodrigues \
+  --matrix $(tr ',\n' '  ' < orientation/out/Rw.csv | xargs)
+usage: orientation matrix-to-rodrigues [-h] --matrix MATRIX MATRIX MATRIX MATRIX MATRIX MATRIX MATRIX MATRIX MATRIX
+orientation matrix-to-rodrigues: error: argument --matrix: expected 9 arguments
+(.venv) ➜  robotics git:(develop) ✗
+
+///
+
+///
+
+///
+
+I mean why are we complicating ourselves with zsh parsing.
+
+if we need to read files we got the orientation/in directory, we can put anything here, yaml, json, cvs.
+
+let the app consume input files and do operations and spit out files in orientation/out directory
+
+So, please generate the entire upgraded cli.py script per the latest facts.
+
+in a separate section provide the two updated run commands, and the input file contents.
+
+here is the current cli.py:
+
+"""
+orientation.cli (OO version)
+----------------------------
+Command-line interface for the Orientation Kinematics toolkit, implemented
+with a Command pattern so each subcommand is a class.
+
+Design
+------
+- CLIContext: shared config (paths, I/O helpers) for commands.
+- BaseCommand: abstract interface for commands.
+- One class per verb (e.g., MatrixFromAxis, ComposeAxis, ToQuat, ...).
+- OrientationCLI: orchestrates argparse, registers commands, dispatches run().
+
+This file intentionally imports only the public OO API from core/utils/design/io.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable, List, Sequence, Dict, Type
+
+import numpy as np
+
+# Internal imports (OO types)
+from .core import SO3, AxisAngle, RodriguesVector, Quaternion
+from .utils import expm_so3
+from .design import generate_diagram
+from .io import OUT_DIR, IN_DIR, write_json, write_matrix_csv
+
+
+# ---------------------------------------------------------------------------
+# Shared context & helpers
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class CLIContext:
+    in_dir: Path = IN_DIR
+    out_dir: Path = OUT_DIR
+
+    @staticmethod
+    def vec3(values: Iterable[str]) -> np.ndarray:
+        v = list(map(float, values))
+        if len(v) != 3:
+            raise argparse.ArgumentTypeError("Expected 3 numbers for a 3-vector.")
+        return np.asarray(v, dtype=float)
+
+    @staticmethod
+    def mat9(values: Iterable[str]) -> np.ndarray:
+        m = list(map(float, values))
+        if len(m) != 9:
+            raise argparse.ArgumentTypeError("Expected 9 numbers for a 3x3 matrix (row-major).")
+        return np.asarray(m, dtype=float).reshape(3, 3)
+
+    def maybe_save_matrix(self, name: str | None, M: np.ndarray) -> None:
+        if not name:
+            return
+        write_matrix_csv(name, M)
+        print(f"Saved CSV -> {self.out_dir / name}")
+
+    @staticmethod
+    def print_matrix(M: np.ndarray) -> None:
+        np.set_printoptions(precision=6, suppress=True)
+        print(M)
+
+
+# ---------------------------------------------------------------------------
+# Command base
+# ---------------------------------------------------------------------------
+
+class BaseCommand(ABC):
+    """Abstract CLI command. Subclasses must implement add_arguments and run."""
+
+    name: str = ""
+    help: str = ""
+
+    @abstractmethod
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None: ...
+
+    @abstractmethod
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None: ...
+
+    # small utility for --save option reuse
+    @staticmethod
+    def add_save_option(p: argparse.ArgumentParser) -> None:
+        p.add_argument("--save", type=str, help="Save 3x3 matrix as CSV in orientation/out.")
+
+
+# ---------------------------------------------------------------------------
+# Concrete command classes
+# ---------------------------------------------------------------------------
+
+class MatrixFromAxis(BaseCommand):
+    name, help = "matrix-from-axis", "Build rotation matrix from axis-angle (φ, û)."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--axis", nargs=3, required=True, help="Unit axis vector (ux uy uz).")
+        p.add_argument("--phi", type=float, required=True, help="Angle in radians.")
+        self.add_save_option(p)
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        R = AxisAngle(args.phi, ctx.vec3(args.axis)).as_matrix()
+        ctx.print_matrix(R)
+        ctx.maybe_save_matrix(args.save, R)
+
+
+class ComposeAxis(BaseCommand):
+    name, help = "compose-axis", "Compose two axis-angle rotations (R2 * R1)."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--phi1", type=float, required=True)
+        p.add_argument("--axis1", nargs=3, required=True)
+        p.add_argument("--phi2", type=float, required=True)
+        p.add_argument("--axis2", nargs=3, required=True)
+        self.add_save_option(p)
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        R = (SO3.from_axis_angle(args.phi2, ctx.vec3(args.axis2)).R
+             @ SO3.from_axis_angle(args.phi1, ctx.vec3(args.axis1)).R)
+        ctx.print_matrix(R)
+        ctx.maybe_save_matrix(args.save, R)
+
+
+class ToQuat(BaseCommand):
+    name, help = "to-quat", "Rotation matrix → quaternion (Euler parameters e0 e1 e2 e3)."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--matrix", nargs=9, required=True, help="3x3 rotation matrix, row-major.")
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        q = Quaternion.from_matrix(ctx.mat9(args.matrix))
+        print(f"{q.e0} {q.e1} {q.e2} {q.e3}")
+
+
+class FromQuat(BaseCommand):
+    name, help = "from-quat", "Quaternion (e0 e1 e2 e3) → rotation matrix."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--quat", nargs=4, required=True)
+        self.add_save_option(p)
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        e0, e1, e2, e3 = map(float, args.quat)
+        R = Quaternion(e0, e1, e2, e3).as_matrix()
+        ctx.print_matrix(R)
+        ctx.maybe_save_matrix(args.save, R)
+
+
+class RodriguesToMatrix(BaseCommand):
+    name, help = "rodrigues-to-matrix", "Rodrigues vector w → rotation matrix."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--w", nargs=3, required=True)
+        self.add_save_option(p)
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        R = RodriguesVector(ctx.vec3(args.w)).as_matrix()
+        ctx.print_matrix(R)
+        ctx.maybe_save_matrix(args.save, R)
+
+
+class MatrixToRodrigues(BaseCommand):
+    name, help = "matrix-to-rodrigues", "Rotation matrix → Rodrigues vector w."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--matrix", nargs=9, required=True)
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        aa = AxisAngle.from_matrix(ctx.mat9(args.matrix))
+        w = aa.to_rodrigues().w
+        print(f"{w[0]} {w[1]} {w[2]}")
+
+
+class EulerToMatrix(BaseCommand):
+    name, help = "euler-to-matrix", "Euler angles → rotation matrix (axis order configurable)."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--angles", nargs=3, required=True, help="Angles (default radians).")
+        p.add_argument("--order", type=str, default="ZYX", help="Axis order, e.g. ZYX or XYZ.")
+        p.add_argument("--deg", action="store_true", help="Interpret input angles as degrees.")
+        self.add_save_option(p)
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        ang = np.asarray(list(map(float, args.angles)), dtype=float)
+        if args.deg:
+            ang = np.deg2rad(ang)
+        axes = {"X": np.array([1.0, 0.0, 0.0]),
+                "Y": np.array([0.0, 1.0, 0.0]),
+                "Z": np.array([0.0, 0.0, 1.0])}
+        R = np.eye(3)
+        for a, k in zip(ang, args.order.upper()):
+            R = SO3.from_axis_angle(a, axes[k]).R @ R
+        ctx.print_matrix(R)
+        ctx.maybe_save_matrix(args.save, R)
+
+
+class MatrixToEuler(BaseCommand):
+    name, help = "matrix-to-euler", "Rotation matrix → Euler angles (solve for given order)."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--matrix", nargs=9, required=True)
+        p.add_argument("--order", type=str, default="ZYX")
+        p.add_argument("--deg", action="store_true", help="Print angles in degrees.")
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        # numerical solve: minimize ||R(angles) - R_target||_F
+        Rtarget = ctx.mat9(args.matrix)
+        order = args.order.upper()
+        axes = {"X": np.array([1.0, 0.0, 0.0]),
+                "Y": np.array([0.0, 1.0, 0.0]),
+                "Z": np.array([0.0, 0.0, 1.0])}
+
+        def build(a: Sequence[float]) -> np.ndarray:
+            Rb = np.eye(3)
+            for ang, k in zip(a, order):
+                Rb = SO3.from_axis_angle(ang, axes[k]).R @ Rb
+            return Rb
+
+        x = np.zeros(3)
+        for _ in range(60):
+            Rb = build(x)
+            r = (Rb - Rtarget).ravel()
+            if np.linalg.norm(r) < 1e-12:
+                break
+            J = np.zeros((9, 3))
+            eps = 1e-6
+            for i in range(3):
+                dx = x.copy(); dx[i] += eps
+                J[:, i] = (build(dx) - Rb).ravel() / eps
+            step, *_ = np.linalg.lstsq(J, -r, rcond=None)
+            x += step
+            if np.linalg.norm(step) < 1e-10:
+                break
+
+        ang = np.rad2deg(x) if args.deg else x
+        print(f"{ang[0]} {ang[1]} {ang[2]}")
+
+
+class ExpMap(BaseCommand):
+    name, help = "expmap", "Exponential map: exp(omega^) → rotation matrix."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--omega", nargs=3, required=True, help="Rotation vector (axis*angle).")
+        self.add_save_option(p)
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        R = expm_so3(ctx.vec3(args.omega))
+        ctx.print_matrix(R)
+        ctx.maybe_save_matrix(args.save, R)
+
+
+class RandomSO3(BaseCommand):
+    name, help = "random-so3", "Generate N random SO(3) rotations (uniform)."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--n", type=int, default=1)
+        p.add_argument("--out", type=str, help="Write JSON to orientation/out/<out>.")
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        n = int(args.n)
+        rots = []
+        for _ in range(n):
+            # Shoemake method (uniform on S^3 → SO(3))
+            u1, u2, u3 = np.random.rand(3)
+            q = Quaternion(
+                np.sqrt(1 - u1) * np.cos(2 * np.pi * u2),
+                np.sqrt(1 - u1) * np.sin(2 * np.pi * u2),
+                np.sqrt(u1) * np.cos(2 * np.pi * u3),
+                np.sqrt(u1) * np.sin(2 * np.pi * u3),
+            )
+            rots.append(q.as_matrix().tolist())
+        payload = {"rotations": rots}
+        if args.out:
+            write_json(args.out, payload)
+            print(f"Wrote {n} rotations -> {ctx.out_dir / args.out}")
+        else:
+            print(json.dumps(payload, indent=2))
+
+
+class Diagram(BaseCommand):
+    name, help = "diagram", "Generate class diagrams (Graphviz .dot and Mermaid .mmd)."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--out", type=str, default=str(OUT_DIR),
+                       help="Output directory (default orientation/out).")
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        dot, mmd = generate_diagram(Path(args.out))
+        print(f"Wrote diagram files:\n - {dot}\n - {mmd}")
+
+
+class Batch(BaseCommand):
+    name, help = "batch", "Run a JSON batch of operations from orientation/in."
+
+    def add_arguments(self, p: argparse.ArgumentParser) -> None:
+        p.add_argument("--in", dest="infile", required=True, help="Input JSON in orientation/in/")
+        p.add_argument("--out", dest="outfile", required=True, help="Output JSON in orientation/out/")
+
+    def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
+        jobs = json.loads((ctx.in_dir / args.infile).read_text())
+        results: List[Dict] = []
+        # A thin internal dispatcher that leverages our OO classes
+        dispatch: Dict[str, BaseCommand] = {
+            MatrixFromAxis.name: MatrixFromAxis(),
+            ComposeAxis.name: ComposeAxis(),
+            ToQuat.name: ToQuat(),
+            FromQuat.name: FromQuat(),
+            RodriguesToMatrix.name: RodriguesToMatrix(),
+            MatrixToRodrigues.name: MatrixToRodrigues(),
+            EulerToMatrix.name: EulerToMatrix(),
+            ExpMap.name: ExpMap(),
+        }
+        for job in jobs:
+            op = job.get("op", "")
+            params = job.get("params", {})
+            cmd = dispatch.get(op)
+            if not cmd:
+                results.append({"op": op, "error": f"unknown op '{op}'"})
+                continue
+            # Build a tiny Namespace from dict and run, capturing textual output/result
+            ns = argparse.Namespace(**params, save=None)  # avoid writing files in batch unless specified
+            try:
+                # Where possible, return structured results
+                if isinstance(cmd, (MatrixFromAxis, ComposeAxis, FromQuat,
+                                    RodriguesToMatrix, EulerToMatrix, ExpMap)):
+                    # commands that yield a matrix
+                    # replicate run() but capture the matrix
+                    if isinstance(cmd, MatrixFromAxis):
+                        R = AxisAngle(ns.phi, CLIContext.vec3(ns.axis)).as_matrix()
+                    elif isinstance(cmd, ComposeAxis):
+                        R = (SO3.from_axis_angle(ns.phi2, CLIContext.vec3(ns.axis2)).R
+                             @ SO3.from_axis_angle(ns.phi1, CLIContext.vec3(ns.axis1)).R)
+                    elif isinstance(cmd, FromQuat):
+                        R = Quaternion(*ns.quat).as_matrix()
+                    elif isinstance(cmd, RodriguesToMatrix):
+                        R = RodriguesVector(CLIContext.vec3(ns.w)).as_matrix()
+                    elif isinstance(cmd, EulerToMatrix):
+                        ang = np.asarray(ns.angles, dtype=float)
+                        if getattr(ns, "deg", False):
+                            ang = np.deg2rad(ang)
+                        axes = {"X": np.array([1.0, 0.0, 0.0]),
+                                "Y": np.array([0.0, 1.0, 0.0]),
+                                "Z": np.array([0.0, 0.0, 1.0])}
+                        R = np.eye(3)
+                        for a, k in zip(ang, ns.order.upper()):
+                            R = SO3.from_axis_angle(a, axes[k]).R @ R
+                    else:  # ExpMap
+                        R = expm_so3(CLIContext.vec3(ns.omega))
+                    results.append({"op": op, "result": R.tolist()})
+                elif isinstance(cmd, ToQuat):
+                    q = Quaternion.from_matrix(np.asarray(ns.matrix, dtype=float).reshape(3, 3))
+                    results.append({"op": op, "result": [q.e0, q.e1, q.e2, q.e3]})
+                elif isinstance(cmd, MatrixToRodrigues):
+                    aa = AxisAngle.from_matrix(np.asarray(ns.matrix, dtype=float).reshape(3, 3))
+                    results.append({"op": op, "result": aa.to_rodrigues().w.tolist()})
+                else:
+                    cmd.run(ns, ctx)  # fallback
+            except Exception as exc:  # keep batch resilient
+                results.append({"op": op, "error": f"{type(exc).__name__}: {exc}"})
+
+        write_json(args.outfile, {"results": results})
+        print(f"Wrote batch results -> {ctx.out_dir / args.outfile}")
+
+
+# ---------------------------------------------------------------------------
+# CLI Orchestrator
+# ---------------------------------------------------------------------------
+
+class OrientationCLI:
+    """Builds the argparse tree and dispatches to command classes."""
+
+    def __init__(self, ctx: CLIContext | None = None):
+        self.ctx = ctx or CLIContext()
+        self.parser = argparse.ArgumentParser(
+            prog="orientation",
+            description="Orientation Kinematics CLI (OO)"
+        )
+        self.subparsers = self.parser.add_subparsers(dest="cmd", required=True)
+        self._commands: Dict[str, BaseCommand] = {}
+        self._register_default_commands()
+
+    def _register(self, cmd: BaseCommand) -> None:
+        sp = self.subparsers.add_parser(cmd.name, help=cmd.help)
+        cmd.add_arguments(sp)
+        sp.set_defaults(_cmd=cmd)
+        self._commands[cmd.name] = cmd
+
+    def _register_default_commands(self) -> None:
+        for cls in (
+            MatrixFromAxis, ComposeAxis, ToQuat, FromQuat,
+            RodriguesToMatrix, MatrixToRodrigues,
+            EulerToMatrix, MatrixToEuler,
+            ExpMap, RandomSO3, Diagram, Batch
+        ):
+            self._register(cls())
+
+    def run(self, argv: List[str] | None = None) -> None:
+        args = self.parser.parse_args(argv)
+        cmd: BaseCommand = getattr(args, "_cmd")
+        cmd.run(args, self.ctx)
+
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
+def main(argv: List[str] | None = None) -> None:
+    OrientationCLI().run(argv)
+
+
+if __name__ == "__main__":
+    main()
+
