@@ -4,46 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the rotation kinematics app">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/applied/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/applied/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/motion/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/motion/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pytest.ini" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/robot/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/robot/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation/in/job.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation/rot_closedform.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation/tests/conftest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation/tests/test_rotation_app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/time/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/time/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/velocity/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/velocity/tests/__init__.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="updated .gitignore">
+      <change afterPath="$PROJECT_DIR$/intro/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intro/tests/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/arch_ascii.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/tools/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/tools/arch.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/tools/ast_callgraph.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/tools/deps_to_mermaid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rotation/prompts/rotation_kinematics.txt" beforeDir="false" afterPath="$PROJECT_DIR$/rotation/prompts/rotation_kinematics.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rotation/rot_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/rotation/rot_cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rotation/rot_io.py" beforeDir="false" afterPath="$PROJECT_DIR$/rotation/rot_io.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rotation/rot_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/rotation/rot_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +94,8 @@
       <workItem from="1758068700995" duration="388000" />
       <workItem from="1758069115398" duration="387000" />
       <workItem from="1758077477819" duration="4131000" />
-      <workItem from="1758127377996" duration="12878000" />
+      <workItem from="1758127377996" duration="13354000" />
+      <workItem from="1758151328686" duration="4221000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -181,7 +153,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758133959620</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="implemented pytests in the rotation module">
+      <option name="closed" value="true" />
+      <created>1758150288504</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1758150288504</updated>
+    </task>
+    <task id="LOCAL-00009" summary="updated .gitignore">
+      <option name="closed" value="true" />
+      <created>1758150620160</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1758150620160</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -208,6 +196,8 @@
     <MESSAGE value="implemented kinematics.py" />
     <MESSAGE value="updated kinematics.py&#10;added vector functions" />
     <MESSAGE value="implemented the rotation kinematics app" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented the rotation kinematics app" />
+    <MESSAGE value="implemented pytests in the rotation module" />
+    <MESSAGE value="updated .gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated .gitignore" />
   </component>
 </project>

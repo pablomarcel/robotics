@@ -770,6 +770,194 @@ basically this is a philosophical question that has application in the broader s
 
 ///
 
+arch.json was not generated, so the mermaid script did not work
+
+pydeps rotation \
+  --only rotation \
+  --noshow --no-output \
+  --deps-output rotation/out/arch.json
+
+
+///
+
+i am not satisfied with these architecture scripts and run commands.
+
+i was expecting that a library would exist that would be smart enough to learn the relationships between functions in all of our scripts. that is why i understand by architecture. not just file structure. the file structure i can see it in pycharm, there is no intelligence in that.
+i was expecting that a tool would scan the functions know what they return to where and their relationships to other scripts and stuff.
+kind of a class diagram, but since we are using functional programming i was expecting something similar.
+
+basically i need a class diagram, for my functional programming driven app to brag about at the bar and library.
+
+///
+
+rotation/out does exist
+
+(.venv) ➜  robotics git:(develop) ✗ pydeps rotation \
+  --only rotation \
+  --noshow --no-output \
+  --show-deps \
+  --deps-output rotation/out/arch.json
+
+        ERROR: [Errno 2] No such file or directory: 'rotation/out/arch.json'
+        (Did you forget to include an __init__.py?)
+
+please do not use deprecated api's. here are the library versions i am using:
+
+ace_tools==0.0
+alabaster==1.0.0
+altair==4.2.0
+ansitable==0.11.4
+astroid==3.3.11
+async-generator==1.10
+attrs==22.1.0
+babel==2.17.0
+black==25.1.0
+blinker==1.5
+bokeh==2.4.3
+boto==2.49.0
+cachetools==5.2.0
+certifi==2022.9.24
+cfgv==3.4.0
+charset-normalizer==2.1.1
+choreographer==1.0.9
+click==8.1.3
+code2flow==2.5.1
+colored==2.3.1
+commonmark==0.9.1
+contourpy==1.0.6
+control==0.10.2
+coverage==7.10.6
+cycler==0.11.0
+decorator==5.1.1
+dill==0.4.0
+distlib==0.4.0
+docutils==0.21.2
+dot==0.3.0
+entrypoints==0.4
+et_xmlfile==2.0.0
+execnet==2.1.1
+filelock==3.19.1
+fonttools==4.38.0
+geopandas==1.1.1
+gitdb==4.0.10
+GitPython==3.1.29
+graphviz==0.20.1
+h11==0.14.0
+identify==2.6.14
+idna==3.4
+imagesize==1.4.1
+importlib-metadata==5.1.0
+iniconfig==1.1.1
+isort==6.0.1
+Jinja2==3.1.2
+jsonschema==4.17.3
+kaleido==1.0.0
+kiwisolver==1.4.4
+liegroups==0.11
+logistro==1.1.0
+lxml==6.0.1
+MarkupSafe==2.1.1
+matplotlib==3.10.3
+mccabe==0.7.0
+mpmath==1.3.0
+mypy_extensions==1.1.0
+networkx==3.5
+nodeenv==1.9.1
+numpy==2.3.2
+numpy-financial==1.0.0
+numpy-quaternion==2024.0.12
+openpyxl==3.1.5
+orjson==3.11.2
+outcome==1.2.0
+packaging==25.0
+pandas==2.3.1
+pathspec==0.12.1
+Pillow==9.3.0
+platformdirs==4.4.0
+plotly==5.11.0
+pluggy==1.6.0
+pre_commit==4.3.0
+protobuf==3.20.3
+pyan3==1.2.0
+pyarrow==10.0.1
+pydeck==0.8.0
+pydeps==3.0.1
+pyglet==1.5.31
+Pygments==2.19.2
+pylint==3.3.8
+Pympler==1.0.1
+pyogrio==0.11.1
+pyparsing==3.0.9
+pyproj==3.7.1
+pyquaternion==0.9.9
+pyrsistent==0.19.2
+PySocks==1.7.1
+pytest==7.2.0
+pytest-cov==7.0.0
+pytest-sugar==1.1.1
+pytest-xdist==3.8.0
+python-dateutil==2.8.2
+pytransform3d==3.14.2
+pytz==2022.6
+pytz-deprecation-shim==0.1.0.post0
+PyYAML==6.0
+Quaternion==3.5.2.post4
+requests==2.32.5
+rich==12.6.0
+roman-numerals-py==3.1.0
+scipy==1.15.3
+selenium==4.7.2
+semver==2.13.0
+shapely==2.1.1
+simplejson==3.20.1
+six==1.16.0
+smmap==5.0.0
+sniffio==1.3.0
+snowballstemmer==3.0.1
+sophuspy==1.2.0
+sortedcontainers==2.4.0
+spatialmath-python==1.1.14
+Sphinx==8.2.3
+sphinxcontrib-applehelp==2.0.0
+sphinxcontrib-devhelp==2.0.0
+sphinxcontrib-htmlhelp==2.1.0
+sphinxcontrib-jsmath==1.0.1
+sphinxcontrib-qthelp==2.0.0
+sphinxcontrib-serializinghtml==2.0.0
+stdlib-list==0.11.1
+streamlit==1.15.2
+sympy==1.13.3
+tabulate==0.9.0
+tenacity==8.1.0
+termcolor==3.1.0
+toml==0.10.2
+tomlkit==0.13.3
+toolz==0.12.0
+tornado==6.2
+transforms3d==0.4.2
+trimesh==4.6.13
+trio==0.22.0
+trio-websocket==0.9.2
+typing_extensions==4.4.0
+tzdata==2022.7
+tzlocal==4.2
+urllib3==1.26.13
+validators==0.20.0
+virtualenv==20.34.0
+watchdog==2.2.0
+wsproto==1.2.0
+xyzservices==2022.9.0
+z3==0.2.0
+zipp==3.11.0
+
+///
+
+///
+
+
+
+///
+
 so, we haven yet set the directories as modules right?
 
 (.venv) ➜  rotation git:(develop) ✗ python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
@@ -3854,3 +4042,668 @@ cool beans.
 also, i need a .gitignore for my project.
 
 ///
+
+there is stuff that works, there is stuff that breaks. arch.json was generated:
+
+{
+    "rotation": {
+        "bacon": 1,
+        "imported_by": [
+            "rotation.rot_cli",
+            "rotation.tests.test_rotation_app"
+        ],
+        "name": "rotation",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/__init__.py"
+    },
+    "rotation.arch_ascii": {
+        "bacon": 1,
+        "name": "rotation.arch_ascii",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/arch_ascii.py"
+    },
+    "rotation.rot_cli": {
+        "bacon": 1,
+        "imports": [
+            "rotation",
+            "rotation.rot_closedform",
+            "rotation.rot_core",
+            "rotation.rot_design",
+            "rotation.rot_io",
+            "rotation.rot_utils"
+        ],
+        "name": "rotation.rot_cli",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/rot_cli.py"
+    },
+    "rotation.rot_closedform": {
+        "bacon": 1,
+        "imported_by": [
+            "rotation.rot_cli",
+            "rotation.tests.test_rotation_app"
+        ],
+        "name": "rotation.rot_closedform",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/rot_closedform.py"
+    },
+    "rotation.rot_core": {
+        "bacon": 1,
+        "imported_by": [
+            "rotation.rot_cli",
+            "rotation.tests.test_rotation_app"
+        ],
+        "imports": [
+            "rotation.rot_utils"
+        ],
+        "name": "rotation.rot_core",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/rot_core.py"
+    },
+    "rotation.rot_design": {
+        "bacon": 1,
+        "imported_by": [
+            "rotation.rot_cli"
+        ],
+        "name": "rotation.rot_design",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/rot_design.py"
+    },
+    "rotation.rot_io": {
+        "bacon": 1,
+        "imported_by": [
+            "rotation.rot_cli"
+        ],
+        "imports": [
+            "rotation.rot_utils"
+        ],
+        "name": "rotation.rot_io",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/rot_io.py"
+    },
+    "rotation.rot_utils": {
+        "bacon": 1,
+        "imported_by": [
+            "rotation.rot_cli",
+            "rotation.rot_core",
+            "rotation.rot_io"
+        ],
+        "name": "rotation.rot_utils",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/rot_utils.py"
+    },
+    "rotation.tests": {
+        "bacon": 1,
+        "name": "rotation.tests",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/tests/__init__.py"
+    },
+    "rotation.tests.conftest": {
+        "bacon": 1,
+        "name": "rotation.tests.conftest",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/tests/conftest.py"
+    },
+    "rotation.tests.test_rotation_app": {
+        "bacon": 1,
+        "imports": [
+            "rotation",
+            "rotation.rot_closedform",
+            "rotation.rot_core"
+        ],
+        "name": "rotation.tests.test_rotation_app",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/tests/test_rotation_app.py"
+    },
+    "rotation.tools": {
+        "bacon": 1,
+        "name": "rotation.tools",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/tools/__init__.py"
+    },
+    "rotation.tools.arch": {
+        "bacon": 1,
+        "name": "rotation.tools.arch",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/tools/arch.py"
+    },
+    "rotation.tools.ast_callgraph": {
+        "bacon": 1,
+        "name": "rotation.tools.ast_callgraph",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/tools/ast_callgraph.py"
+    },
+    "rotation.tools.deps_to_mermaid": {
+        "bacon": 1,
+        "name": "rotation.tools.deps_to_mermaid",
+        "path": "/Users/pablomontijo/Control/robotics/rotation/tools/deps_to_mermaid.py"
+    }
+}
+
+callgraph_ast.mmd was generated:
+
+flowchart LR
+  arch___module__["arch.__module__"] --> arch_main["arch.main"]
+  arch_build_graph["arch.build_graph"] --> arch_find_py_files["arch.find_py_files"]
+  arch_build_graph["arch.build_graph"] --> arch_module_name_from_path["arch.module_name_from_path"]
+  arch_build_graph["arch.build_graph"] --> arch_scan_imports["arch.scan_imports"]
+  arch_build_graph["arch.build_graph"] --> arch_set["arch.set"]
+  arch_build_graph["arch.build_graph"] --> arch_sorted["arch.sorted"]
+  arch_build_graph["arch.build_graph"] --> edges_append["edges.append"]
+  arch_build_graph["arch.build_graph"] --> imp_startswith["imp.startswith"]
+  arch_build_graph["arch.build_graph"] --> mods_append["mods.append"]
+  arch_find_py_files["arch.find_py_files"] --> fn_endswith["fn.endswith"]
+  arch_find_py_files["arch.find_py_files"] --> os_path_join["os.path.join"]
+  arch_find_py_files["arch.find_py_files"] --> os_walk["os.walk"]
+  arch_main["arch.main"] --> ap_add_argument["ap.add_argument"]
+  arch_main["arch.main"] --> ap_parse_args["ap.parse_args"]
+  arch_main["arch.main"] --> arch_build_graph["arch.build_graph"]
+  arch_main["arch.main"] --> arch_open["arch.open"]
+  arch_main["arch.main"] --> arch_print["arch.print"]
+  arch_main["arch.main"] --> arch_to_ascii["arch.to_ascii"]
+  arch_main["arch.main"] --> arch_to_mermaid["arch.to_mermaid"]
+  arch_main["arch.main"] --> argparse_ArgumentParser["argparse.ArgumentParser"]
+  arch_main["arch.main"] --> f_write["f.write"]
+  arch_main["arch.main"] --> os_makedirs["os.makedirs"]
+  arch_main["arch.main"] --> os_path_dirname["os.path.dirname"]
+  arch_module_name_from_path["arch.module_name_from_path"] --> arch_<dynamic>["arch.<dynamic>"]
+  arch_module_name_from_path["arch.module_name_from_path"] --> mod_endswith["mod.endswith"]
+  arch_module_name_from_path["arch.module_name_from_path"] --> mod_replace["mod.replace"]
+  arch_module_name_from_path["arch.module_name_from_path"] --> os_path_relpath["os.path.relpath"]
+  arch_module_name_from_path["arch.module_name_from_path"] --> rel_startswith["rel.startswith"]
+  arch_scan_imports["arch.scan_imports"] --> arch_isinstance["arch.isinstance"]
+  arch_scan_imports["arch.scan_imports"] --> arch_open["arch.open"]
+  arch_scan_imports["arch.scan_imports"] --> arch_set["arch.set"]
+  arch_scan_imports["arch.scan_imports"] --> ast_parse["ast.parse"]
+  arch_scan_imports["arch.scan_imports"] --> ast_walk["ast.walk"]
+  arch_scan_imports["arch.scan_imports"] --> f_read["f.read"]
+  arch_scan_imports["arch.scan_imports"] --> imports_add["imports.add"]
+  arch_to_ascii["arch.to_ascii"] --> arch_<dynamic>["arch.<dynamic>"]
+  arch_to_ascii["arch.to_ascii"] --> arch_short["arch.short"]
+  arch_to_ascii["arch.to_ascii"] --> arch_sorted["arch.sorted"]
+  arch_to_ascii["arch.to_ascii"] --> out_append["out.append"]
+  arch_to_ascii["arch.to_ascii"] --> s_replace["s.replace"]
+  arch_to_mermaid["arch.to_mermaid"] --> arch_<dynamic>["arch.<dynamic>"]
+  arch_to_mermaid["arch.to_mermaid"] --> arch_short["arch.short"]
+  arch_to_mermaid["arch.to_mermaid"] --> lines_append["lines.append"]
+  arch_to_mermaid["arch.to_mermaid"] --> s_replace["s.replace"]
+  arch_ascii___module__["arch_ascii.__module__"] --> arch_ascii_main["arch_ascii.main"]
+  arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"] --> arch_ascii_<dynamic>["arch_ascii.<dynamic>"]
+  arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"] --> arch_ascii_isinstance["arch_ascii.isinstance"]
+  arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"] --> arch_ascii_set["arch_ascii.set"]
+  arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"] --> ast_parse["ast.parse"]
+  arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"] --> ast_walk["ast.walk"]
+  arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"] --> mod_startswith["mod.startswith"]
+  arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"] --> n_name_startswith["n.name.startswith"]
+  arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"] --> pathlib_Path["pathlib.Path"]
+  arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"] --> used_add["used.add"]
+  arch_ascii_main["arch_ascii.main"] --> arch_ascii_<dynamic>["arch_ascii.<dynamic>"]
+  arch_ascii_main["arch_ascii.main"] --> arch_ascii_defaultdict["arch_ascii.defaultdict"]
+  arch_ascii_main["arch_ascii.main"] --> arch_ascii_enumerate["arch_ascii.enumerate"]
+  arch_ascii_main["arch_ascii.main"] --> arch_ascii_find_internal_imports["arch_ascii.find_internal_imports"]
+  arch_ascii_main["arch_ascii.main"] --> arch_ascii_len["arch_ascii.len"]
+  arch_ascii_main["arch_ascii.main"] --> arch_ascii_print["arch_ascii.print"]
+  arch_ascii_main["arch_ascii.main"] --> arch_ascii_sorted["arch_ascii.sorted"]
+  arch_ascii_main["arch_ascii.main"] --> modules_append["modules.append"]
+  arch_ascii_main["arch_ascii.main"] --> pathlib_Path["pathlib.Path"]
+  ast_callgraph___module__["ast_callgraph.__module__"] --> ast_callgraph_main["ast_callgraph.main"]
+  ast_callgraph_find_calls_in_file["ast_callgraph.find_calls_in_file"] --> ast_parse["ast.parse"]
+  ast_callgraph_find_calls_in_file["ast_callgraph.find_calls_in_file"] --> ast_callgraph_<dynamic>["ast_callgraph.<dynamic>"]
+  ast_callgraph_find_calls_in_file["ast_callgraph.find_calls_in_file"] --> ast_callgraph_V["ast_callgraph.V"]
+  ast_callgraph_find_calls_in_file["ast_callgraph.find_calls_in_file"] --> ast_callgraph_set["ast_callgraph.set"]
+  ast_callgraph_find_calls_in_file["ast_callgraph.find_calls_in_file"] --> pathlib_Path["pathlib.Path"]
+  ast_callgraph_main["ast_callgraph.main"] --> ast_callgraph_<dynamic>["ast_callgraph.<dynamic>"]
+  ast_callgraph_main["ast_callgraph.main"] --> ast_callgraph_any["ast_callgraph.any"]
+  ast_callgraph_main["ast_callgraph.main"] --> ast_callgraph_find_calls_in_file["ast_callgraph.find_calls_in_file"]
+  ast_callgraph_main["ast_callgraph.main"] --> ast_callgraph_len["ast_callgraph.len"]
+  ast_callgraph_main["ast_callgraph.main"] --> ast_callgraph_print["ast_callgraph.print"]
+  ast_callgraph_main["ast_callgraph.main"] --> ast_callgraph_set["ast_callgraph.set"]
+  ast_callgraph_main["ast_callgraph.main"] --> ast_callgraph_str["ast_callgraph.str"]
+  ast_callgraph_main["ast_callgraph.main"] --> ast_callgraph_to_mermaid["ast_callgraph.to_mermaid"]
+  ast_callgraph_main["ast_callgraph.main"] --> files_append["files.append"]
+  ast_callgraph_main["ast_callgraph.main"] --> os_path_basename["os.path.basename"]
+  ast_callgraph_main["ast_callgraph.main"] --> pathlib_Path["pathlib.Path"]
+  ast_callgraph_main["ast_callgraph.main"] --> pth_is_dir["pth.is_dir"]
+  ast_callgraph_main["ast_callgraph.main"] --> pth_rglob["pth.rglob"]
+  ast_callgraph_main["ast_callgraph.main"] --> sys_exit["sys.exit"]
+  ast_callgraph_to_mermaid["ast_callgraph.to_mermaid"] --> a_replace["a.replace"]
+  ast_callgraph_to_mermaid["ast_callgraph.to_mermaid"] --> ast_callgraph_<dynamic>["ast_callgraph.<dynamic>"]
+  ast_callgraph_to_mermaid["ast_callgraph.to_mermaid"] --> ast_callgraph_sorted["ast_callgraph.sorted"]
+  ast_callgraph_to_mermaid["ast_callgraph.to_mermaid"] --> b_replace["b.replace"]
+  ast_callgraph_to_mermaid["ast_callgraph.to_mermaid"] --> lines_append["lines.append"]
+  ast_callgraph_visit_AsyncFunctionDef["ast_callgraph.visit_AsyncFunctionDef"] --> ast_callgraph_visit_FunctionDef["ast_callgraph.visit_FunctionDef"]
+  ast_callgraph_visit_Call["ast_callgraph.visit_Call"] --> ast_callgraph_<dynamic>["ast_callgraph.<dynamic>"]
+  ast_callgraph_visit_Call["ast_callgraph.visit_Call"] --> ast_callgraph_generic_visit["ast_callgraph.generic_visit"]
+  ast_callgraph_visit_Call["ast_callgraph.visit_Call"] --> ast_callgraph_isinstance["ast_callgraph.isinstance"]
+  ast_callgraph_visit_Call["ast_callgraph.visit_Call"] --> edges_add["edges.add"]
+  ast_callgraph_visit_Call["ast_callgraph.visit_Call"] --> parts_append["parts.append"]
+  ast_callgraph_visit_Call["ast_callgraph.visit_Call"] --> parts_reverse["parts.reverse"]
+  ast_callgraph_visit_ClassDef["ast_callgraph.visit_ClassDef"] --> ast_callgraph_generic_visit["ast_callgraph.generic_visit"]
+  ast_callgraph_visit_ClassDef["ast_callgraph.visit_ClassDef"] --> parents_append["parents.append"]
+  ast_callgraph_visit_ClassDef["ast_callgraph.visit_ClassDef"] --> parents_pop["parents.pop"]
+  ast_callgraph_visit_FunctionDef["ast_callgraph.visit_FunctionDef"] --> ast_callgraph_generic_visit["ast_callgraph.generic_visit"]
+  ast_callgraph_visit_FunctionDef["ast_callgraph.visit_FunctionDef"] --> defs_add["defs.add"]
+  ast_callgraph_visit_FunctionDef["ast_callgraph.visit_FunctionDef"] --> parents_append["parents.append"]
+  ast_callgraph_visit_FunctionDef["ast_callgraph.visit_FunctionDef"] --> parents_pop["parents.pop"]
+  conftest___module__["conftest.__module__"] --> os_path_abspath["os.path.abspath"]
+  conftest___module__["conftest.__module__"] --> os_path_dirname["os.path.dirname"]
+  conftest___module__["conftest.__module__"] --> os_path_join["os.path.join"]
+  conftest___module__["conftest.__module__"] --> sys_path_insert["sys.path.insert"]
+  deps_to_mermaid___module__["deps_to_mermaid.__module__"] --> deps_to_mermaid_main["deps_to_mermaid.main"]
+  deps_to_mermaid_main["deps_to_mermaid.main"] --> deps_to_mermaid_<dynamic>["deps_to_mermaid.<dynamic>"]
+  deps_to_mermaid_main["deps_to_mermaid.main"] --> deps_to_mermaid_len["deps_to_mermaid.len"]
+  deps_to_mermaid_main["deps_to_mermaid.main"] --> deps_to_mermaid_print["deps_to_mermaid.print"]
+  deps_to_mermaid_main["deps_to_mermaid.main"] --> deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"]
+  deps_to_mermaid_main["deps_to_mermaid.main"] --> json_loads["json.loads"]
+  deps_to_mermaid_main["deps_to_mermaid.main"] --> pathlib_Path["pathlib.Path"]
+  deps_to_mermaid_main["deps_to_mermaid.main"] --> sys_exit["sys.exit"]
+  deps_to_mermaid_short["deps_to_mermaid.short"] --> name_replace["name.replace"]
+  deps_to_mermaid_short["deps_to_mermaid.short"] --> name_startswith["name.startswith"]
+  deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"] --> deps_to_mermaid_<dynamic>["deps_to_mermaid.<dynamic>"]
+  deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"] --> deps_to_mermaid_isinstance["deps_to_mermaid.isinstance"]
+  deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"] --> deps_to_mermaid_set["deps_to_mermaid.set"]
+  deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"] --> deps_to_mermaid_short["deps_to_mermaid.short"]
+  deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"] --> dst_startswith["dst.startswith"]
+  deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"] --> graph_items["graph.items"]
+  deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"] --> lines_append["lines.append"]
+  deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"] --> seen_add["seen.add"]
+  deps_to_mermaid_to_mermaid["deps_to_mermaid.to_mermaid"] --> src_startswith["src.startswith"]
+  rot_cli___module__["rot_cli.__module__"] --> os_path_join["os.path.join"]
+  rot_cli___module__["rot_cli.__module__"] --> rot_cli_SystemExit["rot_cli.SystemExit"]
+  rot_cli___module__["rot_cli.__module__"] --> rot_cli_cli["rot_cli.cli"]
+  rot_cli___module__["rot_cli.__module__"] --> rot_cli_ensure_dir["rot_cli.ensure_dir"]
+  rot_cli__angles_arg["rot_cli._angles_arg"] --> argparse_ArgumentTypeError["argparse.ArgumentTypeError"]
+  rot_cli__angles_arg["rot_cli._angles_arg"] --> rot_cli_len["rot_cli.len"]
+  rot_cli__angles_arg["rot_cli._angles_arg"] --> rot_cli_parse_floats["rot_cli.parse_floats"]
+  rot_cli__fmt_ndarray["rot_cli._fmt_ndarray"] --> np_array2string["np.array2string"]
+  rot_cli__print_sympy_matrix["rot_cli._print_sympy_matrix"] --> rot_cli_<dynamic>["rot_cli.<dynamic>"]
+  rot_cli__print_sympy_matrix["rot_cli._print_sympy_matrix"] --> rot_cli_print["rot_cli.print"]
+  rot_cli__print_sympy_matrix["rot_cli._print_sympy_matrix"] --> rot_cli_range["rot_cli.range"]
+  rot_cli__print_sympy_matrix["rot_cli._print_sympy_matrix"] --> rows_append["rows.append"]
+  rot_cli__print_sympy_matrix["rot_cli._print_sympy_matrix"] --> sp_simplify["sp.simplify"]
+  rot_cli__print_sympy_matrix["rot_cli._print_sympy_matrix"] --> sp_sstr["sp.sstr"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> Rm_as_matrix["Rm.as_matrix"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> Robj_as_matrix["Robj.as_matrix"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> core_align_body_x["core.align_body_x"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> core_angvel_from_rates["core.angvel_from_rates"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> core_build_matrix["core.build_matrix"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> core_passive_transform["core.passive_transform"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> core_rates_from_angvel["core.rates_from_angvel"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> core_repeat_rotation["core.repeat_rotation"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> core_save_R["core.save_R"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> core_transform_points["core.transform_points"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> np_array["np.array"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> np_eye["np.eye"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> os_path_join["os.path.join"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> rio_read_points_csv["rio.read_points_csv"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> rio_write_points_csv["rio.write_points_csv"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> rot_cli_ValueError["rot_cli.ValueError"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> rot_cli__fmt_ndarray["rot_cli._fmt_ndarray"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> rot_cli_bool["rot_cli.bool"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> rot_cli_int["rot_cli.int"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> rot_cli_print["rot_cli.print"]
+  rot_cli__run_one_task["rot_cli._run_one_task"] --> t_get["t.get"]
+  rot_cli__vec_arg["rot_cli._vec_arg"] --> argparse_ArgumentTypeError["argparse.ArgumentTypeError"]
+  rot_cli__vec_arg["rot_cli._vec_arg"] --> rot_cli_len["rot_cli.len"]
+  rot_cli__vec_arg["rot_cli._vec_arg"] --> rot_cli_parse_floats["rot_cli.parse_floats"]
+  rot_cli_cli["rot_cli.cli"] --> R_from_matrix["R.from_matrix"]
+  rot_cli_cli["rot_cli.cli"] --> Rm_as_matrix["Rm.as_matrix"]
+  rot_cli_cli["rot_cli.cli"] --> Robj_as_matrix["Robj.as_matrix"]
+  rot_cli_cli["rot_cli.cli"] --> argparse_ArgumentParser["argparse.ArgumentParser"]
+  rot_cli_cli["rot_cli.cli"] --> args_points_split["args.points.split"]
+  rot_cli_cli["rot_cli.cli"] --> cf_E_matrix["cf.E_matrix"]
+  rot_cli_cli["rot_cli.cli"] --> cf_E_matrix_rpy_zyx_body["cf.E_matrix_rpy_zyx_body"]
+  rot_cli_cli["rot_cli.cli"] --> core_align_body_x["core.align_body_x"]
+  rot_cli_cli["rot_cli.cli"] --> core_angvel_from_rates["core.angvel_from_rates"]
+  rot_cli_cli["rot_cli.cli"] --> core_build_matrix["core.build_matrix"]
+  rot_cli_cli["rot_cli.cli"] --> core_check_matrix["core.check_matrix"]
+  rot_cli_cli["rot_cli.cli"] --> core_decompose["core.decompose"]
+  rot_cli_cli["rot_cli.cli"] --> core_passive_transform["core.passive_transform"]
+  rot_cli_cli["rot_cli.cli"] --> core_rates_from_angvel["core.rates_from_angvel"]
+  rot_cli_cli["rot_cli.cli"] --> core_repeat_rotation["core.repeat_rotation"]
+  rot_cli_cli["rot_cli.cli"] --> core_save_R["core.save_R"]
+  rot_cli_cli["rot_cli.cli"] --> core_transform_points["core.transform_points"]
+  rot_cli_cli["rot_cli.cli"] --> g_add_argument["g.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> info_items["info.items"]
+  rot_cli_cli["rot_cli.cli"] --> info_pop["info.pop"]
+  rot_cli_cli["rot_cli.cli"] --> job_get["job.get"]
+  rot_cli_cli["rot_cli.cli"] --> np_eye["np.eye"]
+  rot_cli_cli["rot_cli.cli"] --> np_loadtxt["np.loadtxt"]
+  rot_cli_cli["rot_cli.cli"] --> np_vstack["np.vstack"]
+  rot_cli_cli["rot_cli.cli"] --> os_path_exists["os.path.exists"]
+  rot_cli_cli["rot_cli.cli"] --> os_path_join["os.path.join"]
+  rot_cli_cli["rot_cli.cli"] --> p_add_subparsers["p.add_subparsers"]
+  rot_cli_cli["rot_cli.cli"] --> p_error["p.error"]
+  rot_cli_cli["rot_cli.cli"] --> p_parse_args["p.parse_args"]
+  rot_cli_cli["rot_cli.cli"] --> pa_add_argument["pa.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> pb_add_argument["pb.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> pc_add_argument["pc.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> pd_add_argument["pd.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> pd_add_mutually_exclusive_group["pd.add_mutually_exclusive_group"]
+  rot_cli_cli["rot_cli.cli"] --> pe_add_argument["pe.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> pk_add_argument["pk.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> ppv_add_argument["ppv.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> pr_add_argument["pr.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> pt_add_argument["pt.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> pv_add_argument["pv.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> pvr_add_argument["pvr.add_argument"]
+  rot_cli_cli["rot_cli.cli"] --> rio_read_job["rio.read_job"]
+  rot_cli_cli["rot_cli.cli"] --> rio_read_points_csv["rio.read_points_csv"]
+  rot_cli_cli["rot_cli.cli"] --> rio_write_points_csv["rio.write_points_csv"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli_SystemExit["rot_cli.SystemExit"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli__angles_arg["rot_cli._angles_arg"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli__fmt_ndarray["rot_cli._fmt_ndarray"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli__print_sympy_matrix["rot_cli._print_sympy_matrix"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli__run_one_task["rot_cli._run_one_task"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli__vec_arg["rot_cli._vec_arg"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli_enumerate["rot_cli.enumerate"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli_isinstance["rot_cli.isinstance"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli_len["rot_cli.len"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli_parse_floats["rot_cli.parse_floats"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli_print["rot_cli.print"]
+  rot_cli_cli["rot_cli.cli"] --> rot_cli_str["rot_cli.str"]
+  rot_cli_cli["rot_cli.cli"] --> sp_add_parser["sp.add_parser"]
+  rot_cli_cli["rot_cli.cli"] --> t_get["t.get"]
+  rot_closedform_E_matrix["rot_closedform.E_matrix"] --> cols_append["cols.append"]
+  rot_closedform_E_matrix["rot_closedform.E_matrix"] --> rot_closedform_ValueError["rot_closedform.ValueError"]
+  rot_closedform_E_matrix["rot_closedform.E_matrix"] --> rot_closedform__compose_local["rot_closedform._compose_local"]
+  rot_closedform_E_matrix["rot_closedform.E_matrix"] --> rot_closedform__vee["rot_closedform._vee"]
+  rot_closedform_E_matrix["rot_closedform.E_matrix"] --> seq_lower["seq.lower"]
+  rot_closedform_E_matrix["rot_closedform.E_matrix"] --> sp_Matrix_hstack["sp.Matrix.hstack"]
+  rot_closedform_E_matrix["rot_closedform.E_matrix"] --> sp_diff["sp.diff"]
+  rot_closedform_E_matrix["rot_closedform.E_matrix"] --> sp_simplify["sp.simplify"]
+  rot_closedform_E_matrix["rot_closedform.E_matrix"] --> sp_symbols["sp.symbols"]
+  rot_closedform_E_matrix_proper["rot_closedform.E_matrix_proper"] --> rot_closedform_E_matrix["rot_closedform.E_matrix"]
+  rot_closedform_E_matrix_proper["rot_closedform.E_matrix_proper"] --> rot_closedform_ValueError["rot_closedform.ValueError"]
+  rot_closedform_E_matrix_proper["rot_closedform.E_matrix_proper"] --> seq_lower["seq.lower"]
+  rot_closedform_E_matrix_rpy_zyx_body["rot_closedform.E_matrix_rpy_zyx_body"] --> rot_closedform_E_matrix["rot_closedform.E_matrix"]
+  rot_closedform_E_matrix_rpy_zyx_body["rot_closedform.E_matrix_rpy_zyx_body"] --> sp_simplify["sp.simplify"]
+  rot_closedform__Rx["rot_closedform._Rx"] --> sp_Matrix["sp.Matrix"]
+  rot_closedform__Rx["rot_closedform._Rx"] --> sp_cos["sp.cos"]
+  rot_closedform__Rx["rot_closedform._Rx"] --> sp_sin["sp.sin"]
+  rot_closedform__Ry["rot_closedform._Ry"] --> sp_Matrix["sp.Matrix"]
+  rot_closedform__Ry["rot_closedform._Ry"] --> sp_cos["sp.cos"]
+  rot_closedform__Ry["rot_closedform._Ry"] --> sp_sin["sp.sin"]
+  rot_closedform__Rz["rot_closedform._Rz"] --> sp_Matrix["sp.Matrix"]
+  rot_closedform__Rz["rot_closedform._Rz"] --> sp_cos["sp.cos"]
+  rot_closedform__Rz["rot_closedform._Rz"] --> sp_sin["sp.sin"]
+  rot_closedform__compose_local["rot_closedform._compose_local"] --> rot_closedform_<dynamic>["rot_closedform.<dynamic>"]
+  rot_closedform__compose_local["rot_closedform._compose_local"] --> rot_closedform_ValueError["rot_closedform.ValueError"]
+  rot_closedform__compose_local["rot_closedform._compose_local"] --> rot_closedform_len["rot_closedform.len"]
+  rot_closedform__compose_local["rot_closedform._compose_local"] --> seq_lower["seq.lower"]
+  rot_closedform__vee["rot_closedform._vee"] --> sp_Matrix["sp.Matrix"]
+  rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"] --> cols_append["cols.append"]
+  rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"] --> frame_lower["frame.lower"]
+  rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"] --> np_column_stack["np.column_stack"]
+  rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"] --> np_zeros["np.zeros"]
+  rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"] --> rot_core_ValueError["rot_core.ValueError"]
+  rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"] --> rot_core__rotation_matrix["rot_core._rotation_matrix"]
+  rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"] --> rot_core__vee["rot_core._vee"]
+  rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"] --> rot_core_range["rot_core.range"]
+  rot_core__rotation_matrix["rot_core._rotation_matrix"] --> convention_lower["convention.lower"]
+  rot_core__rotation_matrix["rot_core._rotation_matrix"] --> rot_core_<dynamic>["rot_core.<dynamic>"]
+  rot_core__rotation_matrix["rot_core._rotation_matrix"] --> rot_core_ValueError["rot_core.ValueError"]
+  rot_core__rotation_matrix["rot_core._rotation_matrix"] --> rot_core_compose_global["rot_core.compose_global"]
+  rot_core__rotation_matrix["rot_core._rotation_matrix"] --> rot_core_compose_local["rot_core.compose_local"]
+  rot_core__vee["rot_core._vee"] --> np_array["np.array"]
+  rot_core_align_body_x["rot_core.align_body_x"] --> rot_core_align_x_to_vector["rot_core.align_x_to_vector"]
+  rot_core_angvel_from_rates["rot_core.angvel_from_rates"] --> np_asarray["np.asarray"]
+  rot_core_angvel_from_rates["rot_core.angvel_from_rates"] --> np_deg2rad["np.deg2rad"]
+  rot_core_angvel_from_rates["rot_core.angvel_from_rates"] --> np_rad2deg["np.rad2deg"]
+  rot_core_angvel_from_rates["rot_core.angvel_from_rates"] --> rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"]
+  rot_core_build_matrix["rot_core.build_matrix"] --> mode_lower["mode.lower"]
+  rot_core_build_matrix["rot_core.build_matrix"] --> rot_core_ValueError["rot_core.ValueError"]
+  rot_core_build_matrix["rot_core.build_matrix"] --> rot_core_compose_global["rot_core.compose_global"]
+  rot_core_build_matrix["rot_core.build_matrix"] --> rot_core_compose_local["rot_core.compose_local"]
+  rot_core_check_matrix["rot_core.check_matrix"] --> Robj_as_matrix["Robj.as_matrix"]
+  rot_core_check_matrix["rot_core.check_matrix"] --> rot_core_is_rotmat["rot_core.is_rotmat"]
+  rot_core_passive_transform["rot_core.passive_transform"] --> Robj_inv["Robj.inv"]
+  rot_core_passive_transform["rot_core.passive_transform"] --> np_asarray["np.asarray"]
+  rot_core_passive_transform["rot_core.passive_transform"] --> rot_core_<dynamic>["rot_core.<dynamic>"]
+  rot_core_rates_from_angvel["rot_core.rates_from_angvel"] --> np_asarray["np.asarray"]
+  rot_core_rates_from_angvel["rot_core.rates_from_angvel"] --> np_deg2rad["np.deg2rad"]
+  rot_core_rates_from_angvel["rot_core.rates_from_angvel"] --> np_linalg_pinv["np.linalg.pinv"]
+  rot_core_rates_from_angvel["rot_core.rates_from_angvel"] --> np_rad2deg["np.rad2deg"]
+  rot_core_rates_from_angvel["rot_core.rates_from_angvel"] --> rot_core__omega_jacobian_numeric["rot_core._omega_jacobian_numeric"]
+  rot_core_repeat_rotation["rot_core.repeat_rotation"] --> rot_core_rotation_power["rot_core.rotation_power"]
+  rot_core_save_R["rot_core.save_R"] --> rot_core_save_matrix_csv["rot_core.save_matrix_csv"]
+  rot_core_save_series["rot_core.save_series"] --> rot_core_save_series_csv["rot_core.save_series_csv"]
+  rot_core_transform_points["rot_core.transform_points"] --> Robj_apply["Robj.apply"]
+  rot_core_transform_points["rot_core.transform_points"] --> np_asarray["np.asarray"]
+  rot_io_read_job["rot_io.read_job"] --> json_load["json.load"]
+  rot_io_read_job["rot_io.read_job"] --> k_strip["k.strip"]
+  rot_io_read_job["rot_io.read_job"] --> line_split["line.split"]
+  rot_io_read_job["rot_io.read_job"] --> line_startswith["line.startswith"]
+  rot_io_read_job["rot_io.read_job"] --> line_strip["line.strip"]
+  rot_io_read_job["rot_io.read_job"] --> os_path_exists["os.path.exists"]
+  rot_io_read_job["rot_io.read_job"] --> os_path_splitext["os.path.splitext"]
+  rot_io_read_job["rot_io.read_job"] --> rot_io_<dynamic>["rot_io.<dynamic>"]
+  rot_io_read_job["rot_io.read_job"] --> rot_io_FileNotFoundError["rot_io.FileNotFoundError"]
+  rot_io_read_job["rot_io.read_job"] --> rot_io_RuntimeError["rot_io.RuntimeError"]
+  rot_io_read_job["rot_io.read_job"] --> rot_io_open["rot_io.open"]
+  rot_io_read_job["rot_io.read_job"] --> v_strip["v.strip"]
+  rot_io_read_job["rot_io.read_job"] --> yaml_safe_load["yaml.safe_load"]
+  rot_io_read_points_csv["rot_io.read_points_csv"] --> np_loadtxt["np.loadtxt"]
+  rot_io_write_points_csv["rot_io.write_points_csv"] --> np_savetxt["np.savetxt"]
+  rot_io_write_points_csv["rot_io.write_points_csv"] --> os_path_dirname["os.path.dirname"]
+  rot_io_write_points_csv["rot_io.write_points_csv"] --> rot_io_ensure_dir["rot_io.ensure_dir"]
+  rot_utils___module__["rot_utils.__module__"] --> rot_utils_RuntimeError["rot_utils.RuntimeError"]
+  rot_utils__omega_from_Rdot["rot_utils._omega_from_Rdot"] --> Robj_as_matrix["Robj.as_matrix"]
+  rot_utils__omega_from_Rdot["rot_utils._omega_from_Rdot"] --> rot_utils_ValueError["rot_utils.ValueError"]
+  rot_utils__omega_from_Rdot["rot_utils._omega_from_Rdot"] --> rot_utils_vee["rot_utils.vee"]
+  rot_utils_align_x_to_vector["rot_utils.align_x_to_vector"] --> R_from_matrix["R.from_matrix"]
+  rot_utils_align_x_to_vector["rot_utils.align_x_to_vector"] --> np_array["np.array"]
+  rot_utils_align_x_to_vector["rot_utils.align_x_to_vector"] --> np_asarray["np.asarray"]
+  rot_utils_align_x_to_vector["rot_utils.align_x_to_vector"] --> np_column_stack["np.column_stack"]
+  rot_utils_align_x_to_vector["rot_utils.align_x_to_vector"] --> np_cross["np.cross"]
+  rot_utils_align_x_to_vector["rot_utils.align_x_to_vector"] --> np_linalg_norm["np.linalg.norm"]
+  rot_utils_align_x_to_vector["rot_utils.align_x_to_vector"] --> rot_utils_ValueError["rot_utils.ValueError"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> R_from_euler["R.from_euler"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> Rm_as_matrix["Rm.as_matrix"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> Rp_as_matrix["Rp.as_matrix"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> np_asarray["np.asarray"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> np_deg2rad["np.deg2rad"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> np_zeros["np.zeros"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> q_rad_copy["q_rad.copy"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> rot_utils__omega_from_Rdot["rot_utils._omega_from_Rdot"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> rot_utils_range["rot_utils.range"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> seq_lower["seq.lower"]
+  rot_utils_build_rate_map["rot_utils.build_rate_map"] --> seq_upper["seq.upper"]
+  rot_utils_compose_global["rot_utils.compose_global"] --> R_from_euler["R.from_euler"]
+  rot_utils_compose_global["rot_utils.compose_global"] --> rot_utils_ValueError["rot_utils.ValueError"]
+  rot_utils_compose_global["rot_utils.compose_global"] --> rot_utils_len["rot_utils.len"]
+  rot_utils_compose_global["rot_utils.compose_global"] --> seq_lower["seq.lower"]
+  rot_utils_compose_local["rot_utils.compose_local"] --> R_from_euler["R.from_euler"]
+  rot_utils_compose_local["rot_utils.compose_local"] --> rot_utils_ValueError["rot_utils.ValueError"]
+  rot_utils_compose_local["rot_utils.compose_local"] --> rot_utils_len["rot_utils.len"]
+  rot_utils_compose_local["rot_utils.compose_local"] --> seq_lower["seq.lower"]
+  rot_utils_compose_local["rot_utils.compose_local"] --> seq_upper["seq.upper"]
+  rot_utils_decompose["rot_utils.decompose"] --> Robj_as_euler["Robj.as_euler"]
+  rot_utils_decompose["rot_utils.decompose"] --> rot_utils_ValueError["rot_utils.ValueError"]
+  rot_utils_decompose["rot_utils.decompose"] --> seq_lower["seq.lower"]
+  rot_utils_decompose["rot_utils.decompose"] --> seq_upper["seq.upper"]
+  rot_utils_ensure_dir["rot_utils.ensure_dir"] --> os_makedirs["os.makedirs"]
+  rot_utils_hat["rot_utils.hat"] --> np_array["np.array"]
+  rot_utils_hat["rot_utils.hat"] --> np_asarray["np.asarray"]
+  rot_utils_hat["rot_utils.hat"] --> rot_utils_<dynamic>["rot_utils.<dynamic>"]
+  rot_utils_is_rotmat["rot_utils.is_rotmat"] --> np_allclose["np.allclose"]
+  rot_utils_is_rotmat["rot_utils.is_rotmat"] --> np_asarray["np.asarray"]
+  rot_utils_is_rotmat["rot_utils.is_rotmat"] --> np_eye["np.eye"]
+  rot_utils_is_rotmat["rot_utils.is_rotmat"] --> np_isclose["np.isclose"]
+  rot_utils_is_rotmat["rot_utils.is_rotmat"] --> np_linalg_det["np.linalg.det"]
+  rot_utils_is_rotmat["rot_utils.is_rotmat"] --> np_linalg_norm["np.linalg.norm"]
+  rot_utils_is_rotmat["rot_utils.is_rotmat"] --> rot_utils_<dynamic>["rot_utils.<dynamic>"]
+  rot_utils_is_rotmat["rot_utils.is_rotmat"] --> rot_utils_float["rot_utils.float"]
+  rot_utils_is_rotmat["rot_utils.is_rotmat"] --> rot_utils_range["rot_utils.range"]
+  rot_utils_omega_from_rates["rot_utils.omega_from_rates"] --> np_asarray["np.asarray"]
+  rot_utils_omega_from_rates["rot_utils.omega_from_rates"] --> np_deg2rad["np.deg2rad"]
+  rot_utils_omega_from_rates["rot_utils.omega_from_rates"] --> np_rad2deg["np.rad2deg"]
+  rot_utils_omega_from_rates["rot_utils.omega_from_rates"] --> rot_utils_build_rate_map["rot_utils.build_rate_map"]
+  rot_utils_parse_floats["rot_utils.parse_floats"] --> rot_utils_<dynamic>["rot_utils.<dynamic>"]
+  rot_utils_parse_floats["rot_utils.parse_floats"] --> rot_utils_float["rot_utils.float"]
+  rot_utils_parse_floats["rot_utils.parse_floats"] --> rot_utils_isinstance["rot_utils.isinstance"]
+  rot_utils_parse_floats["rot_utils.parse_floats"] --> rot_utils_str["rot_utils.str"]
+  rot_utils_rates_from_omega["rot_utils.rates_from_omega"] --> np_asarray["np.asarray"]
+  rot_utils_rates_from_omega["rot_utils.rates_from_omega"] --> np_deg2rad["np.deg2rad"]
+  rot_utils_rates_from_omega["rot_utils.rates_from_omega"] --> np_linalg_pinv["np.linalg.pinv"]
+  rot_utils_rates_from_omega["rot_utils.rates_from_omega"] --> np_rad2deg["np.rad2deg"]
+  rot_utils_rates_from_omega["rot_utils.rates_from_omega"] --> rot_utils_build_rate_map["rot_utils.build_rate_map"]
+  rot_utils_rotation_power["rot_utils.rotation_power"] --> R_from_rotvec["R.from_rotvec"]
+  rot_utils_rotation_power["rot_utils.rotation_power"] --> R_identity["R.identity"]
+  rot_utils_rotation_power["rot_utils.rotation_power"] --> Robj_as_rotvec["Robj.as_rotvec"]
+  rot_utils_rotation_power["rot_utils.rotation_power"] --> np_linalg_norm["np.linalg.norm"]
+  rot_utils_rotation_power["rot_utils.rotation_power"] --> rot_utils_ValueError["rot_utils.ValueError"]
+  rot_utils_rotation_power["rot_utils.rotation_power"] --> rot_utils_float["rot_utils.float"]
+  rot_utils_rotation_power["rot_utils.rotation_power"] --> rot_utils_isinstance["rot_utils.isinstance"]
+  rot_utils_save_matrix_csv["rot_utils.save_matrix_csv"] --> Robj_as_matrix["Robj.as_matrix"]
+  rot_utils_save_matrix_csv["rot_utils.save_matrix_csv"] --> np_savetxt["np.savetxt"]
+  rot_utils_save_matrix_csv["rot_utils.save_matrix_csv"] --> os_path_dirname["os.path.dirname"]
+  rot_utils_save_matrix_csv["rot_utils.save_matrix_csv"] --> rot_utils_ensure_dir["rot_utils.ensure_dir"]
+  rot_utils_save_series_csv["rot_utils.save_series_csv"] --> np_column_stack["np.column_stack"]
+  rot_utils_save_series_csv["rot_utils.save_series_csv"] --> np_savetxt["np.savetxt"]
+  rot_utils_save_series_csv["rot_utils.save_series_csv"] --> os_path_dirname["os.path.dirname"]
+  rot_utils_save_series_csv["rot_utils.save_series_csv"] --> rot_utils_ensure_dir["rot_utils.ensure_dir"]
+  rot_utils_save_series_csv["rot_utils.save_series_csv"] --> t_reshape["t.reshape"]
+  rot_utils_vee["rot_utils.vee"] --> np_array["np.array"]
+  rot_utils_vee["rot_utils.vee"] --> np_asarray["np.asarray"]
+  test_rotation_app__close["test_rotation_app._close"] --> np_allclose["np.allclose"]
+  test_rotation_app_test_align_x_axis_right_handed_unit_det["test_rotation_app.test_align_x_axis_right_handed_unit_det"] --> Robj_as_matrix["Robj.as_matrix"]
+  test_rotation_app_test_align_x_axis_right_handed_unit_det["test_rotation_app.test_align_x_axis_right_handed_unit_det"] --> core_align_body_x["core.align_body_x"]
+  test_rotation_app_test_align_x_axis_right_handed_unit_det["test_rotation_app.test_align_x_axis_right_handed_unit_det"] --> np_array["np.array"]
+  test_rotation_app_test_align_x_axis_right_handed_unit_det["test_rotation_app.test_align_x_axis_right_handed_unit_det"] --> np_eye["np.eye"]
+  test_rotation_app_test_align_x_axis_right_handed_unit_det["test_rotation_app.test_align_x_axis_right_handed_unit_det"] --> np_isclose["np.isclose"]
+  test_rotation_app_test_align_x_axis_right_handed_unit_det["test_rotation_app.test_align_x_axis_right_handed_unit_det"] --> np_linalg_det["np.linalg.det"]
+  test_rotation_app_test_align_x_axis_right_handed_unit_det["test_rotation_app.test_align_x_axis_right_handed_unit_det"] --> np_linalg_norm["np.linalg.norm"]
+  test_rotation_app_test_align_x_axis_right_handed_unit_det["test_rotation_app.test_align_x_axis_right_handed_unit_det"] --> test_rotation_app__close["test_rotation_app._close"]
+  test_rotation_app_test_angvel_local_zyz_body_matches_closed_form_in_degrees["test_rotation_app.test_angvel_local_zyz_body_matches_closed_form_in_degrees"] --> E_sym_subs["E_sym.subs"]
+  test_rotation_app_test_angvel_local_zyz_body_matches_closed_form_in_degrees["test_rotation_app.test_angvel_local_zyz_body_matches_closed_form_in_degrees"] --> cf_E_matrix["cf.E_matrix"]
+  test_rotation_app_test_angvel_local_zyz_body_matches_closed_form_in_degrees["test_rotation_app.test_angvel_local_zyz_body_matches_closed_form_in_degrees"] --> core_angvel_from_rates["core.angvel_from_rates"]
+  test_rotation_app_test_angvel_local_zyz_body_matches_closed_form_in_degrees["test_rotation_app.test_angvel_local_zyz_body_matches_closed_form_in_degrees"] --> np_array["np.array"]
+  test_rotation_app_test_angvel_local_zyz_body_matches_closed_form_in_degrees["test_rotation_app.test_angvel_local_zyz_body_matches_closed_form_in_degrees"] --> np_deg2rad["np.deg2rad"]
+  test_rotation_app_test_angvel_local_zyz_body_matches_closed_form_in_degrees["test_rotation_app.test_angvel_local_zyz_body_matches_closed_form_in_degrees"] --> np_rad2deg["np.rad2deg"]
+  test_rotation_app_test_angvel_local_zyz_body_matches_closed_form_in_degrees["test_rotation_app.test_angvel_local_zyz_body_matches_closed_form_in_degrees"] --> pytest_importorskip["pytest.importorskip"]
+  test_rotation_app_test_angvel_local_zyz_body_matches_closed_form_in_degrees["test_rotation_app.test_angvel_local_zyz_body_matches_closed_form_in_degrees"] --> test_rotation_app__close["test_rotation_app._close"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyx_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyx_body_local"] --> E_sym_subs["E_sym.subs"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyx_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyx_body_local"] --> cf_E_matrix["cf.E_matrix"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyx_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyx_body_local"] --> core_angvel_from_rates["core.angvel_from_rates"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyx_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyx_body_local"] --> np_array["np.array"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyx_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyx_body_local"] --> pytest_importorskip["pytest.importorskip"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyx_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyx_body_local"] --> test_rotation_app__close["test_rotation_app._close"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyz_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyz_body_local"] --> E_sym_subs["E_sym.subs"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyz_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyz_body_local"] --> cf_E_matrix["cf.E_matrix"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyz_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyz_body_local"] --> core_angvel_from_rates["core.angvel_from_rates"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyz_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyz_body_local"] --> np_array["np.array"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyz_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyz_body_local"] --> pytest_importorskip["pytest.importorskip"]
+  test_rotation_app_test_closed_form_E_matches_numeric_zyz_body_local["test_rotation_app.test_closed_form_E_matches_numeric_zyz_body_local"] --> test_rotation_app__close["test_rotation_app._close"]
+  test_rotation_app_test_compose_decompose_zyx_30_20_10["test_rotation_app.test_compose_decompose_zyx_30_20_10"] --> Robj_as_matrix["Robj.as_matrix"]
+  test_rotation_app_test_compose_decompose_zyx_30_20_10["test_rotation_app.test_compose_decompose_zyx_30_20_10"] --> core_build_matrix["core.build_matrix"]
+  test_rotation_app_test_compose_decompose_zyx_30_20_10["test_rotation_app.test_compose_decompose_zyx_30_20_10"] --> core_decompose["core.decompose"]
+  test_rotation_app_test_compose_decompose_zyx_30_20_10["test_rotation_app.test_compose_decompose_zyx_30_20_10"] --> np_array["np.array"]
+  test_rotation_app_test_compose_decompose_zyx_30_20_10["test_rotation_app.test_compose_decompose_zyx_30_20_10"] --> test_rotation_app__close["test_rotation_app._close"]
+  test_rotation_app_test_repeat_12x15deg_about_Z["test_rotation_app.test_repeat_12x15deg_about_Z"] --> core_build_matrix["core.build_matrix"]
+  test_rotation_app_test_repeat_12x15deg_about_Z["test_rotation_app.test_repeat_12x15deg_about_Z"] --> core_repeat_rotation["core.repeat_rotation"]
+  test_rotation_app_test_repeat_12x15deg_about_Z["test_rotation_app.test_repeat_12x15deg_about_Z"] --> np_diag["np.diag"]
+  test_rotation_app_test_repeat_12x15deg_about_Z["test_rotation_app.test_repeat_12x15deg_about_Z"] --> test_rotation_app_<dynamic>["test_rotation_app.<dynamic>"]
+  test_rotation_app_test_repeat_12x15deg_about_Z["test_rotation_app.test_repeat_12x15deg_about_Z"] --> test_rotation_app__close["test_rotation_app._close"]
+  test_rotation_app_test_transform_basis_rows_returns_Rt["test_rotation_app.test_transform_basis_rows_returns_Rt"] --> Robj_as_matrix["Robj.as_matrix"]
+  test_rotation_app_test_transform_basis_rows_returns_Rt["test_rotation_app.test_transform_basis_rows_returns_Rt"] --> core_build_matrix["core.build_matrix"]
+  test_rotation_app_test_transform_basis_rows_returns_Rt["test_rotation_app.test_transform_basis_rows_returns_Rt"] --> core_transform_points["core.transform_points"]
+  test_rotation_app_test_transform_basis_rows_returns_Rt["test_rotation_app.test_transform_basis_rows_returns_Rt"] --> np_eye["np.eye"]
+  test_rotation_app_test_transform_basis_rows_returns_Rt["test_rotation_app.test_transform_basis_rows_returns_Rt"] --> test_rotation_app__close["test_rotation_app._close"]
+
+  trace_zyx.json was generated
+  trace.json was generated
+  trace.html was generated (exhibit 1)
+
+  i do not know what to make out of all this.
+
+  here are the logs:
+
+(.venv) ➜  robotics git:(develop) ✗ pyan3 rotation/*.py \
+  --format mermaid \
+  --uses --no-defines \
+  > rotation/out/callgraph.mmd
+
+Traceback (most recent call last):
+  File "/Users/pablomontijo/Control/robotics/.venv/bin/pyan3", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/pablomontijo/Control/robotics/.venv/lib/python3.11/site-packages/pyan/main.py", line 206, in main
+    v = CallGraphVisitor(filenames, logger, root=root)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: CallGraphVisitor.__init__() got multiple values for argument 'root'
+(.venv) ➜  robotics git:(develop) ✗ pyan3 rotation/*.py \
+  --format mermaid \
+  --uses --no-defines \
+  --grouped rotation \
+  --colored \
+  > rotation/out/callgraph.mmd
+
+Traceback (most recent call last):
+  File "/Users/pablomontijo/Control/robotics/.venv/bin/pyan3", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/pablomontijo/Control/robotics/.venv/lib/python3.11/site-packages/pyan/main.py", line 206, in main
+    v = CallGraphVisitor(filenames, logger, root=root)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: CallGraphVisitor.__init__() got multiple values for argument 'root'
+(.venv) ➜  robotics git:(develop) ✗ pyan3 rotation/*.py \
+  --format mermaid \
+  --uses --no-defines \
+  --root rotation \
+  --grouped rotation \
+  --colored \
+  > rotation/out/callgraph.mmd
+
+Traceback (most recent call last):
+  File "/Users/pablomontijo/Control/robotics/.venv/bin/pyan3", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/pablomontijo/Control/robotics/.venv/lib/python3.11/site-packages/pyan/main.py", line 206, in main
+    v = CallGraphVisitor(filenames, logger, root=root)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: CallGraphVisitor.__init__() got multiple values for argument 'root'
+(.venv) ➜  robotics git:(develop) ✗ viztracer -o rotation/out/trace_zyx.json -- \
+  python -m rotation.rot_cli angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+
+Traceback (most recent call last):
+  File "/Users/pablomontijo/Control/robotics/.venv/bin/viztracer", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/pablomontijo/Control/robotics/.venv/lib/python3.11/site-packages/viztracer/main.py", line 698, in main
+    success, err_msg = ui.run()
+                       ^^^^^^^^
+  File "/Users/pablomontijo/Control/robotics/.venv/lib/python3.11/site-packages/viztracer/main.py", line 332, in run
+    return self.run_command()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/pablomontijo/Control/robotics/.venv/lib/python3.11/site-packages/viztracer/main.py", line 465, in run_command
+    code = compile(code_string, os.path.abspath(file_name), "exec")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: source code string cannot contain null bytes
+(.venv) ➜  robotics git:(develop) ✗ viztracer -o rotation/out/trace_zyx.json -m rotation.rot_cli \
+  angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+
+ω =  [ 0.070380  0.190306  0.393969]
+Total Entries: 925858
+Use the following command to open the report:
+vizviewer /Users/pablomontijo/Control/robotics/rotation/out/trace_zyx.json
+(.venv) ➜  robotics git:(develop) ✗ vizviewer rotation/out/trace_zyx.json
+
+Running vizviewer
+You can also view your trace on http://localhost:9001
+Press Ctrl+C to quit
+^C%
+(.venv) ➜  robotics git:(develop) ✗ viztracer -o rotation/out/trace.json --min_duration 0.0005 --max_stack_depth 20 -m rotation.rot_cli ...
+
+usage: rot-cli [-h] {compose,decompose,transform,passive,repeat,align,check,E,batch,angvel,rates} ...
+rot-cli: error: argument cmd: invalid choice: '../..' (choose from 'compose', 'decompose', 'transform', 'passive', 'repeat', 'align', 'check', 'E', 'batch', 'angvel', 'rates')
+Total Entries: 11273
+Use the following command to open the report:
+vizviewer /Users/pablomontijo/Control/robotics/rotation/out/trace.json
+(.venv) ➜  robotics git:(develop) ✗ viztracer -o rotation/out/trace.html --html -m rotation.rot_cli ...
+
+usage: rot-cli [-h] {compose,decompose,transform,passive,repeat,align,check,E,batch,angvel,rates} ...
+rot-cli: error: argument cmd: invalid choice: '../..' (choose from 'compose', 'decompose', 'transform', 'passive', 'repeat', 'align', 'check', 'E', 'batch', 'angvel', 'rates')
+Total Entries: 924650
+Use the following command to open the report:
+vizviewer /Users/pablomontijo/Control/robotics/rotation/out/trace.html
+(.venv) ➜  robotics git:(develop) ✗
+
+
+the interactive plot failed with this message:
+
+UI: http://127.0.0.1:9001/v47.0-02b2414d5
+
+RPC framing error
+ - onRpcResponseMessage (frontend_bundle.js:3631:6807)
+ - onRpcResponseBytes (frontend_bundle.js:3631:6502)
+ - onMessage (frontend_bundle.js:3631:14499)
+
+Trace: http://127.0.0.1:9001/localtrace
+UA: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15
+Referrer:
