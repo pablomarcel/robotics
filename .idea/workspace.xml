@@ -4,12 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the orientation module">
-      <change afterPath="$PROJECT_DIR$/motion/prompts/motion.txt" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented diagramming">
+      <change afterPath="$PROJECT_DIR$/motion/apis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/io.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/tests/test_plucker_distance.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/tests/test_rotation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/tests/test_screw_transform.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/tests/test_se3_inverse.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/tests/test_utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/tools/diagram.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orientation/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/orientation/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orientation/prompts/orientation.txt" beforeDir="false" afterPath="$PROJECT_DIR$/orientation/prompts/orientation.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orientation/tools/gen_diagram.py" beforeDir="false" afterPath="$PROJECT_DIR$/orientation/tools/gen_diagram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/motion/prompts/motion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/motion/prompts/motion.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +104,8 @@
       <workItem from="1758159970953" duration="2919000" />
       <workItem from="1758215271470" duration="869000" />
       <workItem from="1758222755826" duration="8806000" />
-      <workItem from="1758241788176" duration="3700000" />
+      <workItem from="1758241788176" duration="4141000" />
+      <workItem from="1758248873505" duration="5180000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -192,7 +203,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758237375097</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="implemented diagramming">
+      <option name="closed" value="true" />
+      <created>1758248347541</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1758248347541</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -223,6 +242,7 @@
     <MESSAGE value="updated .gitignore" />
     <MESSAGE value="implemented architecture scripts" />
     <MESSAGE value="implemented the orientation module" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented the orientation module" />
+    <MESSAGE value="implemented diagramming" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented diagramming" />
   </component>
 </project>
