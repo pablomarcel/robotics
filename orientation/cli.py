@@ -310,15 +310,49 @@ class RandomSO3(BaseCommand):
 
 
 class Diagram(BaseCommand):
-    name, help = "diagram", "Generate class diagrams (Graphviz .dot and Mermaid .mmd)."
+    name, help = "diagram", "Generate class diagrams (Graphviz .dot, Mermaid .mmd, and/or PlantUML .puml)."
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         p.add_argument("--out", type=str, default=str(OUT_DIR),
                        help="Output directory (default orientation/out).")
 
     def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
-        dot, mmd = generate_diagram(Path(args.out))
-        print(f"Wrote diagram files:\n - {dot}\n - {mmd}")
+        """
+        Try the rich renderer in orientation.design first.
+        Handle both return signatures:
+          - old: (dot_path, mmd_path)
+          - new: (puml_path, dot_path, mmd_path)
+        If that fails (or design.py was rolled back), fallback to the
+        standalone PlantUML generator in orientation.tools.gen_diagram.
+        """
+        out_dir = Path(args.out)
+        try:
+            from .design import generate_diagram  # may be old or new
+            ret = generate_diagram(out_dir)
+            # Normalize outputs
+            if isinstance(ret, tuple):
+                if len(ret) == 3:
+                    puml, dot, mmd = ret
+                    print(f"Wrote diagram files:\n - {puml}\n - {dot}\n - {mmd}")
+                elif len(ret) == 2:
+                    dot, mmd = ret
+                    print(f"Wrote diagram files:\n - {dot}\n - {mmd}")
+                else:
+                    print(f"Wrote diagram set -> {ret}")
+            else:
+                print(f"Wrote diagram -> {ret}")
+        except Exception as e:
+            # Fallback to standalone PUML generator
+            try:
+                from .tools.gen_diagram import GeneratorApp
+                path = GeneratorApp(out_dir=str(out_dir), filename=None, modules=None).run()
+                print(f"Fallback: wrote PlantUML -> {path}")
+            except Exception as e2:
+                raise RuntimeError(
+                    f"Diagram generation failed in design.py ({type(e).__name__}: {e}) "
+                    f"and fallback failed ({type(e2).__name__}: {e2})."
+                )
+
 
 
 class Batch(BaseCommand):

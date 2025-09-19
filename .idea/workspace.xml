@@ -4,26 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented architecture scripts">
-      <change afterPath="$PROJECT_DIR$/orientation/apis.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/design.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/in/jobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/io.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/prompts/orientation.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tests/test_apis_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tests/test_cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tests/test_core_axisangle.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tests/test_core_quaternion.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tests/test_core_rodrigues.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tests/test_core_so3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tests/test_design_io.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tests/test_utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/tools/gen_diagram.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/utils.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the orientation module">
+      <change afterPath="$PROJECT_DIR$/motion/prompts/motion.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orientation/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/orientation/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orientation/prompts/orientation.txt" beforeDir="false" afterPath="$PROJECT_DIR$/orientation/prompts/orientation.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orientation/tools/gen_diagram.py" beforeDir="false" afterPath="$PROJECT_DIR$/orientation/tools/gen_diagram.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,7 +93,8 @@
       <workItem from="1758151328686" duration="4581000" />
       <workItem from="1758159970953" duration="2919000" />
       <workItem from="1758215271470" duration="869000" />
-      <workItem from="1758222755826" duration="8329000" />
+      <workItem from="1758222755826" duration="8806000" />
+      <workItem from="1758241788176" duration="3700000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -189,7 +176,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758156160504</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="implemented the orientation module">
+      <option name="closed" value="true" />
+      <created>1758237359254</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1758237359254</updated>
+    </task>
+    <task id="LOCAL-00012" summary="implemented the orientation module">
+      <option name="closed" value="true" />
+      <created>1758237375097</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1758237375097</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -219,6 +222,7 @@
     <MESSAGE value="implemented pytests in the rotation module" />
     <MESSAGE value="updated .gitignore" />
     <MESSAGE value="implemented architecture scripts" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented architecture scripts" />
+    <MESSAGE value="implemented the orientation module" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented the orientation module" />
   </component>
 </project>

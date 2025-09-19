@@ -1,0 +1,28 @@
+
+
+ok we need an all encompassing app to tackle motion kinematics within our robotics project.
+all the scripts will be stored in the motion module.
+any input files will be stored in motion/in directory.
+any output files will be stored in the motion/out directory.
+tests should be stored in the motion/tests/ directory.
+any tools should be stored in the motion/tools directory.
+any potential combination of user input should be captured in the cli run commands.
+The important thing to remember in this app we will strictly use object-oriented programming and test driven development.
+So we are going to build a beautiful architecture, with crisp classes and methods and all the goodies that come with oo approach.
+The proposed architecture would be something like this:
+
+    app.py
+    apis.py
+    cli.py
+    core.py
+    design.py
+    io.py
+    utils.py
+
+it does not have to be like this. If you find redundancies that is ok. The important thing is that we break this up for easy understanding, testing and debugging.
+keep in mind that we will implement TDD with pytest. So the classes and methods should be testable.
+
+Also, when the app is done we want to generate a class diagram. So keep in mind which libraries we can leverage to create a sparkling, cute class diagram.
+Also, if the classes need documentation, let's do that. Perhaps later we can implement a sphinx project to generate the documentation.
+
+So, please go ahead and build this glorious, architecture sound, god tier, kickass app to meet the project requirements and tackle orientation kinematics math from equation 3.1 to 3.434.
