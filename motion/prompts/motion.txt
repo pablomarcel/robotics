@@ -1189,3 +1189,80 @@ please generate the entire upgraded test_plucker_distance.py per the latest fact
 
 ///
 
+we overlooked our tools/diagram.py tool. please generate it.
+
+///
+
+dot is not installed, it requires xcode and I do not have enough disk space so that is out of the question.
+
+here are the latest logs:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest motion/tests -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 37 items
+
+ motion/tests/test_diagram_tool.py::test_discover_and_export_json_snapshot ✓                                                                                 3% ▍
+ motion/tests/test_diagram_tool.py::test_emit_plantuml_and_mermaid ✓                                                                                         5% ▋
+ motion/tests/test_diagram_tool.py::test_render_graphviz_optional s                                                                                          8% ▊
+ motion/tests/test_diagram_tool.py::test_render_pyreverse_optional s                                                                                        11% █▏
+ motion/tests/test_diagram_tool.py::test_render_all_compiles_even_without_optional_backends ✓                                                               14% █▍
+ motion/tests/test_plucker_distance.py::test_angle_distance_between_skew_lines ✓                                                                            16% █▋
+ motion/tests/test_plucker_distance.py::test_intersecting_lines_distance_zero_and_reciprocal_zero ✓                                                         19% █▉
+ motion/tests/test_plucker_distance.py::test_parallel_lines_distance_nan_and_manual_computation ✓                                                           22% ██▎
+ motion/tests/test_plucker_distance.py::test_se3_transform_invariance_of_angle_and_distance ✓                                                               24% ██▌
+ motion/tests/test_rotation.py::test_rz_90_matches_axis_angle ✓                                                                                             27% ██▊
+ motion/tests/test_rotation.py::test_rx_ry_rz_are_proper_rotations ✓                                                                                        30% ███
+ motion/tests/test_rotation.py::test_inverse_is_transpose_and_composition_identity ✓                                                                        32% ███▎
+ motion/tests/test_rotation.py::test_same_axis_composition_adds_angles ✓                                                                                    35% ███▌
+ motion/tests/test_rotation.py::test_zero_angle_is_identity_any_axis ✓                                                                                      38% ███▊
+ motion/tests/test_rotation.py::test_small_angle_first_order_term ✓                                                                                         41% ████▏
+ motion/tests/test_rotation.py::test_random_axes_yield_orthonormal_mats ✓                                                                                   43% ████▍
+ motion/tests/test_screw_transform.py::test_central_pure_rotation_about_z_90deg ✓                                                                           46% ████▋
+ motion/tests/test_screw_transform.py::test_central_screw_with_pitch_translates_along_axis ✓                                                                49% ████▉
+ motion/tests/test_screw_transform.py::test_off_axis_rotation_matches_conjugation_D_R_Dinv ✓                                                                51% █████▎
+ motion/tests/test_screw_transform.py::test_inverse_is_negating_angle_only ✓                                                                                54% █████▌
+ motion/tests/test_screw_transform.py::test_composition_same_axis_same_s_with_effective_pitch ✓                                                             57% █████▋
+ motion/tests/test_screw_transform.py::test_small_angle_linearization_translation_term ✓                                                                    59% █████▉
+ motion/tests/test_se3_inverse.py::test_inverse_rule_Tinv_T_is_identity ✓                                                                                   62% ██████▎
+ motion/tests/test_se3_inverse.py::test_inverse_blocks_match_formula ✓                                                                                      65% ██████▌
+ motion/tests/test_se3_inverse.py::test_composition_matches_block_form ✓                                                                                    68% ██████▊
+ motion/tests/test_se3_inverse.py::test_associativity_of_composition ✓                                                                                      70% ███████
+ motion/tests/test_se3_inverse.py::test_inverse_of_product_equals_reverse_product_of_inverses ✓                                                             73% ███████▍
+ motion/tests/test_se3_inverse.py::test_apply_point_and_apply_points ✓                                                                                      76% ███████▋
+ motion/tests/test_se3_inverse.py::test_from_matrix_roundtrip ✓                                                                                             78% ███████▉
+ motion/tests/test_utils.py::test_timing_on_dict_adds_elapsed_ms ✓                                                                                          81% ████████▎
+ motion/tests/test_utils.py::test_timing_on_object_sets_attr ✓                                                                                              84% ████████▍
+ motion/tests/test_utils.py::test_is_rotation_matrix_true_false ✓                                                                                           86% ████████▋
+ motion/tests/test_utils.py::test_is_se3_true_false ✓                                                                                                       89% ████████▉
+ motion/tests/test_utils.py::test_numpy_json_encoder_roundtrip ✓                                                                                            92% █████████▎
+ motion/tests/test_utils.py::test_angle_conversions ✓                                                                                                       95% █████████▌
+ motion/tests/test_utils.py::test_as_vec3_valid_and_invalid ✓                                                                                               97% █████████▊
+ motion/tests/test_utils.py::test_almost_equal_and_clamp_and_version ✓                                                                                     100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+0.44s call     motion/tests/test_diagram_tool.py::test_render_pyreverse_optional
+0.28s call     motion/tests/test_diagram_tool.py::test_render_all_compiles_even_without_optional_backends
+0.05s call     motion/tests/test_rotation.py::test_random_axes_yield_orthonormal_mats
+0.03s call     motion/tests/test_diagram_tool.py::test_render_graphviz_optional
+0.01s call     motion/tests/test_diagram_tool.py::test_discover_and_export_json_snapshot
+0.01s setup    motion/tests/test_diagram_tool.py::test_discover_and_export_json_snapshot
+0.01s call     motion/tests/test_diagram_tool.py::test_emit_plantuml_and_mermaid
+
+(3 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+SKIPPED [1] motion/tests/test_diagram_tool.py:53: 'dot' (Graphviz CLI) not found on PATH
+SKIPPED [1] motion/tests/test_diagram_tool.py:72: pyreverse failed to run here: pyreverse failed:
+
+Results (1.22s):
+      35 passed
+       2 skipped
+(.venv) ➜  robotics git:(develop) ✗
+
+///
+
+///
+
+///
