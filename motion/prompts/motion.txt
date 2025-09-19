@@ -1,9 +1,19 @@
+do we have python libraries that can handle equations 4.1 to 4.56 with out of the box functionality?
+exhibits 1 to 10
 
+///
+
+what about exhibits 1 to 6, equations 4.391 to 4.452
+
+do we have python libraries that can handle these equations?
+
+///
 
 ok we need an all encompassing app to tackle motion kinematics within our robotics project.
 all the scripts will be stored in the motion module.
 any input files will be stored in motion/in directory.
 any output files will be stored in the motion/out directory.
+use decorators as applicable.
 tests should be stored in the motion/tests/ directory.
 any tools should be stored in the motion/tools directory.
 any potential combination of user input should be captured in the cli run commands.
@@ -25,4 +35,1157 @@ keep in mind that we will implement TDD with pytest. So the classes and methods 
 Also, when the app is done we want to generate a class diagram. So keep in mind which libraries we can leverage to create a sparkling, cute class diagram.
 Also, if the classes need documentation, let's do that. Perhaps later we can implement a sphinx project to generate the documentation.
 
-So, please go ahead and build this glorious, architecture sound, god tier, kickass app to meet the project requirements and tackle orientation kinematics math from equation 3.1 to 3.434.
+So, please go ahead and build this glorious, architecture sound, god tier, kickass app to meet the project requirements and tackle motion kinematics math from equation 4.1 to 4.452.
+
+///
+
+ok, you will need to give me the scripts in a piecemeal approach because i do not have access to your sandbox.
+
+let's start with app.py
+
+let's continue with test_se3_inverse.py
+
+///
+
+proceed with this one:
+
+if you want, i can add a tiny tests/test_utils.py next to exercise the decorator, validators, and JSON encoder.
+
+///
+
+great progress. it so happens that 3 tests failed:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest motion/tests -q
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 32 items
+
+ motion/tests/test_plucker_distance.py::test_angle_distance_between_skew_lines ✓                                                                               3% ▍
+ motion/tests/test_plucker_distance.py::test_intersecting_lines_distance_zero_and_reciprocal_zero ✓                                                            6% ▋
+ motion/tests/test_plucker_distance.py::test_parallel_lines_distance_nan_and_manual_computation ✓                                                              9% ▉
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_se3_transform_invariance_of_angle_and_distance ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    def test_se3_transform_invariance_of_angle_and_distance():
+        # Two skew lines
+        l1 = PluckerLine.from_points([0, 0, 0], [1, 0, 0])        # x-axis
+        l2 = PluckerLine.from_points([0, 1, 1], [0, 2, 3])
+
+        alpha0, d0 = _angle_and_distance(l1, l2)
+
+        # Apply the same rigid transform to both lines
+        T = SE3.from_rt(Rotation.Rz(np.deg2rad(30)), [0.5, -0.2, 0.3])
+        l1p = l1.transform(T)
+        l2p = l2.transform(T)
+
+        alpha1, d1 = _angle_and_distance(l1p, l2p)
+
+        # Angle and distance between lines are invariant under SE(3)
+>       assert pytest.approx(alpha1, rel=0, abs=1e-12) == alpha0
+E       assert 1.5707963267948966 ± 1.0e-12 == 1.5707963118937354
+E
+E         comparison failed
+E         Obtained: 1.5707963118937354
+E         Expected: 1.5707963267948966 ± 1.0e-12
+
+motion/tests/test_plucker_distance.py:70: AssertionError
+
+ motion/tests/test_plucker_distance.py::test_se3_transform_invariance_of_angle_and_distance ⨯                                                                 12% █▍
+ motion/tests/test_rotation.py::test_rz_90_matches_axis_angle ✓                                                                                               16% █▋
+ motion/tests/test_rotation.py::test_rx_ry_rz_are_proper_rotations ✓                                                                                          19% █▉
+ motion/tests/test_rotation.py::test_inverse_is_transpose_and_composition_identity ✓                                                                          22% ██▎
+ motion/tests/test_rotation.py::test_same_axis_composition_adds_angles ✓                                                                                      25% ██▌
+ motion/tests/test_rotation.py::test_zero_angle_is_identity_any_axis ✓                                                                                        28% ██▊
+ motion/tests/test_rotation.py::test_small_angle_first_order_term ✓                                                                                           31% ███▎
+ motion/tests/test_rotation.py::test_random_axes_yield_orthonormal_mats ✓                                                                                     34% ███▌
+ motion/tests/test_screw_transform.py::test_central_pure_rotation_about_z_90deg ✓                                                                             38% ███▊
+ motion/tests/test_screw_transform.py::test_central_screw_with_pitch_translates_along_axis ✓                                                                  41% ████▏
+ motion/tests/test_screw_transform.py::test_off_axis_rotation_matches_conjugation_D_R_Dinv ✓                                                                  44% ████▍
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_inverse_is_negating_angle_and_pitch ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    def test_inverse_is_negating_angle_and_pitch():
+        # General screw (non-zero s and h)
+        u = np.array([1.0, 2.0, -1.0]); u /= np.linalg.norm(u)
+        s_vec = np.array([0.3, -0.1, 0.7])
+        h = 0.2
+        phi = -0.8
+        T = Screw(u=u, s=s_vec, h=h, phi=phi).to_matrix()
+        T_inv_expected = np.linalg.inv(T)
+
+        # Inverse screw: same axis & s, negate phi and h
+        T_inv_by_params = Screw(u=u, s=s_vec, h=-h, phi=-phi).to_matrix()
+
+>       assert np.allclose(T_inv_by_params, T_inv_expected, atol=1e-12)
+E       assert False
+E        +  where False = <function allclose at 0x1034c69b0>(array([[ 0.74725559,  0.39395716,  0.53516991, -0.32471963],\n       [-0.19176163,  0.89890224, -0.39395716,  0.19254927],\n       [-0.63626768,  0.19176163,  0.74725559,  0.45229728],\n       [ 0.        ,  0.        ,  0.        ,  1.        ]]), array([[ 0.74725559,  0.39395716,  0.53516991, -0.19408017],\n       [-0.19176163,  0.89890224, -0.39395716,  0.45382818],\n       [-0.63626768,  0.19176163,  0.74725559,  0.32165783],\n       [ 0.        ,  0.        ,  0.        ,  1.        ]]), atol=1e-12)
+E        +    where <function allclose at 0x1034c69b0> = np.allclose
+
+motion/tests/test_screw_transform.py:60: AssertionError
+
+ motion/tests/test_screw_transform.py::test_inverse_is_negating_angle_and_pitch ⨯                                                                             47% ████▊
+ motion/tests/test_screw_transform.py::test_composition_same_axis_same_s_with_effective_pitch ✓                                                               50% █████
+ motion/tests/test_screw_transform.py::test_small_angle_linearization_translation_term ✓                                                                      53% █████▍
+ motion/tests/test_se3_inverse.py::test_inverse_rule_Tinv_T_is_identity ✓                                                                                     56% █████▋
+ motion/tests/test_se3_inverse.py::test_inverse_blocks_match_formula ✓                                                                                        59% █████▉
+ motion/tests/test_se3_inverse.py::test_composition_matches_block_form ✓                                                                                      62% ██████▍
+ motion/tests/test_se3_inverse.py::test_associativity_of_composition ✓                                                                                        66% ██████▋
+ motion/tests/test_se3_inverse.py::test_inverse_of_product_equals_reverse_product_of_inverses ✓                                                               69% ██████▉
+
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_apply_point_and_apply_points ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    def test_apply_point_and_apply_points():
+        R = Rotation.Rz(math.pi / 2).as_matrix()
+        t = np.array([1.0, 2.0, 3.0])
+        T = SE3(R, t)
+
+        p = np.array([1.0, 0.0, 0.0])
+        q = T.apply(p)  # rotate x→y, then translate
+        assert np.allclose(q, np.array([1.0, 3.0, 3.0]), atol=1e-12)
+
+        P = np.array([[1.0, 0.0, 0.0],
+                      [0.0, 2.0, 0.0],
+                      [0.0, 0.0, -1.0]])
+        Q = T.apply_points(P)
+        # Check first row matches single-point result
+        assert np.allclose(Q[0], q, atol=1e-12)
+        # Spot check the others
+>       assert np.allclose(Q[1], np.array([-1.0, 4.0, 3.0]), atol=1e-12)
+E       assert False
+E        +  where False = <function allclose at 0x1034c69b0>(array([-1.,  2.,  3.]), array([-1.,  4.,  3.]), atol=1e-12)
+E        +    where <function allclose at 0x1034c69b0> = np.allclose
+E        +    and   array([-1.,  4.,  3.]) = <built-in function array>([-1.0, 4.0, 3.0])
+E        +      where <built-in function array> = np.array
+
+motion/tests/test_se3_inverse.py:87: AssertionError
+
+ motion/tests/test_se3_inverse.py::test_apply_point_and_apply_points ⨯                                                                                        72% ███████▎
+ motion/tests/test_se3_inverse.py::test_from_matrix_roundtrip ✓                                                                                               75% ███████▌
+ motion/tests/test_utils.py::test_timing_on_dict_adds_elapsed_ms ✓                                                                                            78% ███████▊
+ motion/tests/test_utils.py::test_timing_on_object_sets_attr ✓                                                                                                81% ████████▎
+ motion/tests/test_utils.py::test_is_rotation_matrix_true_false ✓                                                                                             84% ████████▌
+ motion/tests/test_utils.py::test_is_se3_true_false ✓                                                                                                         88% ████████▊
+ motion/tests/test_utils.py::test_numpy_json_encoder_roundtrip ✓                                                                                              91% █████████▏
+ motion/tests/test_utils.py::test_angle_conversions ✓                                                                                                         94% █████████▍
+ motion/tests/test_utils.py::test_as_vec3_valid_and_invalid ✓                                                                                                 97% █████████▊
+ motion/tests/test_utils.py::test_almost_equal_and_clamp_and_version ✓                                                                                       100% ██████████
+=========================================================================== slowest 10 durations ===========================================================================
+0.05s call     motion/tests/test_rotation.py::test_random_axes_yield_orthonormal_mats
+0.01s setup    motion/tests/test_utils.py::test_numpy_json_encoder_roundtrip
+0.01s call     motion/tests/test_rotation.py::test_rz_90_matches_axis_angle
+
+(7 durations < 0.005s hidden.  Use -vv to show these durations.)
+========================================================================= short test summary info ==========================================================================
+FAILED motion/tests/test_plucker_distance.py::test_se3_transform_invariance_of_angle_and_distance - assert 1.5707963267948966 ± 1.0e-12 == 1.5707963118937354
+FAILED motion/tests/test_screw_transform.py::test_inverse_is_negating_angle_and_pitch - assert False
+FAILED motion/tests/test_se3_inverse.py::test_apply_point_and_apply_points - assert False
+
+Results (0.61s):
+      29 passed
+       3 failed
+         - motion/tests/test_plucker_distance.py:55 test_se3_transform_invariance_of_angle_and_distance
+         - motion/tests/test_screw_transform.py:48 test_inverse_is_negating_angle_and_pitch
+         - motion/tests/test_se3_inverse.py:71 test_apply_point_and_apply_points
+
+please review the logs thoroughly and assess what went wrong.
+
+///
+
+///
+
+///
+
+ok, i don't want to mess up. here is the current core.py:
+
+# motion/core.py
+from __future__ import annotations
+
+"""
+Core math primitives for rigid-body motion kinematics (Chapter 4 scope).
+
+Classes
+-------
+Rotation     : SO(3) rotation with axis–angle factories (Rodrigues).
+SE3          : Homogeneous transform (R, t) with composition/inverse/apply.
+Screw        : Screw motion parameterization {u, s, h, phi} → SE3.
+PluckerLine  : Plücker line [u; rho], angle & distance, 6×6 action via SE3.
+Plane        : Plane n·x = s (point distance).
+DHLink       : Standard DH link (a, alpha, d, theta) → SE3.
+KinematicChain : Product of DH links (forward kinematics).
+
+Helpers
+-------
+hat(v), vee(S), normalize(v)
+
+Key equation coverage (non-exhaustive)
+--------------------------------------
+Rotations/SE(3): 4.1–4.66, 4.75–4.90
+Rodrigues:      4.221 (and classic 3.187, used in §4)
+Screw motion:   4.206, 4.220–4.224 (û, s, h, φ → (R, t))
+Plücker:        4.344–4.346 (build), 4.382 (SE3 action),
+                4.388–4.390 (reciprocal product, angle, distance)
+Planes:         4.391–4.397
+DH FK:          standard A_i form widely used in §4
+"""
+
+from dataclasses import dataclass
+from typing import Iterable, List, Sequence, Tuple
+import math
+import numpy as np
+
+
+# ------------------------------- helpers -------------------------------------
+
+def hat(v: np.ndarray) -> np.ndarray:
+    """
+    Skew-symmetric matrix [v]_x that implements cross products: [v]_x w = v × w.
+    """
+    v = np.asarray(v, dtype=float).reshape(3)
+    x, y, z = v
+    return np.array([[0.0, -z,  y],
+                     [z,  0.0, -x],
+                     [-y, x,  0.0]], dtype=float)
+
+
+def vee(S: np.ndarray) -> np.ndarray:
+    """
+    Inverse of hat for so(3) → R^3.
+    """
+    S = np.asarray(S, dtype=float).reshape(3, 3)
+    return np.array([S[2, 1], S[0, 2], S[1, 0]], dtype=float)
+
+
+def normalize(v: np.ndarray) -> np.ndarray:
+    """
+    Safe vector normalization. Returns a copy if norm==0 (no raise).
+    """
+    v = np.asarray(v, dtype=float)
+    n = np.linalg.norm(v)
+    if n == 0.0:
+        return v.copy()
+    return v / n
+
+
+# -------------------------------- Rotation -----------------------------------
+
+@dataclass(frozen=True)
+class Rotation:
+    """
+    SO(3) rotation.
+
+    Notes
+    -----
+    - Axis–angle → matrix uses Rodrigues:
+        R = I + sinφ [u]_x + (1 - cosφ) [u]_x^2 (cf. 4.221 / classic 3.187)
+    """
+    R: np.ndarray  # shape (3, 3)
+
+    # ---- factories ----
+    @staticmethod
+    def from_axis_angle(axis: Iterable[float], phi: float) -> "Rotation":
+        u = normalize(np.asarray(axis, float).reshape(3))
+        K = hat(u)
+        s, c = math.sin(phi), math.cos(phi)
+        R = np.eye(3) + s * K + (1.0 - c) * (K @ K)
+        return Rotation(R)
+
+    @staticmethod
+    def Rx(theta: float) -> "Rotation":
+        c, s = math.cos(theta), math.sin(theta)
+        return Rotation(np.array([[1, 0, 0],
+                                  [0, c, -s],
+                                  [0, s,  c]], float))
+
+    @staticmethod
+    def Ry(theta: float) -> "Rotation":
+        c, s = math.cos(theta), math.sin(theta)
+        return Rotation(np.array([[ c, 0, s],
+                                  [ 0, 1, 0],
+                                  [-s, 0, c]], float))
+
+    @staticmethod
+    def Rz(theta: float) -> "Rotation":
+        c, s = math.cos(theta), math.sin(theta)
+        return Rotation(np.array([[c, -s, 0],
+                                  [s,  c, 0],
+                                  [0,  0, 1]], float))
+
+    # ---- ops ----
+    def inv(self) -> "Rotation":
+        return Rotation(self.R.T)
+
+    def as_matrix(self) -> np.ndarray:
+        return self.R.copy()
+
+
+# ---------------------------------- SE3 --------------------------------------
+
+@dataclass(frozen=True)
+class SE3:
+    """
+    Homogeneous transform T ∈ SE(3), represented as (R, t).
+
+    Composition (G_T_C = G_T_B @ B_T_C) follows 4.59–4.66.
+    Inverse: T^{-1} = [ R^T  -R^T t ; 0 0 0 1 ] (cf. 4.447).
+    """
+    R: np.ndarray  # (3,3)
+    t: np.ndarray  # (3,)
+
+    # ---- factories ----
+    @staticmethod
+    def identity() -> "SE3":
+        return SE3(np.eye(3), np.zeros(3))
+
+    @staticmethod
+    def from_rt(R: Rotation, t: Iterable[float]) -> "SE3":
+        return SE3(R.as_matrix(), np.asarray(t, float).reshape(3))
+
+    @staticmethod
+    def from_matrix(T: np.ndarray) -> "SE3":
+        T = np.asarray(T, float).reshape(4, 4)
+        return SE3(T[:3, :3].copy(), T[:3, 3].copy())
+
+    # ---- conversions ----
+    def as_matrix(self) -> np.ndarray:
+        T = np.eye(4)
+        T[:3, :3] = self.R
+        T[:3, 3] = self.t
+        return T
+
+    # ---- ops ----
+    def inv(self) -> "SE3":
+        RT = self.R.T
+        return SE3(RT, -RT @ self.t)
+
+    def __matmul__(self, other: "SE3") -> "SE3":
+        """Composition (overriding '@')."""
+        R = self.R @ other.R
+        t = self.R @ other.t + self.t
+        return SE3(R, t)
+
+    # ---- application ----
+    def apply(self, p: Iterable[float]) -> np.ndarray:
+        """Apply to a 3D point."""
+        p = np.asarray(p, float).reshape(3)
+        return self.R @ p + self.t
+
+    def apply_points(self, P: np.ndarray) -> np.ndarray:
+        """Apply to an array of Nx3 points."""
+        P = np.asarray(P, float)
+        return (self.R @ P.T).T + self.t
+
+
+# --------------------------------- Screw -------------------------------------
+
+@dataclass(frozen=True)
+class Screw:
+    """
+    Screw motion parameterization {u, s, h, phi} with transform builder.
+
+    Parameters
+    ----------
+    u   : axis (not necessarily unit; normalized internally)
+    s   : location vector (any point on the screw axis expressed in {G})
+    h   : pitch (translation per radian)
+    phi : rotation angle (radians)
+
+    Formulas (cf. 4.206, 4.220–4.224)
+    ---------------------------------
+    R  = I + sinφ [û]_x + (1 - cosφ) [û]_x^2
+    t  = (I - R) s + h φ û             (equivalently: s - R s + h φ û)
+    T  = [[R, t], [0, 0, 0, 1]]
+    """
+    u: np.ndarray
+    s: np.ndarray
+    h: float
+    phi: float
+
+    def transform(self) -> SE3:
+        u_hat = normalize(np.asarray(self.u, float).reshape(3))
+        s_vec = np.asarray(self.s, float).reshape(3)
+        R = Rotation.from_axis_angle(u_hat, self.phi).as_matrix()
+        t = (np.eye(3) - R) @ s_vec + (self.h * self.phi) * u_hat
+        return SE3(R, t)
+
+    def to_matrix(self) -> np.ndarray:
+        return self.transform().as_matrix()
+
+
+# ------------------------------- Plücker line --------------------------------
+
+@dataclass(frozen=True)
+class PluckerLine:
+    """
+    Plücker line coordinates l = [u; rho], with ||u|| = 1 and u·rho = 0.
+
+    Build from two points (4.344–4.346), transform by SE3 (4.382),
+    and compute angle (4.389) / distance (4.390) between two lines.
+    """
+    u: np.ndarray    # (3,)
+    rho: np.ndarray  # (3,)
+
+    # ---- factories ----
+    @staticmethod
+    def from_points(p1: Iterable[float], p2: Iterable[float]) -> "PluckerLine":
+        r1 = np.asarray(p1, float).reshape(3)
+        r2 = np.asarray(p2, float).reshape(3)
+        u = normalize(r2 - r1)
+        rho = np.cross(r1, u)
+        return PluckerLine(u, rho)
+
+    # ---- relations ----
+    def reciprocal_product(self, other: "PluckerLine") -> float:
+        """
+        Reciprocal product l2 × l1 = u2·rho1 + u1·rho2 (Eq. 4.388).
+        """
+        return float(self.u @ other.rho + other.u @ self.rho)
+
+    def angle(self, other: "PluckerLine") -> float:
+        """
+        Angle α between lines via sinα = ||u1 × u2|| (Eq. 4.389).
+        Returns α in radians (principal value via arcsin).
+        """
+        s = np.linalg.norm(np.cross(self.u, other.u))
+        s = float(np.clip(s, 0.0, 1.0))
+        return math.asin(s)
+
+    def distance(self, other: "PluckerLine") -> float:
+        """
+        Shortest distance d = |l2 × l1| / sinα  (Eq. 4.390).
+        Returns NaN for parallel lines (sinα ≈ 0).
+        """
+        num = abs(self.reciprocal_product(other))
+        den = np.linalg.norm(np.cross(self.u, other.u))
+        if den <= 1e-12:
+            return float("nan")
+        return float(num / den)
+
+    # ---- actions ----
+    def transform(self, T: SE3) -> "PluckerLine":
+        """
+        6×6 Plücker action induced by SE3 (Eq. 4.382).
+
+        l' = Ad_T · l, where Ad_T = [[R, 0],[ [t]_x R, R ]].
+        Implemented explicitly without materializing the full 6×6.
+        """
+        R, t = T.R, T.t
+        u2 = R @ self.u
+        rho2 = hat(t) @ (R @ self.u) + R @ self.rho
+        return PluckerLine(u2, rho2)
+
+
+# ---------------------------------- Plane ------------------------------------
+
+@dataclass(frozen=True)
+class Plane:
+    """
+    Plane given by unit normal n and offset s:  n·x = s  (cf. 4.391).
+
+    Distance to a point p: signed = n·p - s ; unsigned = |signed| (4.397).
+    """
+    n: np.ndarray
+    s: float = 0.0
+
+    @staticmethod
+    def from_point_normal(point: Iterable[float], normal: Iterable[float]) -> "Plane":
+        n_hat = normalize(np.asarray(normal, float).reshape(3))
+        s = float(n_hat @ np.asarray(point, float).reshape(3))
+        return Plane(n_hat, s)
+
+    def distance_to_point(self, p: Iterable[float], *, signed: bool = True) -> float:
+        p = np.asarray(p, float).reshape(3)
+        d = float(self.n @ p - self.s)
+        return d if signed else abs(d)
+
+
+# -------------------------- DH Link & Kinematic Chain ------------------------
+
+@dataclass(frozen=True)
+class DHLink:
+    """
+    Standard Denavit–Hartenberg link: (a, alpha, d, theta).
+
+    A_i =
+    [[ cosθ, -sinθ cosα,  sinθ sinα,  a cosθ],
+     [ sinθ,  cosθ cosα, -cosθ sinα,  a sinθ],
+     [    0,        sinα,       cosα,      d],
+     [    0,           0,          0,      1]]
+    """
+    a: float
+    alpha: float
+    d: float
+    theta: float
+
+    def T(self) -> SE3:
+        ca, sa = math.cos(self.alpha), math.sin(self.alpha)
+        ct, st = math.cos(self.theta), math.sin(self.theta)
+        R = np.array(
+            [[ct, -st * ca,  st * sa],
+             [st,  ct * ca, -ct * sa],
+             [0.0,     sa,       ca]],
+            dtype=float,
+        )
+        t = np.array([self.a * ct, self.a * st, self.d], dtype=float)
+        return SE3(R, t)
+
+
+@dataclass
+class KinematicChain:
+    """
+    Product of DH links (forward kinematics).
+    """
+    links: Tuple[DHLink, ...] | List[DHLink]
+
+    def fk(self) -> SE3:
+        T = SE3.identity()
+        for link in self.links:
+            T = T @ link.T()
+        return T
+
+please generate the entire upgraded core.py per the latest facts.
+
+///
+
+///
+
+///
+
+ok, here is the current test_screw_transform.py:
+
+# motion/tests/test_screw_transform.py
+import math
+import numpy as np
+import pytest
+
+from motion.core import Rotation, SE3, Screw
+
+
+def test_central_pure_rotation_about_z_90deg():
+    s = Screw(u=np.array([0, 0, 1.0]), s=np.zeros(3), h=0.0, phi=math.pi / 2)
+    T = s.to_matrix()
+    p = np.array([1.0, 0.0, 0.0, 1.0])  # x-axis point
+    out = T @ p
+    assert np.allclose(out[:3], [0.0, 1.0, 0.0], atol=1e-12)
+    # rotation block should equal Rz(90)
+    Rz = Rotation.Rz(math.pi / 2).as_matrix()
+    assert np.allclose(T[:3, :3], Rz, atol=1e-12)
+
+
+def test_central_screw_with_pitch_translates_along_axis():
+    h = 0.5
+    phi = math.pi
+    s = Screw(u=np.array([0.0, 0.0, 1.0]), s=np.zeros(3), h=h, phi=phi)
+    T = s.to_matrix()
+    # Translation part for a central screw is h * phi * u
+    expected_t = h * phi * np.array([0.0, 0.0, 1.0])
+    assert np.allclose(T[:3, 3], expected_t, atol=1e-12)
+    # Apply to the origin
+    out = (T @ np.array([0, 0, 0, 1.0]))[:3]
+    assert np.allclose(out, expected_t, atol=1e-12)
+
+
+def test_off_axis_rotation_matches_conjugation_D_R_Dinv():
+    # Rotate about z-axis but through the point s = [2, 0, 0] (h = 0)
+    s_vec = np.array([2.0, 0.0, 0.0])
+    phi = math.radians(45.0)
+    screw = Screw(u=np.array([0.0, 0.0, 1.0]), s=s_vec, h=0.0, phi=phi)
+    T_screw = screw.to_matrix()
+
+    # Construct via conjugation: D * R * D^{-1}
+    D = SE3(np.eye(3), s_vec)
+    R = SE3(Rotation.Rz(phi).as_matrix(), np.zeros(3))
+    T_conj = (D @ R @ D.inv()).as_matrix()
+
+    assert np.allclose(T_screw, T_conj, atol=1e-12)
+
+
+def test_inverse_is_negating_angle_and_pitch():
+    # General screw (non-zero s and h)
+    u = np.array([1.0, 2.0, -1.0]); u /= np.linalg.norm(u)
+    s_vec = np.array([0.3, -0.1, 0.7])
+    h = 0.2
+    phi = -0.8
+    T = Screw(u=u, s=s_vec, h=h, phi=phi).to_matrix()
+    T_inv_expected = np.linalg.inv(T)
+
+    # Inverse screw: same axis & s, negate phi and h
+    T_inv_by_params = Screw(u=u, s=s_vec, h=-h, phi=-phi).to_matrix()
+
+    assert np.allclose(T_inv_by_params, T_inv_expected, atol=1e-12)
+    assert np.allclose(T @ T_inv_by_params, np.eye(4), atol=1e-12)
+    assert np.allclose(T_inv_by_params @ T, np.eye(4), atol=1e-12)
+
+
+def test_composition_same_axis_same_s_with_effective_pitch():
+    # Compose two screws about the same line (same u, same s), different pitches.
+    u = np.array([0.0, 0.0, 1.0])
+    s_vec = np.array([1.5, -0.2, 0.3])
+    phi1, h1 = 0.7, 0.10
+    phi2, h2 = -0.4, 0.30
+
+    T1 = Screw(u=u, s=s_vec, h=h1, phi=phi1).to_matrix()
+    T2 = Screw(u=u, s=s_vec, h=h2, phi=phi2).to_matrix()
+    T12 = T1 @ T2
+
+    # For same twist axis and same s, composition is exp(S * (phi1+phi2)).
+    # The resulting pitch satisfies h_eff * (phi1+phi2) = h1*phi1 + h2*phi2
+    phi = phi1 + phi2
+    # If phi is ~0, the decomposition is ill-defined; pick parameters so not zero.
+    assert abs(phi) > 1e-9
+    h_eff = (h1 * phi1 + h2 * phi2) / phi
+
+    T_eff = Screw(u=u, s=s_vec, h=h_eff, phi=phi).to_matrix()
+    assert np.allclose(T12, T_eff, atol=1e-12)
+
+
+def test_small_angle_linearization_translation_term():
+    # For small φ: R ≈ I + φ [u]_x, and t ≈ -(φ [u]_x) s + h φ u
+    u = np.array([0.2, -0.4, 0.1]); u /= np.linalg.norm(u)
+    s_vec = np.array([0.3, 0.5, -0.2])
+    h = -0.25
+    phi = 1e-7
+
+    T = Screw(u=u, s=s_vec, h=h, phi=phi).to_matrix()
+
+    # Linearized translation
+    ux = np.array([[0, -u[2], u[1]],
+                   [u[2], 0, -u[0]],
+                   [-u[1], u[0], 0]], dtype=float)
+    t_lin = -(phi * ux) @ s_vec + (h * phi) * u
+
+    assert np.allclose(T[:3, :3], np.eye(3) + phi * ux, atol=1e-10)
+    assert np.allclose(T[:3, 3], t_lin, atol=1e-10)
+
+please generate the entire upgraded test_screw_transform.py per the latest facts.
+
+///
+
+///
+
+///
+
+good progress, now just one test fails:
+
+(.venv) ➜  robotics git:(develop) ✗ pytest motion/tests -q
+
+Test session starts (platform: darwin, Python 3.11.0, pytest 8.4.2, pytest-sugar 1.1.1)
+cachedir: .pytest_cache
+rootdir: /Users/pablomontijo/Control/robotics
+configfile: pytest.ini
+plugins: xdist-3.8.0, sugar-1.1.1, cov-7.0.0
+collected 32 items
+
+
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― test_angle_distance_between_skew_lines ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    def test_angle_distance_between_skew_lines():
+        # l1: x-axis through origin
+        l1 = PluckerLine.from_points([0, 0, 0], [1, 0, 0])
+        # l2: line through (0,1,1) toward (0,2,3)
+        l2 = PluckerLine.from_points([0, 1, 1], [0, 2, 3])
+
+        alpha, d = _angle_and_distance(l1, l2)
+
+>       assert 0 < alpha < math.pi / 2  # non-parallel, non-orthogonal
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 1.5707963267948966 < (3.141592653589793 / 2)
+E        +  where 3.141592653589793 = math.pi
+
+motion/tests/test_plucker_distance.py:21: AssertionError
+
+ motion/tests/test_plucker_distance.py::test_angle_distance_between_skew_lines ⨯                                                                             3% ▍
+ motion/tests/test_plucker_distance.py::test_intersecting_lines_distance_zero_and_reciprocal_zero ✓                                                          6% ▋
+ motion/tests/test_plucker_distance.py::test_parallel_lines_distance_nan_and_manual_computation ✓                                                            9% ▉
+ motion/tests/test_plucker_distance.py::test_se3_transform_invariance_of_angle_and_distance ✓                                                               12% █▍
+ motion/tests/test_rotation.py::test_rz_90_matches_axis_angle ✓                                                                                             16% █▋
+ motion/tests/test_rotation.py::test_rx_ry_rz_are_proper_rotations ✓                                                                                        19% █▉
+ motion/tests/test_rotation.py::test_inverse_is_transpose_and_composition_identity ✓                                                                        22% ██▎
+ motion/tests/test_rotation.py::test_same_axis_composition_adds_angles ✓                                                                                    25% ██▌
+ motion/tests/test_rotation.py::test_zero_angle_is_identity_any_axis ✓                                                                                      28% ██▊
+ motion/tests/test_rotation.py::test_small_angle_first_order_term ✓                                                                                         31% ███▎
+ motion/tests/test_rotation.py::test_random_axes_yield_orthonormal_mats ✓                                                                                   34% ███▌
+ motion/tests/test_screw_transform.py::test_central_pure_rotation_about_z_90deg ✓                                                                           38% ███▊
+ motion/tests/test_screw_transform.py::test_central_screw_with_pitch_translates_along_axis ✓                                                                41% ████▏
+ motion/tests/test_screw_transform.py::test_off_axis_rotation_matches_conjugation_D_R_Dinv ✓                                                                44% ████▍
+ motion/tests/test_screw_transform.py::test_inverse_is_negating_angle_only ✓                                                                                47% ████▊
+ motion/tests/test_screw_transform.py::test_composition_same_axis_same_s_with_effective_pitch ✓                                                             50% █████
+ motion/tests/test_screw_transform.py::test_small_angle_linearization_translation_term ✓                                                                    53% █████▍
+ motion/tests/test_se3_inverse.py::test_inverse_rule_Tinv_T_is_identity ✓                                                                                   56% █████▋
+ motion/tests/test_se3_inverse.py::test_inverse_blocks_match_formula ✓                                                                                      59% █████▉
+ motion/tests/test_se3_inverse.py::test_composition_matches_block_form ✓                                                                                    62% ██████▍
+ motion/tests/test_se3_inverse.py::test_associativity_of_composition ✓                                                                                      66% ██████▋
+ motion/tests/test_se3_inverse.py::test_inverse_of_product_equals_reverse_product_of_inverses ✓                                                             69% ██████▉
+ motion/tests/test_se3_inverse.py::test_apply_point_and_apply_points ✓                                                                                      72% ███████▎
+ motion/tests/test_se3_inverse.py::test_from_matrix_roundtrip ✓                                                                                             75% ███████▌
+ motion/tests/test_utils.py::test_timing_on_dict_adds_elapsed_ms ✓                                                                                          78% ███████▊
+ motion/tests/test_utils.py::test_timing_on_object_sets_attr ✓                                                                                              81% ████████▎
+ motion/tests/test_utils.py::test_is_rotation_matrix_true_false ✓                                                                                           84% ████████▌
+ motion/tests/test_utils.py::test_is_se3_true_false ✓                                                                                                       88% ████████▊
+ motion/tests/test_utils.py::test_numpy_json_encoder_roundtrip ✓                                                                                            91% █████████▏
+ motion/tests/test_utils.py::test_angle_conversions ✓                                                                                                       94% █████████▍
+ motion/tests/test_utils.py::test_as_vec3_valid_and_invalid ✓                                                                                               97% █████████▊
+ motion/tests/test_utils.py::test_almost_equal_and_clamp_and_version ✓                                                                                     100% ██████████
+========================================================================== slowest 10 durations ==========================================================================
+0.05s call     motion/tests/test_rotation.py::test_random_axes_yield_orthonormal_mats
+0.01s setup    motion/tests/test_utils.py::test_numpy_json_encoder_roundtrip
+
+(8 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================================================================== short test summary info =========================================================================
+FAILED motion/tests/test_plucker_distance.py::test_angle_distance_between_skew_lines - assert 1.5707963267948966 < (3.141592653589793 / 2)
+
+Results (0.48s):
+      31 passed
+       1 failed
+         - motion/tests/test_plucker_distance.py:13 test_angle_distance_between_skew_lines
+
+please analyze the logs thoroughly and assess what went wrong.
+
+here is the latest core.py:
+
+# motion/core.py
+from __future__ import annotations
+
+"""
+Core math primitives for rigid-body motion kinematics (Chapter 4 scope).
+
+Classes
+-------
+Rotation     : SO(3) rotation with axis–angle factories (Rodrigues).
+SE3          : Homogeneous transform (R, t) with composition/inverse/apply.
+Screw        : Screw motion parameterization {u, s, h, phi} → SE3.
+PluckerLine  : Plücker line [u; rho], angle & distance, 6×6 action via SE3.
+Plane        : Plane n·x = s (point distance).
+DHLink       : Standard DH link (a, alpha, d, theta) → SE3.
+KinematicChain : Product of DH links (forward kinematics).
+
+Helpers
+-------
+hat(v), vee(S), normalize(v)
+
+Key equation coverage (non-exhaustive)
+--------------------------------------
+Rotations/SE(3): 4.1–4.66, 4.75–4.90
+Rodrigues:      4.221 (and classic 3.187, used in §4)
+Screw motion:   4.206, 4.220–4.224 (û, s, h, φ → (R, t))
+Plücker:        4.344–4.346 (build), 4.382 (SE3 action),
+                4.388–4.390 (reciprocal product, angle, distance)
+Planes:         4.391–4.397
+DH FK:          standard A_i form widely used in §4
+"""
+
+from dataclasses import dataclass
+from typing import Iterable, List, Tuple
+import math
+import numpy as np
+
+
+# ------------------------------- helpers -------------------------------------
+
+def hat(v: np.ndarray) -> np.ndarray:
+    """
+    Skew-symmetric matrix [v]_x that implements cross products: [v]_x w = v × w.
+    """
+    v = np.asarray(v, dtype=float).reshape(3)
+    x, y, z = v
+    return np.array([[0.0, -z,  y],
+                     [z,  0.0, -x],
+                     [-y, x,  0.0]], dtype=float)
+
+
+def vee(S: np.ndarray) -> np.ndarray:
+    """
+    Inverse of hat for so(3) → R^3.
+    """
+    S = np.asarray(S, dtype=float).reshape(3, 3)
+    return np.array([S[2, 1], S[0, 2], S[1, 0]], dtype=float)
+
+
+def normalize(v: np.ndarray) -> np.ndarray:
+    """
+    Safe vector normalization. Returns a copy if norm==0 (no raise).
+    """
+    v = np.asarray(v, dtype=float)
+    n = np.linalg.norm(v)
+    if n == 0.0:
+        return v.copy()
+    return v / n
+
+
+# -------------------------------- Rotation -----------------------------------
+
+@dataclass(frozen=True)
+class Rotation:
+    """
+    SO(3) rotation.
+
+    Notes
+    -----
+    - Axis–angle → matrix uses Rodrigues:
+        R = I + sinφ [u]_x + (1 - cosφ) [u]_x^2 (cf. 4.221 / classic 3.187)
+    """
+    R: np.ndarray  # shape (3, 3)
+
+    # ---- factories ----
+    @staticmethod
+    def from_axis_angle(axis: Iterable[float], phi: float) -> "Rotation":
+        u = normalize(np.asarray(axis, float).reshape(3))
+        K = hat(u)
+        s, c = math.sin(phi), math.cos(phi)
+        R = np.eye(3) + s * K + (1.0 - c) * (K @ K)
+        return Rotation(R)
+
+    @staticmethod
+    def Rx(theta: float) -> "Rotation":
+        c, s = math.cos(theta), math.sin(theta)
+        return Rotation(np.array([[1, 0, 0],
+                                  [0, c, -s],
+                                  [0, s,  c]], float))
+
+    @staticmethod
+    def Ry(theta: float) -> "Rotation":
+        c, s = math.cos(theta), math.sin(theta)
+        return Rotation(np.array([[ c, 0, s],
+                                  [ 0, 1, 0],
+                                  [-s, 0, c]], float))
+
+    @staticmethod
+    def Rz(theta: float) -> "Rotation":
+        c, s = math.cos(theta), math.sin(theta)
+        return Rotation(np.array([[c, -s, 0],
+                                  [s,  c, 0],
+                                  [0,  0, 1]], float))
+
+    # ---- ops ----
+    def inv(self) -> "Rotation":
+        return Rotation(self.R.T)
+
+    def as_matrix(self) -> np.ndarray:
+        return self.R.copy()
+
+
+# ---------------------------------- SE3 --------------------------------------
+
+@dataclass(frozen=True)
+class SE3:
+    """
+    Homogeneous transform T ∈ SE(3), represented as (R, t).
+
+    Composition (G_T_C = G_T_B @ B_T_C) follows 4.59–4.66.
+    Inverse: T^{-1} = [ R^T  -R^T t ; 0 0 0 1 ] (cf. 4.447).
+    """
+    R: np.ndarray  # (3,3)
+    t: np.ndarray  # (3,)
+
+    # ---- factories ----
+    @staticmethod
+    def identity() -> "SE3":
+        return SE3(np.eye(3), np.zeros(3))
+
+    @staticmethod
+    def from_rt(R: Rotation, t: Iterable[float]) -> "SE3":
+        return SE3(R.as_matrix(), np.asarray(t, float).reshape(3))
+
+    @staticmethod
+    def from_matrix(T: np.ndarray) -> "SE3":
+        T = np.asarray(T, float).reshape(4, 4)
+        return SE3(T[:3, :3].copy(), T[:3, 3].copy())
+
+    # ---- conversions ----
+    def as_matrix(self) -> np.ndarray:
+        T = np.eye(4)
+        T[:3, :3] = self.R
+        T[:3, 3] = self.t
+        return T
+
+    # ---- ops ----
+    def inv(self) -> "SE3":
+        RT = self.R.T
+        return SE3(RT, -RT @ self.t)
+
+    def __matmul__(self, other: "SE3") -> "SE3":
+        """Composition (overriding '@')."""
+        R = self.R @ other.R
+        t = self.R @ other.t + self.t
+        return SE3(R, t)
+
+    # ---- application ----
+    def apply(self, p: Iterable[float]) -> np.ndarray:
+        """Apply to a 3D point."""
+        p = np.asarray(p, float).reshape(3)
+        return self.R @ p + self.t
+
+    def apply_points(self, P: np.ndarray) -> np.ndarray:
+        """Apply to an array of Nx3 points."""
+        P = np.asarray(P, float)
+        return (self.R @ P.T).T + self.t
+
+
+# --------------------------------- Screw -------------------------------------
+
+@dataclass(frozen=True)
+class Screw:
+    """
+    Screw motion parameterization {u, s, h, phi} with transform builder.
+
+    Parameters
+    ----------
+    u   : axis (not necessarily unit; normalized internally)
+    s   : location vector (any point on the screw axis expressed in {G})
+    h   : pitch (translation per radian)
+    phi : rotation angle (radians)
+
+    Formulas (cf. 4.206, 4.220–4.224)
+    ---------------------------------
+    R  = I + sinφ [û]_x + (1 - cosφ) [û]_x^2
+    t  = (I - R) s + h φ û             (equivalently: s - R s + h φ û)
+    T  = [[R, t], [0, 0, 0, 1]]
+    """
+    u: np.ndarray
+    s: np.ndarray
+    h: float
+    phi: float
+
+    def transform(self) -> SE3:
+        u_hat = normalize(np.asarray(self.u, float).reshape(3))
+        s_vec = np.asarray(self.s, float).reshape(3)
+        R = Rotation.from_axis_angle(u_hat, self.phi).as_matrix()
+        t = (np.eye(3) - R) @ s_vec + (self.h * self.phi) * u_hat
+        return SE3(R, t)
+
+    def to_matrix(self) -> np.ndarray:
+        return self.transform().as_matrix()
+
+
+# ------------------------------- Plücker line --------------------------------
+
+@dataclass(frozen=True)
+class PluckerLine:
+    """
+    Plücker line coordinates l = [u; rho], with ||u|| = 1 and u·rho = 0.
+
+    Build from two points (4.344–4.346), transform by SE3 (4.382),
+    and compute angle (4.389) / distance (4.390) between two lines.
+    """
+    u: np.ndarray    # (3,)
+    rho: np.ndarray  # (3,)
+
+    # ---- factories ----
+    @staticmethod
+    def from_points(p1: Iterable[float], p2: Iterable[float]) -> "PluckerLine":
+        r1 = np.asarray(p1, float).reshape(3)
+        r2 = np.asarray(p2, float).reshape(3)
+        u = normalize(r2 - r1)
+        rho = np.cross(r1, u)
+        return PluckerLine(u, rho)
+
+    # ---- relations ----
+    def reciprocal_product(self, other: "PluckerLine") -> float:
+        """
+        Reciprocal product l2 × l1 = u2·rho1 + u1·rho2 (Eq. 4.388).
+        """
+        return float(self.u @ other.rho + other.u @ self.rho)
+
+    def angle(self, other: "PluckerLine") -> float:
+        """
+        Robust principal angle α ∈ [0, π] between directions using:
+            α = atan2( ||u1 × u2|| , u1 · u2 )   (more stable than asin near 90°)
+        (cf. 4.389 for sinα; here we use atan2(sinα, cosα) for numerical stability.)
+        """
+        u1 = self.u / np.linalg.norm(self.u)
+        u2 = other.u / np.linalg.norm(other.u)
+        s = float(np.linalg.norm(np.cross(u1, u2)))
+        c = float(np.clip(u1 @ u2, -1.0, 1.0))
+        s = float(np.clip(s, 0.0, 1.0))
+        return math.atan2(s, c)
+
+    def distance(self, other: "PluckerLine") -> float:
+        """
+        Shortest distance d = |l2 × l1| / sinα  (Eq. 4.390).
+        Returns NaN for parallel lines (sinα ≈ 0).
+        """
+        # Normalize directions for consistent numerics
+        u1 = self.u / np.linalg.norm(self.u)
+        u2 = other.u / np.linalg.norm(other.u)
+        num = abs(self.reciprocal_product(other))
+        den = float(np.linalg.norm(np.cross(u1, u2)))
+        if den <= 1e-12:
+            return float("nan")
+        return float(num / den)
+
+    # ---- actions ----
+    def transform(self, T: SE3) -> "PluckerLine":
+        """
+        6×6 Plücker action induced by SE3 (Eq. 4.382).
+
+        l' = Ad_T · l, where Ad_T = [[R, 0],[ [t]_x R, R ]].
+        Implemented explicitly without materializing the full 6×6.
+        """
+        R, t = T.R, T.t
+        u2 = R @ self.u
+        # normalize to eliminate tiny drift (important for angle invariance tests)
+        n = np.linalg.norm(u2)
+        if n > 0:
+            u2 = u2 / n
+        rho2 = hat(t) @ u2 + R @ self.rho
+        return PluckerLine(u2, rho2)
+
+
+# ---------------------------------- Plane ------------------------------------
+
+@dataclass(frozen=True)
+class Plane:
+    """
+    Plane given by unit normal n and offset s:  n·x = s  (cf. 4.391).
+
+    Distance to a point p: signed = n·p - s ; unsigned = |signed| (4.397).
+    """
+    n: np.ndarray
+    s: float = 0.0
+
+    @staticmethod
+    def from_point_normal(point: Iterable[float], normal: Iterable[float]) -> "Plane":
+        n_hat = normalize(np.asarray(normal, float).reshape(3))
+        s = float(n_hat @ np.asarray(point, float).reshape(3))
+        return Plane(n_hat, s)
+
+    def distance_to_point(self, p: Iterable[float], *, signed: bool = True) -> float:
+        p = np.asarray(p, float).reshape(3)
+        d = float(self.n @ p - self.s)
+        return d if signed else abs(d)
+
+
+# -------------------------- DH Link & Kinematic Chain ------------------------
+
+@dataclass(frozen=True)
+class DHLink:
+    """
+    Standard Denavit–Hartenberg link: (a, alpha, d, theta).
+
+    A_i =
+    [[ cosθ, -sinθ cosα,  sinθ sinα,  a cosθ],
+     [ sinθ,  cosθ cosα, -cosθ sinα,  a sinθ],
+     [    0,        sinα,       cosα,      d],
+     [    0,           0,          0,      1]]
+    """
+    a: float
+    alpha: float
+    d: float
+    theta: float
+
+    def T(self) -> SE3:
+        ca, sa = math.cos(self.alpha), math.sin(self.alpha)
+        ct, st = math.cos(self.theta), math.sin(self.theta)
+        R = np.array(
+            [[ct, -st * ca,  st * sa],
+             [st,  ct * ca, -ct * sa],
+             [0.0,     sa,       ca]],
+            dtype=float,
+        )
+        t = np.array([self.a * ct, self.a * st, self.d], dtype=float)
+        return SE3(R, t)
+
+
+@dataclass
+class KinematicChain:
+    """
+    Product of DH links (forward kinematics).
+    """
+    links: Tuple[DHLink, ...] | List[DHLink]
+
+    def fk(self) -> SE3:
+        T = SE3.identity()
+        for link in self.links:
+            T = T @ link.T()
+        return T
+
+///
+
+///
+
+///
+
+here is the current test_plucker_distance.py:
+
+# motion/tests/test_plucker_distance.py
+import math
+import numpy as np
+import pytest
+
+from motion.core import PluckerLine, SE3, Rotation
+
+
+def _angle_and_distance(l1: PluckerLine, l2: PluckerLine):
+    return l1.angle(l2), l1.distance(l2)
+
+
+def test_angle_distance_between_skew_lines():
+    # l1: x-axis through origin
+    l1 = PluckerLine.from_points([0, 0, 0], [1, 0, 0])
+    # l2: line through (0,1,1) toward (0,2,3)
+    l2 = PluckerLine.from_points([0, 1, 1], [0, 2, 3])
+
+    alpha, d = _angle_and_distance(l1, l2)
+
+    assert 0 < alpha < math.pi / 2  # non-parallel, non-orthogonal
+    assert d > 0 and math.isfinite(d)
+
+
+def test_intersecting_lines_distance_zero_and_reciprocal_zero():
+    # Two axes crossing at origin, orthogonal
+    l1 = PluckerLine.from_points([0, 0, 0], [1, 0, 0])  # x-axis
+    l2 = PluckerLine.from_points([0, 0, 0], [0, 1, 0])  # y-axis
+
+    # Distance must be zero, angle = 90 deg
+    alpha = l1.angle(l2)
+    d = l1.distance(l2)
+    assert pytest.approx(alpha, rel=0, abs=1e-12) == math.pi / 2
+    assert pytest.approx(d, rel=0, abs=1e-12) == 0.0
+
+    # Reciprocal product should vanish for intersecting lines (4.388)
+    assert pytest.approx(l2.reciprocal_product(l1), rel=0, abs=1e-12) == 0.0
+
+
+def test_parallel_lines_distance_nan_and_manual_computation():
+    # Parallel lines along x, offset by 0.3 in y
+    l1 = PluckerLine.from_points([0, 0, 0], [1, 0, 0])
+    l2 = PluckerLine.from_points([0, 0.3, 0], [1, 0.3, 0])
+
+    alpha, d = _angle_and_distance(l1, l2)
+    # Our implementation returns NaN for parallel lines (sin alpha ~ 0)
+    assert pytest.approx(alpha, rel=0, abs=1e-12) == 0.0
+    assert math.isnan(d)
+
+    # Manual shortest distance between parallel lines equals offset magnitude
+    expected = 0.3
+    assert pytest.approx(expected, rel=0, abs=1e-12) == 0.3
+
+
+def test_se3_transform_invariance_of_angle_and_distance():
+    # Two skew lines
+    l1 = PluckerLine.from_points([0, 0, 0], [1, 0, 0])        # x-axis
+    l2 = PluckerLine.from_points([0, 1, 1], [0, 2, 3])
+
+    alpha0, d0 = _angle_and_distance(l1, l2)
+
+    # Apply the same rigid transform to both lines
+    T = SE3.from_rt(Rotation.Rz(np.deg2rad(30)), [0.5, -0.2, 0.3])
+    l1p = l1.transform(T)
+    l2p = l2.transform(T)
+
+    alpha1, d1 = _angle_and_distance(l1p, l2p)
+
+    # Angle and distance between lines are invariant under SE(3)
+    assert pytest.approx(alpha1, rel=0, abs=1e-12) == alpha0
+    assert pytest.approx(d1, rel=0, abs=1e-12) == d0
+
+please generate the entire upgraded test_plucker_distance.py per the latest facts.
+
+///
+
+///
+
+///
+
