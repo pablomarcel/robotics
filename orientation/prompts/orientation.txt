@@ -1427,3 +1427,761 @@ def main(argv: List[str] | None = None) -> None:
 if __name__ == "__main__":
     main()
 
+///
+
+///
+
+///
+
+one thing we overlooked was gen_diagram.py.
+now that we have classes, can we generate a class diagram?
+
+I explored the PyCharm built in functionality and it works, but i wonder if we could generate the puml from code.
+
+///
+
+///
+
+the curl command calling kroki worked as well as the plantuml.com server
+
+classes are put in the image but i noticed they are not connected.
+
+///
+
+///
+
+///
+
+ok, here is the updated design.py:
+
+# orientation/design.py
+"""
+Diagram generation utilities (PlantUML, Graphviz DOT, Mermaid) with
+relationship inference:
+
+- Inheritance: subclass → baseclass
+- Composition: class has field/attribute annotated as another in-project class
+- Usage: method parameter/return type annotated as another in-project class
+
+You can filter by modules (default: everything under 'orientation').
+"""
+
+from __future__ import annotations
+from dataclasses import dataclass, field, fields, is_dataclass
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple, get_type_hints
+import inspect
+import sys
+import types
+
+# --------------------------- model ---------------------------
+
+@dataclass
+class ClassInfo:
+    name: str
+    qualname: str
+    module: str
+    bases: List[str] = field(default_factory=list)
+    attrs: Dict[str, str] = field(default_factory=dict)   # attr -> type name
+    methods: Dict[str, str] = field(default_factory=dict) # name -> signature str
+
+@dataclass
+class Relationship:
+    src: str
+    dst: str
+    kind: str  # 'inherits' | 'has' | 'uses'
+
+@dataclass
+class DiagramConfig:
+    include_prefixes: Sequence[str] = ("orientation.",)
+    exclude_modules: Sequence[str] = ()
+    include_private: bool = False
+
+    def allow_module(self, mod: str) -> bool:
+        if any(mod.startswith(x) for x in self.exclude_modules):
+            return False
+        return any(mod.startswith(p) for p in self.include_prefixes)
+
+# --------------------------- inspector ---------------------------
+
+class ClassCollector:
+    def __init__(self, cfg: DiagramConfig):
+        self.cfg = cfg
+
+    def _is_allowed(self, obj) -> bool:
+        if not inspect.isclass(obj):
+            return False
+        mod = getattr(obj, "__module__", "")
+        return self.cfg.allow_module(mod)
+
+    def collect(self, modules: Optional[Sequence[types.ModuleType]] = None) -> Dict[str, ClassInfo]:
+        if modules is None:
+            # Autodiscover loaded modules that match prefix
+            modules = [m for n, m in sys.modules.items()
+                       if isinstance(m, types.ModuleType) and self.cfg.allow_module(n)]
+        classes: Dict[str, ClassInfo] = {}
+        for m in modules:
+            for _, obj in inspect.getmembers(m, inspect.isclass):
+                if not self._is_allowed(obj):
+                    continue
+                qual = f"{obj.__module__}.{obj.__name__}"
+                bases = [b.__name__ for b in obj.__bases__
+                         if getattr(b, "__module__", "").startswith("orientation")]
+                # attributes via dataclass fields + class annotations
+                attrs: Dict[str, str] = {}
+                if is_dataclass(obj):
+                    try:
+                        for f in fields(obj):
+                            attrs[f.name] = _friendly_type(f.type)
+                    except Exception:
+                        pass
+                # global annotations at class level
+                try:
+                    hints = get_type_hints(obj, include_extras=False)
+                    for k, t in hints.items():
+                        attrs.setdefault(k, _friendly_type(t))
+                except Exception:
+                    pass
+                # methods (names + signature) – no bodies
+                methods: Dict[str, str] = {}
+                for name, fn in inspect.getmembers(obj, inspect.isfunction):
+                    if not self.cfg.include_private and name.startswith("_"):
+                        continue
+                    try:
+                        sig = str(inspect.signature(fn))
+                    except Exception:
+                        sig = "(…)"
+                    methods[name] = sig
+
+                classes[qual] = ClassInfo(
+                    name=obj.__name__,
+                    qualname=qual,
+                    module=obj.__module__,
+                    bases=bases,
+                    attrs=attrs,
+                    methods=methods,
+                )
+        return classes
+
+def _friendly_type(t) -> str:
+    try:
+        if hasattr(t, "__name__"):
+            return t.__name__
+        s = str(t)
+        return s.replace("typing.", "")
+    except Exception:
+        return "Any"
+
+# --------------------------- relationships ---------------------------
+
+class RelationshipInferer:
+    def __init__(self, classes: Dict[str, ClassInfo]):
+        self.classes = classes
+        # Map simple name -> fully qualified (prefer in-project uniques)
+        self._name_to_qual: Dict[str, str] = {}
+        for q, ci in classes.items():
+            self._name_to_qual.setdefault(ci.name, q)
+
+    def _resolve(self, name_or_hint: str) -> Optional[str]:
+        # best-effort: handle 'SO3', 'orientation.core.SO3', 'List[SO3]' etc.
+        s = name_or_hint.replace("]", "").replace("[", "").replace(",", " ")
+        tokens = s.split()
+        for tok in tokens:
+            if tok in self._name_to_qual:
+                return self._name_to_qual[tok]
+            # already qualified?
+            if tok in self.classes:
+                return tok
+        return None
+
+    def infer(self) -> List[Relationship]:
+        rels: List[Relationship] = []
+        # Inheritance
+        for q, ci in self.classes.items():
+            for b in ci.bases:
+                dst = self._resolve(b) or f"orientation.{b}"
+                if dst in self.classes:
+                    rels.append(Relationship(src=q, dst=dst, kind="inherits"))
+
+        # Composition (has-a): attribute types
+        for q, ci in self.classes.items():
+            for _, tname in ci.attrs.items():
+                dst = self._resolve(tname)
+                if dst and dst in self.classes and dst != q:
+                    rels.append(Relationship(src=q, dst=dst, kind="has"))
+
+        # Usage: method annotations (params + return)
+        for q, cls in self._iter_runtime_classes():
+            ci = self.classes.get(f"{cls.__module__}.{cls.__name__}")
+            if not ci:
+                continue
+            for name, fn in inspect.getmembers(cls, inspect.isfunction):
+                if name.startswith("_"):
+                    continue
+                try:
+                    th = get_type_hints(fn)
+                except Exception:
+                    th = {}
+                for k, t in th.items():
+                    dst = self._resolve(_friendly_type(t))
+                    if dst and dst in self.classes and dst != ci.qualname:
+                        rels.append(Relationship(src=ci.qualname, dst=dst, kind="uses"))
+        # Deduplicate
+        uniq = {(r.src, r.dst, r.kind): r for r in rels}
+        return list(uniq.values())
+
+    def _iter_runtime_classes(self):
+        for q in self.classes:
+            modname, _, clsname = q.rpartition(".")
+            m = sys.modules.get(modname)
+            if not m:
+                continue
+            c = getattr(m, clsname, None)
+            if inspect.isclass(c):
+                yield c
+
+# --------------------------- renderers ---------------------------
+
+class PlantUMLRenderer:
+    def render(self, classes: Dict[str, ClassInfo], rels: List[Relationship]) -> str:
+        lines = ["@startuml", "skinparam classAttributeIconSize 0"]
+        # classes
+        for ci in classes.values():
+            lines.append(f"class {ci.name} {{")
+            for a, t in sorted(ci.attrs.items()):
+                lines.append(f"  +{a}: {t}")
+            for m, sig in sorted(ci.methods.items()):
+                lines.append(f"  +{m}{sig}")
+            lines.append("}")
+        # relationships
+        for r in rels:
+            s = classes[r.src].name
+            d = classes[r.dst].name
+            if r.kind == "inherits":
+                lines.append(f"{s} --|> {d}")
+            elif r.kind == "has":
+                lines.append(f"{s} *-- {d}")
+            else:  # uses
+                lines.append(f"{s} ..> {d}")
+        lines.append("@enduml")
+        return "\n".join(lines)
+
+class GraphvizRenderer:
+    def render(self, classes: Dict[str, ClassInfo], rels: List[Relationship]) -> str:
+        lines = ["digraph G {", '  rankdir=LR;', '  node [shape=record, fontsize=10];']
+        for ci in classes.values():
+            attrs = r"\l".join(f"+ {k}: {v}" for k, v in sorted(ci.attrs.items()))
+            meths = r"\l".join(f"+ {k}{sig}" for k, sig in sorted(ci.methods.items()))
+            label = f"{{{ci.name}|{attrs}|{meths}}}"
+            lines.append(f'  "{ci.qualname}" [label="{label}"];')
+        for r in rels:
+            style = {"inherits":"arrowhead=onormal",
+                     "has":"arrowhead=diamond",
+                     "uses":"style=dashed,arrowhead=vee"}[r.kind]
+            lines.append(f'  "{r.src}" -> "{r.dst}" [{style}];')
+        lines.append("}")
+        return "\n".join(lines)
+
+class MermaidRenderer:
+    def render(self, classes: Dict[str, ClassInfo], rels: List[Relationship]) -> str:
+        lines = ["classDiagram"]
+        for ci in classes.values():
+            lines.append(f"class {ci.name} {{")
+            for a, t in sorted(ci.attrs.items()):
+                lines.append(f"  +{a}: {t}")
+            for m, sig in sorted(ci.methods.items()):
+                lines.append(f"  +{m}{sig}")
+            lines.append("}")
+        for r in rels:
+            s = classes[r.src].name
+            d = classes[r.dst].name
+            if r.kind == "inherits":
+                lines.append(f"{s} <|-- {d}")
+            elif r.kind == "has":
+                lines.append(f"{s} *-- {d}")
+            else:
+                lines.append(f"{s} ..> {d}")
+        return "\n".join(lines)
+
+# --------------------------- facade ---------------------------
+
+def generate_diagram(out_dir: Path,
+                     cfg: Optional[DiagramConfig] = None
+                     ) -> Tuple[Path, Path, Path]:
+    """
+    Collect classes under 'orientation.*', infer relationships, and write
+    PlantUML (.puml), Graphviz (.dot), and Mermaid (.mmd) to out_dir.
+    Returns the three paths.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cfg = cfg or DiagramConfig()
+
+    collector = ClassCollector(cfg)
+    classes = collector.collect()
+
+    infer = RelationshipInferer(classes)
+    rels = infer.infer()
+
+    puml = PlantUMLRenderer().render(classes, rels)
+    dot  = GraphvizRenderer().render(classes, rels)
+    mmd  = MermaidRenderer().render(classes, rels)
+
+    puml_path = out_dir / "class_diagram.puml"
+    dot_path  = out_dir / "class_diagram.dot"
+    mmd_path  = out_dir / "class_diagram.mmd"
+    puml_path.write_text(puml, encoding="utf-8")
+    dot_path.write_text(dot, encoding="utf-8")
+    mmd_path.write_text(mmd, encoding="utf-8")
+    return puml_path, dot_path, mmd_path
+
+here is the new gen_diagram.py:
+
+"""
+orientation.tools.gen_diagram
+-----------------------------
+Generate a PlantUML (.puml) class diagram by introspecting the orientation package.
+
+Usage examples
+--------------
+# Default: scan core/utils/io/apis/cli/app/design, write to orientation/out/class_diagram.puml
+python -m orientation.tools.gen_diagram
+
+# Custom out dir and filename
+python -m orientation.tools.gen_diagram --out orientation/out --name orientation_classes.puml
+
+# Limit scanned modules
+python -m orientation.tools.gen_diagram --modules orientation.core orientation.utils
+
+Design
+------
+- DiagramModel: holds discovered classes and relations
+- PlantUMLRenderer: renders DiagramModel to .puml text
+- Introspector: discovers classes/methods/bases from given modules/packages
+- GeneratorApp: wires args, runs introspection, writes file
+"""
+from __future__ import annotations
+
+import argparse
+import importlib
+import inspect
+import pkgutil
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Dict, List, Optional, Set, Tuple
+
+# Use project IO manager so we honor orientation/in & out conventions
+try:
+    from ..io import IO, OUT_DIR
+except Exception:
+    # Fallback if run as a plain script without package context
+    IO = None
+    OUT_DIR = Path(__file__).resolve().parents[2] / "orientation" / "out"
+
+
+# ------------------------- Model -------------------------
+
+@dataclass
+class MethodInfo:
+    name: str
+    signature: str
+    is_classmethod: bool = False
+    is_staticmethod: bool = False
+
+@dataclass
+class ClassInfo:
+    qname: str                 # qualified name: module.Class
+    module: str
+    name: str
+    bases: List[str]           # qualified base names (if imported in scope)
+    methods: List[MethodInfo] = field(default_factory=list)
+    attrs: List[str] = field(default_factory=list)  # simple annotated attributes
+
+@dataclass
+class DiagramModel:
+    classes: Dict[str, ClassInfo] = field(default_factory=dict)  # key: qname
+
+    def add(self, cls: ClassInfo) -> None:
+        self.classes[cls.qname] = cls
+
+    def has(self, qname: str) -> bool:
+        return qname in self.classes
+
+    def get(self, qname: str) -> Optional[ClassInfo]:
+        return self.classes.get(qname)
+
+    def relations(self) -> List[Tuple[str, str]]:
+        """Return inheritance relations as (base_qname, child_qname)."""
+        rels: List[Tuple[str, str]] = []
+        for qname, info in self.classes.items():
+            for b in info.bases:
+                if b in self.classes:  # only link among discovered classes
+                    rels.append((b, qname))
+        return rels
+
+
+# ------------------------- Introspection -------------------------
+
+class Introspector:
+    def __init__(self, module_names: List[str]):
+        self.module_names = module_names
+        self._visited: Set[str] = set()
+
+    def discover(self) -> DiagramModel:
+        model = DiagramModel()
+        for root_mod in self.module_names:
+            try:
+                mod = importlib.import_module(root_mod)
+            except Exception:
+                continue
+            self._walk_module(mod, model)
+        return model
+
+    def _walk_module(self, mod, model: DiagramModel):
+        if getattr(mod, "__name__", "") in self._visited:
+            return
+        self._visited.add(mod.__name__)
+
+        # Add classes in this module
+        for name, obj in inspect.getmembers(mod, inspect.isclass):
+            if obj.__module__ != mod.__name__:
+                continue  # skip re-exported or imported classes
+            if name.startswith("_"):
+                continue  # skip private/internal
+            ci = self._class_info(obj)
+            model.add(ci)
+
+        # Recurse into submodules (packages)
+        if hasattr(mod, "__path__"):  # it's a package
+            for sub in pkgutil.iter_modules(mod.__path__, mod.__name__ + "."):
+                try:
+                    submod = importlib.import_module(sub.name)
+                except Exception:
+                    continue
+                self._walk_module(submod, model)
+
+    def _class_info(self, cls: type) -> ClassInfo:
+        module = cls.__module__
+        name = cls.__name__
+        qname = f"{module}.{name}"
+        bases = []
+        for b in cls.__bases__:
+            bmod = getattr(b, "__module__", "")
+            bname = getattr(b, "__name__", "")
+            if bmod and bname and not bname.startswith("_"):
+                bases.append(f"{bmod}.{bname}")
+
+        # Methods: public, defined on this class (not inherited), no dunders
+        methods: List[MethodInfo] = []
+        for mname, member in cls.__dict__.items():
+            if mname.startswith("_"):
+                continue
+            # Detect methods (function, staticmethod, classmethod)
+            is_func = inspect.isfunction(member)
+            is_static = isinstance(member, staticmethod)
+            is_classm = isinstance(member, classmethod)
+            if is_func or is_static or is_classm:
+                func = member if is_func else member.__func__
+                sig = str(inspect.signature(func))
+                methods.append(MethodInfo(
+                    name=mname, signature=sig,
+                    is_classmethod=is_classm, is_staticmethod=is_static
+                ))
+
+        # Attributes from annotations (if present)
+        attrs: List[str] = []
+        ann = getattr(cls, "__annotations__", {}) or {}
+        for aname, atype in ann.items():
+            if aname.startswith("_"):
+                continue
+            attrs.append(f"{aname}: {getattr(atype, '__name__', str(atype))}")
+
+        return ClassInfo(qname=qname, module=module, name=name, bases=bases,
+                         methods=sorted(methods, key=lambda m: m.name),
+                         attrs=sorted(attrs))
+
+
+# ------------------------- Rendering -------------------------
+
+class PlantUMLRenderer:
+    def __init__(self, hide_empty: bool = True):
+        self.hide_empty = hide_empty
+
+    def render(self, model: DiagramModel) -> str:
+        lines: List[str] = []
+        lines.append("@startuml")
+        lines.append("skinparam classAttributeIconSize 0")
+        if self.hide_empty:
+            lines.append("hide empty members")
+
+        # Classes
+        for ci in sorted(model.classes.values(), key=lambda c: c.qname):
+            lines.extend(self._render_class(ci))
+
+        # Inheritance relations
+        for base, child in model.relations():
+            lines.append(f'"{base}" <|-- "{child}"')
+
+        lines.append("@enduml")
+        return "\n".join(lines)
+
+    def _render_class(self, ci: ClassInfo) -> List[str]:
+        header = f'class "{ci.qname}" as {self._alias(ci.qname)} {{'
+        body: List[str] = [header]
+
+        # attributes
+        for a in ci.attrs:
+            body.append(f"  + {a}")
+
+        # methods
+        for m in ci.methods:
+            prefix = "+"
+            if m.is_classmethod:
+                prefix = "+ {static} "  # PlantUML has {static}, use for classmethod/staticmethod
+            elif m.is_staticmethod:
+                prefix = "+ {static} "
+            body.append(f"  {prefix}{m.name}{m.signature}")
+
+        body.append("}")
+        return body
+
+    @staticmethod
+    def _alias(qname: str) -> str:
+        # Replace dots with underscores for a valid identifier
+        return qname.replace(".", "_")
+
+
+# ------------------------- App/CLI -------------------------
+
+class GeneratorApp:
+    DEFAULT_MODULES = [
+        "orientation.core",
+        "orientation.utils",
+        "orientation.io",
+        "orientation.apis",
+        "orientation.cli",
+        "orientation.app",
+        "orientation.design",
+    ]
+
+    def __init__(self, out_dir: Optional[str], filename: Optional[str], modules: Optional[List[str]]):
+        self.out_dir = Path(out_dir) if out_dir else (OUT_DIR if OUT_DIR else Path("orientation/out"))
+        self.filename = filename or "class_diagram.puml"
+        self.modules = modules or self.DEFAULT_MODULES
+
+    def run(self) -> Path:
+        self.out_dir.mkdir(parents=True, exist_ok=True)
+        model = Introspector(self.modules).discover()
+        puml = PlantUMLRenderer().render(model)
+        path = self.out_dir / self.filename
+        text = puml
+        # Prefer project IO if available
+        if IO is not None:
+            path.write_text(text, encoding="utf-8")
+        else:
+            path.write_text(text, encoding="utf-8")
+        print(f"Wrote PlantUML -> {path}")
+        return path
+
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="Generate PlantUML (.puml) class diagram for orientation.")
+    p.add_argument("--out", type=str, default=None, help="Output directory (default orientation/out).")
+    p.add_argument("--name", type=str, default=None, help="Output filename (default class_diagram.puml).")
+    p.add_argument("--modules", nargs="*", help="Modules/packages to scan (default: core/utils/io/apis/cli/app/design).")
+    return p
+
+
+def main(argv: Optional[List[str]] = None) -> None:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    app = GeneratorApp(args.out, args.name, args.modules)
+    app.run()
+
+
+if __name__ == "__main__":
+    main()
+
+are we good with the code?
+
+///
+
+///
+
+///
+
+ok, this is very confusing. earlier you told me to use these run commands:
+
+absolutely — we can generate a PlantUML class diagram straight from the codebase. Below I’m giving you a drop-in script at orientation/tools/gen_diagram.py that introspects your modules (using inspect, pkgutil, importlib) and emits a .puml file in orientation/out/. No IDE needed.
+It’s self-contained, OO, and follows your project layout.
+How to run
+This reads your installed/checked-out package, introspects classes, and writes PlantUML.
+# Default modules, default output name in orientation/out
+
+python -m orientation.tools.gen_diagram
+
+# Custom filename
+
+python -m orientation.tools.gen_diagram --name orientation_classes.puml
+
+# Narrow to a subset of modules
+
+python -m orientation.tools.gen_diagram --modules orientation.core orientation.utils
+
+Output (example):
+
+Wrote PlantUML -> orientation/out/class_diagram.puml
+
+Then render with your favorite PlantUML runner:
+
+plantuml orientation/out/class_diagram.puml
+
+# or with Docker etc.
+
+Notes / tweaks you can add later
+	• Associations/uses: if you want more than inheritance (e.g., “SO3 uses Quaternion”), we can scan type hints and attribute types to create dashed dependency arrows as well.
+	• Filtering: pass --modules ... to keep the diagram readable, or we can add a --prefix filter.
+	• Merge with existing design.py: if you prefer keeping all diagram logic centralized, we can move PlantUMLRenderer into orientation.design and let this tool be a simple CLI wrapper. Same behavior.
+If you want me to wire this command behind your main CLI (python -m orientation.cli diagram --format puml), I can add a --format switch and call the same renderer from there, plus add a quick pytest that asserts the .puml file is created and non-empty.
+
+but later you told me to run these run commands:
+
+Short answer: yes—we’re good 👍
+
+Your updated `design.py` and `tools/gen_diagram.py` look solid:
+
+* `design.py` now **collects classes**, **infers relationships** (inherits/has/uses) from bases, dataclass fields & class-level annotations, and method type hints, and **renders** PlantUML, Graphviz DOT, and Mermaid.
+* `gen_diagram.py` is a minimal standalone PlantUML generator that works even if the package I/O facade isn’t available (falls back to a direct write).
+
+A couple of quick checks I ran through mentally:
+
+* `ClassCollector.collect()` pulls from `sys.modules` filtered by `DiagramConfig` (default `orientation.*`). Since your CLI imports the package, those modules will already be present when you call `generate_diagram(...)`.
+* `RelationshipInferer` resolves both simple names (`SO3`) and qualified names (`orientation.core.SO3`) and even `List[SO3]`-style hints, so edges should now show up.
+* Renderers use safe node IDs and produce clean, standard syntax for all three formats.
+
+## How to (re)generate + render the diagram without local PlantUML/Graphviz
+
+1. Generate all three sources (PUML, DOT, Mermaid):
+
+```bash
+python -m orientation.cli diagram
+# or, directly:
+python - <<'PY'
+from pathlib import Path
+from orientation.design import generate_diagram
+generate_diagram(Path("orientation/out"))
+print("done")
+PY
+```
+
+2. Render PNG (no installs) using Kroki:
+
+* PlantUML:
+
+```bash
+curl -s -H "Content-Type: text/plain" \
+  --data-binary @orientation/out/class_diagram.puml \
+  https://kroki.io/plantuml/png > orientation/out/class_diagram.png
+```
+
+* Graphviz:
+
+```bash
+curl -s -H "Content-Type: text/plain" \
+  --data-binary @orientation/out/class_diagram.dot \
+  https://kroki.io/graphviz/png > orientation/out/class_diagram.png
+```
+
+* Mermaid:
+
+```bash
+curl -s -H "Content-Type: text/plain" \
+  --data-binary @orientation/out/class_diagram.mmd \
+  https://kroki.io/mermaid/png > orientation/out/class_diagram_mermaid.png
+```
+
+## If some boxes still don’t connect
+
+Edges come from type hints and dataclass fields. If you want even richer graphs:
+
+* Add return/parameter hints on methods (e.g., `def to_quaternion(self) -> Quaternion:`).
+* Add class-level annotations for held objects (e.g., `solver: DecompositionSolver`).
+* If you want “uses” edges from docstrings too, I can extend the resolver to scan docstrings for known class names.
+
+If you want, I can also add a tiny `orientation/tests/test_design_relationships.py` that asserts we get at least some expected edges (e.g., `OrientationCLI uses BaseCommand` and `SO3 has Quaternion` etc.).
+
+which ones are the good ones.
+
+i got gen_diagram.py stored in orientation/tools
+
+design.py is stored in orientation/
+
+///
+
+///
+
+///
+
+nope, option A does not work. option B does work:
+
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.cli diagram
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/pablomontijo/Control/robotics/orientation/cli.py", line 431, in <module>
+    main()
+  File "/Users/pablomontijo/Control/robotics/orientation/cli.py", line 427, in main
+    OrientationCLI().run(argv)
+  File "/Users/pablomontijo/Control/robotics/orientation/cli.py", line 419, in run
+    cmd.run(args, self.ctx)
+  File "/Users/pablomontijo/Control/robotics/orientation/cli.py", line 320, in run
+    dot, mmd = generate_diagram(Path(args.out))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/pablomontijo/Control/robotics/orientation/design.py", line 267, in generate_diagram
+    rels = infer.infer()
+           ^^^^^^^^^^^^^
+  File "/Users/pablomontijo/Control/robotics/orientation/design.py", line 158, in infer
+    for q, cls in self._iter_runtime_classes():
+        ^^^^^^
+TypeError: cannot unpack non-iterable type object
+(.venv) ➜  robotics git:(develop) ✗ python -m orientation.tools.gen_diagram
+Wrote PlantUML -> /Users/pablomontijo/Control/robotics/orientation/out/class_diagram.puml
+
+so i think we need to upgrade gen_diagram.py in order to see the connections between the classes.
+
+the update to design.py did not produce any effect really because the run command A failed.
+
+I had to roll back the changes in design.py because it failed the pytesting.
+
+///
+
+///
+
+///
+
+the standalone tool does generate richer puml. i shared a png that now show the edges.
+
+i still see classes unconnected. not sure if it is a feature or a bug.
+
+please analyze the png thoroughly and assess what we are missing.
+
+to be honest i prefer the standalone tool
+
+///
+
+i need you to generate the entire upgraded gen_diagram.py
+
+exhibit 1 shows the PyCharm generated class diagram using their diagramming tool.
+
+so i was expecting our code would generate something similar.
+
+///
+
+///
+
+new classes were put in the diagram, but still we got unconnected classes.
+
+se exhibit 1
+
+///
+
+///
