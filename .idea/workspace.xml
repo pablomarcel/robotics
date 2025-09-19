@@ -4,11 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the motion module">
-      <change afterPath="$PROJECT_DIR$/motion/tests/test_diagram_tool.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented diagrams in the motion module">
+      <change afterPath="$PROJECT_DIR$/forward/apis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/in/2r.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/in/example_2r.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/in/my_robot.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/in/my_robot.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/io.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/tests/test_cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/tests/test_core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/tests/test_poe.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/tools/diagram.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/motion/prompts/motion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/motion/prompts/motion.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/motion/tools/diagram.py" beforeDir="false" afterPath="$PROJECT_DIR$/motion/tools/diagram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +108,7 @@
       <workItem from="1758222755826" duration="8806000" />
       <workItem from="1758241788176" duration="4141000" />
       <workItem from="1758248873505" duration="5753000" />
-      <workItem from="1758297625573" duration="1421000" />
+      <workItem from="1758297625573" duration="13760000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -209,7 +222,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758256301309</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="implemented diagrams in the motion module">
+      <option name="closed" value="true" />
+      <created>1758301346418</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1758301346418</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -242,6 +263,7 @@
     <MESSAGE value="implemented the orientation module" />
     <MESSAGE value="implemented diagramming" />
     <MESSAGE value="implemented the motion module" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented the motion module" />
+    <MESSAGE value="implemented diagrams in the motion module" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented diagrams in the motion module" />
   </component>
 </project>
