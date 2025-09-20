@@ -4,24 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the forward module">
-      <change afterPath="$PROJECT_DIR$/inverse/apis.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/design.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/in/sample_planar2r.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/io.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/tests/test_apis_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/tests/test_cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/tests/test_io_models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/tests/test_iterative.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/tests/test_iterative_wrist.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/tests/test_planar2r.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/tests/test_utils_so3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/tools/diagram.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/utils.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the inverse module. 14 tests failed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inverse/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/inverse/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inverse/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/inverse/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inverse/core.py" beforeDir="false" afterPath="$PROJECT_DIR$/inverse/core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inverse/design.py" beforeDir="false" afterPath="$PROJECT_DIR$/inverse/design.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +97,8 @@
       <workItem from="1758241788176" duration="4141000" />
       <workItem from="1758248873505" duration="5753000" />
       <workItem from="1758297625573" duration="13895000" />
-      <workItem from="1758318736515" duration="6401000" />
+      <workItem from="1758318736515" duration="6738000" />
+      <workItem from="1758330606061" duration="2513000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -239,7 +228,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758316190365</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="implemented the inverse module. 14 tests failed">
+      <option name="closed" value="true" />
+      <created>1758327204737</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1758327204737</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -274,6 +271,7 @@
     <MESSAGE value="implemented the motion module" />
     <MESSAGE value="implemented diagrams in the motion module" />
     <MESSAGE value="implemented the forward module" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented the forward module" />
+    <MESSAGE value="implemented the inverse module. 14 tests failed" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented the inverse module. 14 tests failed" />
   </component>
 </project>
