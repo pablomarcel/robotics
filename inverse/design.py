@@ -16,19 +16,19 @@ them directly to the solvers in :mod:`inverse.core` or through the façade in
 
 Design notes
 ------------
-* Standard DH is used throughout (Craig’s Tz(d)·Rz(θ)·Tx(a)·Rx(α)).
-* Tool offsets are applied via the terminal fixed transform ``M`` on the chain.
-* The spherical wrist types are realized by carefully choosing the link twists
-  (α) to align each local **z** with the intended global rotation axis.
+* Standard DH (Craig):  Tz(d) · Rz(θ) · Tx(a) · Rx(α).
+* For planar links (α = d = 0), each link contributes Rz(qi) · Tx(ai).
+* Tool offsets are only used where they represent actual physical TCP offsets,
+  not to “store” link lengths (which must live in `a` of the corresponding link).
 """
 
 from __future__ import annotations
 
-from typing import List, Tuple
+from typing import List
 
 import numpy as np
 
-from .core import DHLink, SerialChain, Transform
+from .core import DHLink, SerialChain, Transform  # noqa: F401 (Transform referenced in docstrings)
 
 
 # ------------------------------ Utilities --------------------------------- #
@@ -51,12 +51,15 @@ def _tool_Tx(x: float) -> np.ndarray:
 
 def planar_2r(l1: float, l2: float, *, name: str = "planar_2R") -> SerialChain:
     """
-    Build a simple **planar 2R** arm in the x–y plane (z is out of plane).
+    Build a **planar 2R** arm in the x–y plane (z is out of plane).
 
-    Standard DH arrangement:
-        - Joint 1: revolute about z0 at base
-        - Joint 2: revolute about z1 at elbow
-        - Link length l1 lives in a2; the tool offset M carries l2
+    Correct standard-DH parameterization for a classic 2R:
+        - L1: a1 = l1, α1 = 0, d1 = 0, joint_type="R"
+        - L2: a2 = l2, α2 = 0, d2 = 0, joint_type="R"
+        - M  : identity (no fake length in the tool transform)
+
+    With α = d = 0 for both links, FK is:
+        T = Rz(q1) · Tx(l1) · Rz(q2) · Tx(l2)
 
     Parameters
     ----------
@@ -67,10 +70,9 @@ def planar_2r(l1: float, l2: float, *, name: str = "planar_2R") -> SerialChain:
     -------
     SerialChain
     """
-    L1 = DHLink(a=0.0, alpha=0.0, d=0.0, joint_type="R")   # q1
-    L2 = DHLink(a=l1, alpha=0.0, d=0.0, joint_type="R")    # q2
-    M = _tool_Tx(l2)  # add final link as fixed tool offset
-    return SerialChain([L1, L2], M=M, name=name)
+    L1 = DHLink(a=float(l1), alpha=0.0, d=0.0, joint_type="R")  # q1
+    L2 = DHLink(a=float(l2), alpha=0.0, d=0.0, joint_type="R")  # q2
+    return SerialChain([L1, L2], M=np.eye(4), name=name)
 
 
 # ---------------------------- 3R articulated arm -------------------------- #
@@ -86,16 +88,14 @@ def arm_3r_articulated(
     Build a **3R articulated arm** (shoulder–elbow–wrist center) suitable as the
     *position* subproblem in spherical-wrist decoupling.
 
-    Geometry
-    --------
-    A common textbook-friendly choice is:
-        - Link1: rotate about z0 at the base, a1 = 0
-        - Link2: rotate about z1, carries length a2 = l1
-        - Link3: rotate about z2, carries a3 = l2 or a fixed offset along tool
+    Geometry (planar shoulder & elbow, third revolute about the wrist-center axis):
+        - L1: base yaw,     a1 = l1, α1 = 0, d1 = 0
+        - L2: elbow pitch,  a2 = l2, α2 = 0, d2 = 0
+        - L3: wrist-center, a3 = 0,  α3 = 0, d3 = d3 (optional constant offset)
+        - M : identity (wrist center coincides with tip of link 2 when d3 = 0)
 
-    We encode `l1` in a2 and keep `l2` as a terminal offset (M) so that the
-    wrist center coincides with the tip of link2 when `d3=0`. If you prefer the
-    length as a3, set `d3=0` and modify the tool offset accordingly.
+    This keeps the wrist center at the end of L2 for d3=0, while still allowing
+    a fixed z-offset if needed via `d3`.
 
     Parameters
     ----------
@@ -104,18 +104,16 @@ def arm_3r_articulated(
     l2 : float
         Second planar link length (elbow→wrist center).
     d3 : float, optional
-        Optional constant offset along +z for the third joint (rarely needed).
+        Optional constant offset along +z for the third joint.
 
     Returns
     -------
     SerialChain
     """
-    L1 = DHLink(a=0.0,  alpha=0.0, d=0.0,   joint_type="R")   # q1 (base yaw)
-    L2 = DHLink(a=l1,   alpha=0.0, d=0.0,   joint_type="R")   # q2 (elbow)
-    L3 = DHLink(a=0.0,  alpha=0.0, d=d3,    joint_type="R")   # q3 (wrist-center rot)
-    # Place the wrist center at +x by l2 via the tool transform.
-    M  = _tool_Tx(l2)
-    return SerialChain([L1, L2, L3], M=M, name=name)
+    L1 = DHLink(a=float(l1), alpha=0.0, d=0.0, joint_type="R")  # q1 (base yaw)
+    L2 = DHLink(a=float(l2), alpha=0.0, d=0.0, joint_type="R")  # q2 (elbow)
+    L3 = DHLink(a=0.0,       alpha=0.0, d=float(d3), joint_type="R")  # q3 (wrist-center rot)
+    return SerialChain([L1, L2, L3], M=np.eye(4), name=name)
 
 
 # --------------------------- Spherical wrists (3R) ------------------------ #
@@ -160,7 +158,7 @@ def spherical_wrist(*, wrist_type: int, d_tool: float = 0.0, name: str = "wrist"
     L5 = DHLink(a=0.0, alpha=alphas[1], d=0.0, joint_type="R")  # q5
     L6 = DHLink(a=0.0, alpha=alphas[2], d=0.0, joint_type="R")  # q6
 
-    M = _tool_Tz(d_tool)
+    M = _tool_Tz(float(d_tool))
     return SerialChain([L4, L5, L6], M=M, name=f"{name}_type{wrist_type}")
 
 
@@ -197,15 +195,14 @@ def six_dof_spherical(
         A 6-DOF chain where the last three joint axes intersect and are
         orthogonal (by construction from the wrist preset).
     """
-    arm = arm_3r_articulated(l1, l2, name=f"{name}_arm3R")
+    arm = arm_3r_articulated(l1, l2, name=f"{name}_arm3R")  # M = I
     wrist = spherical_wrist(wrist_type=wrist_type, d_tool=d_tool, name=f"{name}_wrist3R")
 
-    # Concatenate links; apply the arm's tool M first, then the wrist links, then wrist tool M.
-    links: List[DHLink] = []  # type: ignore[assignment]
+    # Concatenate links; final tool is arm.M @ wrist.M = wrist.M (since arm.M = I)
+    links: List[DHLink] = []
     links.extend(arm.links())
     links.extend(wrist.links())
 
-    # The combined terminal transform is arm.M @ wrist.M
     M = arm.M @ wrist.M
     return SerialChain(links, M=M, name=name)
 

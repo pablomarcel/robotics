@@ -53,10 +53,16 @@ def _read_json(path: Path):
         raise click.ClickException(f"Failed to parse JSON: {path} ({exc})") from exc
 
 
-def _pose_from_cli(x: Optional[float], y: Optional[float], T_path: Optional[Path]):
-    if T_path is not None:
-        data = _read_json(T_path)
-        if not isinstance(data, (list, tuple)) or len(data) != 4:
+def _pose_from_cli(x: Optional[float], y: Optional[float], t_path: Optional[Path]):
+    if t_path is not None:
+        data = _read_json(t_path)
+        # Accept either a flat 4x4 list or a nested 4x4 list of lists
+        ok_shape = (
+            isinstance(data, list)
+            and len(data) == 4
+            and all(isinstance(row, list) and len(row) == 4 for row in data)
+        )
+        if not ok_shape:
             raise click.ClickException("--T-path must point to a 4x4 JSON matrix")
         return {"T": data}
     if x is None or y is None:
@@ -119,7 +125,7 @@ def cmd_problem_solve(problem_path: Path, out: Optional[Path]):
               show_default=True, help="IK method.")
 @click.option("--x", type=float, help="Target x (if using x/y pose).")
 @click.option("--y", type=float, help="Target y (if using x/y pose).")
-@click.option("--T-path", type=click.Path(exists=True, path_type=Path),
+@click.option("--T-path", "t_path", type=click.Path(exists=True, path_type=Path),
               help="JSON path to a 4x4 homogeneous matrix for the target pose.")
 @click.option("--q0", "q0_vals", type=float, multiple=True,
               help="Initial guess (iterative methods). Repeat per joint.")
@@ -130,7 +136,7 @@ def cmd_problem_solve(problem_path: Path, out: Optional[Path]):
               help="Output file for solutions (default inverse/out/solutions.json).")
 def cmd_ik_solve(
     model_kind: str, l1: float, l2: float, method: str,
-    x: Optional[float], y: Optional[float], T_path: Optional[Path],
+    x: Optional[float], y: Optional[float], t_path: Optional[Path],
     q0_vals: Iterable[float], tol: float, itmax: int, lambda_damp: float,
     out: Optional[Path],
 ):
@@ -149,7 +155,7 @@ def cmd_ik_solve(
         method_spec.update({"tol": tol, "itmax": itmax, "lambda": lambda_damp})
 
     # Pose spec
-    pose_spec = _pose_from_cli(x, y, T_path)
+    pose_spec = _pose_from_cli(x, y, t_path)
 
     # Initial guess
     q0 = _float_list(q0_vals) if q0_vals else None

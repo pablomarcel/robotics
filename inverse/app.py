@@ -92,10 +92,13 @@ class InverseApp:
         return design_mod.planar_2r(l1, l2)
 
     def preset_scara(self, l1: Number, l2: Number, d: Number = 0.0, wrist_rotary: bool = False) -> SerialChain:
-        return design_mod.scara(l1, l2, d_home=d, wrist_rotary=wrist_rotary)
+        # Optional: preserve API but avoid import errors if not implemented
+        if hasattr(design_mod, "scara"):
+            return design_mod.scara(l1, l2, d_home=d, wrist_rotary=wrist_rotary)  # type: ignore[no-any-return]
+        raise NotImplementedError("design.scara is not available in this build.")
 
-    def preset_spherical_wrist(self, wrist_type: int, d7: Number = 0.0) -> SerialChain:
-        return design_mod.spherical_wrist(wrist_type=wrist_type, d7=d7)
+    def preset_spherical_wrist(self, wrist_type: int, d_tool: Number = 0.0) -> SerialChain:
+        return design_mod.spherical_wrist(wrist_type=wrist_type, d_tool=d_tool)
 
     # ---------- IK: closed-form convenience wrappers ----------
 
@@ -119,10 +122,10 @@ class InverseApp:
         tol: float = 1e-6,
         max_iters: int = 50,
         damping: Optional[float] = None,
-        position_weight: float = 1.0,
-        orientation_weight: float = 1.0,
+        position_weight: float = 1.0,       # reserved for future use
+        orientation_weight: float = 1.0,    # reserved for future use
         space: str = "space",
-    ) -> IterativeIK.Result:
+    ):
         """
         Newton–Raphson / Damped-Least-Squares IK.
 
@@ -134,21 +137,34 @@ class InverseApp:
         tol : stopping tolerance on twist norm
         max_iters : iteration cap
         damping : if provided, LM damping parameter (λ)
-        position_weight, orientation_weight : weighting for twist components
         space : "space" or "body" Jacobian convention for the step
+
+        Returns
+        -------
+        An object with attribute `.q` (np.ndarray), containing the first/best
+        joint solution returned by the underlying IterativeIK solver. This
+        preserves backward-compat behavior expected elsewhere in the app.
         """
         T = T_target.as_matrix() if isinstance(T_target, Transform) else np.asarray(T_target, float)
-        return IterativeIK.solve(
-            chain,
-            T,
-            np.asarray(q0, float).reshape(-1),
-            tol=tol,
-            max_iters=max_iters,
-            damping=damping,
-            w_pos=position_weight,
-            w_ori=orientation_weight,
-            space=space,
-        )
+
+        # Instantiate per the IterativeIK API used in tests
+        kwargs = dict(tol=float(tol), itmax=int(max_iters), space=str(space))
+        if damping is not None:
+            kwargs["lambda_damp"] = float(damping)
+
+        solver = IterativeIK(**kwargs)
+        sols = solver.solve(chain, T, np.asarray(q0, float).reshape(-1))
+        if not sols:
+            # Normalize to a consistent shape: expose a `.q` that is empty
+            class _Res:
+                def __init__(self): self.q = np.asarray([], float)
+            return _Res()
+
+        q_best = np.asarray(sols[0], float).reshape(-1)
+
+        class _Res:
+            def __init__(self, q): self.q = q
+        return _Res(q_best)
 
     # ======================================================================
     # Problem API (used by CLI/tests)
@@ -158,7 +174,7 @@ class InverseApp:
         """
         Supports:
           - {"kind": "planar2r", "l1": ..., "l2": ...}
-          - {"kind": "wrist", "wrist_type": 1|2|3, "d7": float=0.0}
+          - {"kind": "wrist", "wrist_type": 1|2|3, "d_tool": float=0.0}
           - {"kind": "spec", "spec": <dict or path>}
         """
         kind = str(model.get("kind", "")).lower()
@@ -168,8 +184,8 @@ class InverseApp:
             return self.preset_planar_2r(l1, l2)
         if kind == "wrist":
             wt = int(model.get("wrist_type", 1))
-            d7 = float(model.get("d7", 0.0))
-            return self.preset_spherical_wrist(wt, d7)
+            d_tool = float(model.get("d_tool", 0.0))
+            return self.preset_spherical_wrist(wt, d_tool)
         if kind == "spec":
             spec = model.get("spec")
             if isinstance(spec, (str, Path)):
@@ -198,6 +214,18 @@ class InverseApp:
             return T
         raise ValueError("pose must include either 'T' (4x4) or 'x' and 'y'")
 
+    def _extract_l1_l2_from_chain(self, chain: SerialChain) -> Tuple[float, float]:
+        """
+        Robustly extract (l1, l2) from a standard-DH planar-2R chain where
+        link lengths live in a1 and a2.
+        """
+        links = chain.links()
+        if len(links) < 2:
+            raise ValueError("Planar2R chain must have at least two links.")
+        l1 = float(getattr(links[0], "a", 0.0))
+        l2 = float(getattr(links[1], "a", 0.0))
+        return l1, l2
+
     def _solve_planar2r_gateway(
         self,
         chain: SerialChain,
@@ -217,27 +245,38 @@ class InverseApp:
                 x, y = float(pose["T"][0][3]), float(pose["T"][1][3])
             else:
                 x, y = float(pose["x"]), float(pose["y"])
-            # Try to recover l1,l2 from builder conventions (a2=l1, tool M carries l2).
-            try:
-                l1 = float(chain.links()[1].a)
-            except Exception:
-                l1 = 0.0
-            try:
-                l2 = float(chain.M[0, 3])
-            except Exception:
-                l2 = 0.0
+            l1, l2 = self._extract_l1_l2_from_chain(chain)
             sols = ClosedFormIK.planar_2r(x, y, l1, l2)
             return [s.tolist() for s in sols]
 
-        # iterative
+        # ---------------------- iterative branch ----------------------
         tol = float(method.get("tol", 1e-6))
         itmax = int(method.get("itmax", method.get("max_iters", 200)))
         lam = method.get("lambda", method.get("lambda_damp", None))
         lamf = None if lam is None else float(lam)
-        q0 = np.asarray(method.get("q0", [0.0] * chain.n()), float).reshape(-1)
         space = str(method.get("space", "space")).lower()
 
         Tdes = self._parse_pose_to_T(pose)
+
+        # Seed handling: honor user-provided q0; otherwise try a closed-form seed.
+        if "q0" in method and method["q0"] is not None:
+            q0 = np.asarray(method["q0"], float).reshape(-1)
+        else:
+            # Convert pose to (x, y) for planar seeding.
+            if "T" in pose:
+                x_seed, y_seed = float(pose["T"][0][3]), float(pose["T"][1][3])
+            else:
+                x_seed, y_seed = float(pose["x"]), float(pose["y"])
+            try:
+                l1, l2 = self._extract_l1_l2_from_chain(chain)
+                cf_solutions = ClosedFormIK.planar_2r(x_seed, y_seed, l1, l2)
+                if cf_solutions:
+                    q0 = np.asarray(cf_solutions[0], float).reshape(-1)
+                else:
+                    q0 = np.zeros(chain.n(), float)
+            except Exception:
+                q0 = np.zeros(chain.n(), float)
+
         res = self.solve_iterative(chain, Tdes, q0, tol=tol, max_iters=itmax, damping=lamf, space=space)
         return [res.q.tolist()]
 
@@ -266,7 +305,13 @@ class InverseApp:
         pose = {"x": float(x), "y": float(y)}
         meth = {"method": str(method).lower()}
         if meth["method"] == "iterative":
-            meth.update({"tol": float(tol), "itmax": int(itmax), "lambda": float(lambda_damp), "q0": (q0 or [0.0, 0.0]), "space": space})
+            meth.update({
+                "tol": float(tol),
+                "itmax": int(itmax),
+                "lambda": float(lambda_damp),
+                "q0": (q0 or [0.0, 0.0]),
+                "space": space
+            })
         return self._solve_planar2r_gateway(chain, pose, meth)
 
     def solve(self, problem: Mapping[str, Any]) -> List[List[float]]:
