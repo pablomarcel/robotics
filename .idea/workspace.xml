@@ -4,14 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="fixed the tests in the inverse module">
-      <change afterPath="$PROJECT_DIR$/inverse/in/batch.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/in/poses.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/in/problem.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/in/target_T.json" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented a server">
+      <change afterPath="$PROJECT_DIR$/angular/apis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/init.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/io.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/tests/test_cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/tests/test_core_rotation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/tests/test_kinematics.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/tests/test_utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/tests/test_velocity_matrix.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/tools/diagram.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inverse/apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/inverse/apis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,7 +109,8 @@
       <workItem from="1758297625573" duration="13895000" />
       <workItem from="1758318736515" duration="6738000" />
       <workItem from="1758330606061" duration="2745000" />
-      <workItem from="1758337337697" duration="4296000" />
+      <workItem from="1758337337697" duration="4768000" />
+      <workItem from="1758389034721" duration="4154000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -247,7 +256,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758334028144</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="implemented a server">
+      <option name="closed" value="true" />
+      <created>1758342697949</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1758342697949</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -284,6 +301,7 @@
     <MESSAGE value="implemented the forward module" />
     <MESSAGE value="implemented the inverse module. 14 tests failed" />
     <MESSAGE value="fixed the tests in the inverse module" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed the tests in the inverse module" />
+    <MESSAGE value="implemented a server" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented a server" />
   </component>
 </project>
