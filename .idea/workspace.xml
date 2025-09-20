@@ -4,22 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented a server">
-      <change afterPath="$PROJECT_DIR$/angular/apis.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/design.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/init.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/io.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/tests/test_cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/tests/test_core_rotation.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/tests/test_kinematics.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/tests/test_utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/tests/test_velocity_matrix.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/tools/diagram.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/utils.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the angular kinematics module">
+      <change afterPath="$PROJECT_DIR$/velocity/apis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/in/A.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/in/B.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/in/planar2r.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/io.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_analytic_mapping.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_apis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_edge_cases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_io.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_linear.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_prismatic.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tests/test_solvers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/tools/diagram.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/velocity/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +118,9 @@
       <workItem from="1758318736515" duration="6738000" />
       <workItem from="1758330606061" duration="2745000" />
       <workItem from="1758337337697" duration="4768000" />
-      <workItem from="1758389034721" duration="4154000" />
+      <workItem from="1758389034721" duration="5815000" />
+      <workItem from="1758398888427" duration="584000" />
+      <workItem from="1758402035633" duration="4216000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -264,7 +274,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758342697949</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="implemented the angular kinematics module">
+      <option name="closed" value="true" />
+      <created>1758394123978</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1758394123978</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -302,6 +320,7 @@
     <MESSAGE value="implemented the inverse module. 14 tests failed" />
     <MESSAGE value="fixed the tests in the inverse module" />
     <MESSAGE value="implemented a server" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented a server" />
+    <MESSAGE value="implemented the angular kinematics module" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented the angular kinematics module" />
   </component>
 </project>
