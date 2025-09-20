@@ -9,6 +9,11 @@ Two entry points:
 
 2) create_rest_app() — optional FastAPI factory (only if FastAPI/Pydantic
    are installed). Not required for unit tests.
+
+Notes for FastAPI/Pydantic v2:
+- Avoid deprecated `regex=` on Field. Use validators instead.
+- Use `field_validator` (v2) instead of `validator` (v1).
+- Use `.model_dump()` if you need a dict from a Pydantic model instance.
 """
 
 from __future__ import annotations
@@ -113,7 +118,11 @@ class InverseService:
             All solution branches for the pose.
         """
         # Build a problem dict and delegate to app.solve
-        problem = {"model": model_spec, "method": method_spec, "pose": pose_spec}
+        problem = {
+            "model": model_spec,
+            "method": method_spec if q0 is None else {**method_spec, "q0": list(q0)},
+            "pose": pose_spec,
+        }
         sols = self.app.solve(problem)  # list[list[float]]
         return [np.asarray(s, float) for s in sols]
 
@@ -162,9 +171,7 @@ class InverseService:
         list[list[np.ndarray]]
             For each pose, the list of solutions.
         """
-        # app.solve_batch expects (model, poses, method)
         all_sols = self.app.solve_batch(model=model_spec, poses=list(poses), method=method_spec)
-        # Convert list-of-lists-of-lists into list-of-lists-of-ndarrays
         return [[np.asarray(s, float) for s in sols_for_pose] for sols_for_pose in all_sols]
 
     # --------------------- Problem I/O helpers -------------------------
@@ -201,6 +208,77 @@ class InverseService:
 
 
 # ---------------------------------------------------------------------------
+# Pydantic models (module-level for Pydantic v2)
+# ---------------------------------------------------------------------------
+try:
+    from pydantic import BaseModel, Field, field_validator
+except Exception:  # pragma: no cover - only triggered if FastAPI/Pydantic absent
+    BaseModel = object  # type: ignore[misc,assignment]
+    def field_validator(*a, **k):  # type: ignore[no-redef]
+        def _wrap(fn): return fn
+        return _wrap
+    def Field(default, **kwargs):  # type: ignore[no-redef]
+        return default  # dummy
+
+
+class ProblemModel(BaseModel):
+    """Generic IK problem: {'model': {...}, 'method': {...}, 'pose': {...}}"""
+    model: Dict[str, Any]
+    method: Dict[str, Any]
+    pose: Dict[str, Any]
+
+    @field_validator("model", "method", "pose")
+    @classmethod
+    def _non_empty(cls, v: Any) -> Any:
+        if not isinstance(v, dict) or not v:
+            raise ValueError("must be a non-empty object")
+        return v
+
+
+class SolveRequest(BaseModel):
+    model: Dict[str, Any] = Field(..., description="Model spec (e.g., {'kind':'planar2r','l1':1,'l2':1})")
+    method: Dict[str, Any] = Field(..., description="Method spec (e.g., {'method':'analytic'})")
+    pose: Dict[str, Any] = Field(..., description="Pose spec ({'x','y'} or {'T'})")
+    q0: Optional[List[float]] = Field(None, description="Initial guess (iterative methods)")
+
+
+class Planar2RRequest(BaseModel):
+    l1: float
+    l2: float
+    x: float
+    y: float
+    method: str = "analytic"          # validate by field_validator (no regex=)
+    tol: float = 1e-6
+    itmax: int = 200
+    lambda_damp: float = 1e-3
+    q0: Optional[List[float]] = None
+    space: str = "space"              # validate by field_validator
+
+    @field_validator("method")
+    @classmethod
+    def _method_ok(cls, v: str) -> str:
+        v2 = str(v).lower()
+        if v2 not in {"analytic", "iterative"}:
+            raise ValueError("method must be 'analytic' or 'iterative'")
+        return v2
+
+    @field_validator("space")
+    @classmethod
+    def _space_ok(cls, v: str) -> str:
+        v2 = str(v).lower()
+        if v2 not in {"space", "body"}:
+            raise ValueError("space must be 'space' or 'body'")
+        return v2
+
+
+class BatchSolveRequest(BaseModel):
+    model: Dict[str, Any]
+    method: Dict[str, Any]
+    poses: List[Dict[str, Any]]
+    q0: Optional[List[float]] = None
+
+
+# ---------------------------------------------------------------------------
 # Optional REST API (FastAPI)
 # ---------------------------------------------------------------------------
 
@@ -219,53 +297,41 @@ def create_rest_app():
     """
     try:
         from fastapi import FastAPI, HTTPException
-        from pydantic import BaseModel, Field, validator
     except Exception as exc:  # pragma: no cover
         raise ImportError(
             "FastAPI/Pydantic are required for the REST server. "
             "Install with `pip install fastapi uvicorn pydantic`."
         ) from exc
 
+    # Optional: PlantUML support via py2puml
+    try:
+        from py2puml.py2puml import py2puml  # type: ignore
+    except Exception:  # pragma: no cover - if py2puml not installed, PUML routes will 500
+        py2puml = None  # type: ignore
+
     svc = InverseService()
-
-    # --------- Pydantic models ---------
-    class ProblemModel(BaseModel):
-        model: Dict[str, Any]
-        method: Dict[str, Any]
-        pose: Dict[str, Any]
-
-        @validator("model", "method", "pose")
-        def _non_empty(cls, v):
-            if not isinstance(v, dict) or not v:
-                raise ValueError("must be a non-empty object")
-            return v
-
-    class SolveRequest(BaseModel):
-        model: Dict[str, Any] = Field(..., description="Model spec (e.g., {'kind':'planar2r','l1':1,'l2':1})")
-        method: Dict[str, Any] = Field(..., description="Method spec (e.g., {'method':'analytic'})")
-        pose: Dict[str, Any] = Field(..., description="Pose spec ({'x','y'} or {'T'})")
-        q0: Optional[List[float]] = Field(None, description="Initial guess (iterative methods)")
-
-    class Planar2RRequest(BaseModel):
-        l1: float
-        l2: float
-        x: float
-        y: float
-        method: str = Field("analytic", regex="^(analytic|iterative)$")
-        tol: float = 1e-6
-        itmax: int = 200
-        lambda_damp: float = 1e-3
-        q0: Optional[List[float]] = None
-        space: str = Field("space", regex="^(space|body)$")
-
-    class BatchSolveRequest(BaseModel):
-        model: Dict[str, Any]
-        method: Dict[str, Any]
-        poses: List[Dict[str, Any]]
-        q0: Optional[List[float]] = None
-
-    # --------- FastAPI app ---------
     app = FastAPI(title="Inverse Kinematics API", version="0.1.0")
+
+    # ----------------------------- helpers -----------------------------
+
+    def _as_text(obj: Any) -> str:
+        """Normalize py2puml output (str, list[str], or generator) to a single str."""
+        if isinstance(obj, (str, bytes)):
+            return obj.decode() if isinstance(obj, (bytes, bytearray)) else obj
+        try:
+            # Join any iterable of chunks into one string
+            return "".join(map(str, obj))
+        except TypeError:
+            return str(obj)
+
+    def _puml_text() -> str:
+        if py2puml is None:
+            raise RuntimeError("py2puml is not installed")
+        pkg_dir = str(Path(__file__).resolve().parent)  # .../inverse
+        # py2puml often returns a generator/list of lines; normalize to str
+        return _as_text(py2puml(pkg_dir, "inverse"))
+
+    # ----------------------------- routes ------------------------------
 
     @app.get("/health")
     def health():
@@ -273,7 +339,7 @@ def create_rest_app():
 
     @app.post("/problem/validate")
     def problem_validate(problem: ProblemModel):
-        ok, err = svc.validate_problem(problem.dict())
+        ok, err = svc.validate_problem(problem.model_dump())
         return {"valid": ok, "error": err}
 
     @app.post("/ik/solve")
@@ -306,17 +372,39 @@ def create_rest_app():
 
     @app.post("/problem/solve")
     def problem_solve(problem: ProblemModel):
-        ok, err = svc.validate_problem(problem.dict())
+        ok, err = svc.validate_problem(problem.model_dump())
         if not ok:
             raise HTTPException(status_code=422, detail=err)
-        sols = svc.solve_problem(problem.dict())
+        sols = svc.solve_problem(problem.model_dump())
         return {"solutions": sols}
 
     @app.get("/diagram/mermaid")
     def diagram_mermaid():
         return {"mermaid": svc.class_diagram_mermaid()}
 
+    @app.get("/diagram/puml")
+    def diagram_puml():
+        try:
+            return {"puml": _puml_text()}
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"PUML generation failed: {exc}")
+
+    @app.post("/diagram/puml/save")
+    def diagram_puml_save(name: str = "classes.puml"):
+        """
+        Write a PlantUML file under inverse/out/{name} and return the path.
+        """
+        try:
+            txt = _puml_text()
+            out = svc.app.out_dir / name
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(txt, encoding="utf-8")
+            return {"path": str(out)}
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"PUML save failed: {exc}")
+
     return app
 
 
-__all__ = ["InverseService", "create_rest_app"]
+__all__ = ["InverseService", "create_rest_app",
+           "ProblemModel", "SolveRequest", "Planar2RRequest", "BatchSolveRequest"]
