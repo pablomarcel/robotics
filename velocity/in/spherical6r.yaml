@@ -1,0 +1,12 @@
+name: spherical6r
+joints:
+  # Base → shoulder
+  - {name: j1, type: R, alpha: 1.5707963267948966, a: 0.0,  d: 0.35, theta: 0.0}
+  - {name: j2, type: R, alpha: 0.0,   a: 0.45, d: 0.0,  theta: 0.0}
+  - {name: j3, type: R, alpha: 0.0,   a: 0.40, d: 0.0,  theta: 0.0}
+  # Spherical wrist (intersecting axes)
+  - {name: j4, type: R, alpha: 1.5707963267948966,  a: 0.0,  d: 0.25, theta: 0.0}
+  - {name: j5, type: R, alpha: -1.5707963267948966, a: 0.0,  d: 0.0,  theta: 0.0}
+  - {name: j6, type: R, alpha: 0.0,   a: 0.0,  d: 0.12, theta: 0.0}
+tool:
+  xyz: [0.0, 0.0, 0.0]
