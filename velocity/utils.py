@@ -73,25 +73,39 @@ def skew(v: Array) -> Array:
                      [ -y,  x, 0.0]], dtype=float)
 
 
-def pinv_damped(J: Array, lam: float = 1e-6) -> Array:
+def pinv_damped(A: Array, lam: float = 0.0) -> Array:
     """
-    Damped least-squares pseudo-inverse:
+    Damped pseudoinverse (Tikhonov / Levenberg–Marquardt) via SVD.
 
-        J^+ = Jᵀ (J Jᵀ + λ² I)^{-1}
+    For A = U diag(s) V^T, returns:
+        A^#_λ = V diag( s_i / (s_i^2 + λ^2) ) U^T
+
+    Notes
+    -----
+    - When λ → 0 this approaches the Moore–Penrose pseudoinverse.
+    - Stable near singularities when λ > 0.
+    - Works for both tall and wide A.
 
     Parameters
     ----------
-    J : (m,n)
-    lam : float
-        Damping λ (Tikhonov). Use small positive value near singularities.
+    A : (m, n) array_like
+        Matrix to pseudo-invert.
+    lam : float, default 0.0
+        Damping parameter λ ≥ 0.
 
     Returns
     -------
-    (n,m) array
+    (n, m) ndarray
+        Damped pseudoinverse of A.
     """
-    J = np.asarray(J, dtype=float)
-    m, _ = J.shape
-    return J.T @ np.linalg.inv(J @ J.T + (lam**2) * np.eye(m))
+    A = np.asarray(A, dtype=float)
+    U, s, Vt = np.linalg.svd(A, full_matrices=False)
+    lam2 = float(lam) ** 2
+    # s / (s^2 + lam^2) applied along singular values
+    s_damped = s / (s**2 + lam2) if lam2 > 0.0 else np.divide(
+        1.0, s, out=np.zeros_like(s), where=(s != 0.0)
+    )
+    return (Vt.T * s_damped) @ U.T
 
 
 def normalize(v: Array, eps: float = 1e-12) -> Array:
