@@ -23,11 +23,7 @@ What you get
     * alpha_from_Rddot(R, Rdot, Rddot)        (α from R̈ Rᵀ)
     * classic_accel(alpha, omega, r)          (α×r + ω×(ω×r))
 
-- Euler / Quaternion utilities (minimal but testable):
-    * euler_zyx_E(angles)    → 3x3 ω = E(q) q̇
-    * quat_E(q)              → 4x3 matrix s.t. ω = 2 E(q)ᵀ q̇
-
-- Finite-difference helpers (handy in tests/backends):
+- Finite-difference helper (for backends/tests):
     * jdot_qdot_fd(J_fn, q, qd, eps=1e-8)
       where J_fn(q) returns a Jacobian; computes (∂J/∂q · q̇) q̇ via directional FD
 
@@ -38,7 +34,7 @@ from __future__ import annotations
 
 import functools
 import time
-from typing import Callable, Iterable, Sequence, Tuple, TypeVar
+from typing import Callable, Iterable, Sequence, TypeVar
 
 import numpy as np
 
@@ -121,7 +117,7 @@ def asvec(x: Iterable[float] | np.ndarray, n: int) -> np.ndarray:
     """
     Strict 1-D vector coercion with length check (great for unit tests).
     """
-    v = np.asarray(list(x) if not isinstance(x, np.ndarray) else x, float).reshape(-1)
+    v = np.asarray(x, float).reshape(-1)
     if v.size != n:
         raise ValueError(f"Expected vector of length {n}, got {v.size}")
     return v
@@ -131,7 +127,7 @@ def asvec(x: Iterable[float] | np.ndarray, n: int) -> np.ndarray:
 # Lie algebra & SE(3) helpers
 # ---------------------------------------------------------------------------
 
-def skew(v: np.ndarray) -> np.ndarray:
+def skew(v: Sequence[float] | np.ndarray) -> np.ndarray:
     """
     Skew-symmetric matrix [v]^ of a 3-vector.
 
@@ -202,29 +198,32 @@ def S_from(alpha: Sequence[float] | np.ndarray, omega: Sequence[float] | np.ndar
 
 def omega_from_Rdot(R: np.ndarray, Rdot: np.ndarray) -> np.ndarray:
     """
-    ω from Ṙ Rᵀ = ω̃  (standard identity used across Ch. 9).
+    ω from the identity Ṙ Rᵀ = ω̃ (body angular velocity).
     """
     R = np.asarray(R, float).reshape(3, 3)
     Rdot = np.asarray(Rdot, float).reshape(3, 3)
     omega_hat = Rdot @ R.T
-    return vex(omega_hat - omega_hat.T)  # numerically robust sym-reduction
+    # Enforce skew by removing symmetric part (robust to small numeric noise)
+    omega_hat = 0.5 * (omega_hat - omega_hat.T)
+    return vex(omega_hat)
 
 
 def alpha_from_Rddot(R: np.ndarray, Rdot: np.ndarray, Rddot: np.ndarray) -> np.ndarray:
     """
-    α from R̈ Rᵀ = α̃ + ω̃²  (rearranged to α̃ = R̈ Rᵀ − ω̃²).
+    α from R̈ Rᵀ = α̃ + ω̃²  ⇒  α̃ = R̈ Rᵀ − ω̃².
     """
     R = np.asarray(R, float).reshape(3, 3)
     Rdot = np.asarray(Rdot, float).reshape(3, 3)
     Rddot = np.asarray(Rddot, float).reshape(3, 3)
     omega = omega_from_Rdot(R, Rdot)
     alpha_hat = Rddot @ R.T - skew(omega) @ skew(omega)
-    return vex(alpha_hat - alpha_hat.T)
+    alpha_hat = 0.5 * (alpha_hat - alpha_hat.T)
+    return vex(alpha_hat)
 
 
 def classic_accel(alpha: Sequence[float], omega: Sequence[float], r: Sequence[float]) -> np.ndarray:
     """
-    Classic rigid-body acceleration:
+    Classic rigid-body point acceleration:
         a = α×r + ω×(ω×r)   (tangential + centripetal)
     """
     α = asvec(alpha, 3)
@@ -234,47 +233,7 @@ def classic_accel(alpha: Sequence[float], omega: Sequence[float], r: Sequence[fl
 
 
 # ---------------------------------------------------------------------------
-# Euler / Quaternion helpers (minimal but explicit)
-# ---------------------------------------------------------------------------
-
-def euler_zyx_E(angles: Sequence[float]) -> np.ndarray:
-    """
-    Mapping ω = E(q) q̇ for ZYX Euler. Returns a (3,3) matrix.
-    The explicit form is stable and unit-test friendly.
-    """
-    φ, θ, ψ = asvec(angles, 3)  # Z=ψ, Y=θ, X=φ in many texts (roll=φ, pitch=θ, yaw=ψ)
-    sφ, cφ = np.sin(φ), np.cos(φ)
-    sθ, cθ = np.sin(θ), np.cos(θ)
-    # One common ω = [ ψ̇ - φ̇ sinθ, θ̇ cosψ + φ̇ cosθ sinψ, -θ̇ sinψ + φ̇ cosθ cosψ ]
-    # We encode it as ω = E(q) q̇ with:
-    E = np.array([
-        [-sθ,      0.0, 1.0],                # multiplies [φ̇, θ̇, ψ̇]
-        [ cθ*sψ,   cψ,  0.0],
-        [ cθ*cψ,  -sψ,  0.0],
-    ], float)
-    return E
-
-
-def quat_E(q: Sequence[float]) -> np.ndarray:
-    """
-    Linear map for quaternion rates → angular velocity.
-    For q = [w, x, y, z], ω = 2 * E(q)^T q̇, where E(q) is 4x3:
-
-        E(q) =
-        [ -x  -y  -z ]
-        [  w  -z   y ]
-        [  z   w  -x ]
-        [ -y   x   w ]
-    """
-    w, x, y, z = asvec(q, 4)
-    return np.array([[-x, -y, -z],
-                     [ w, -z,  y],
-                     [ z,  w, -x],
-                     [-y,  x,  w]], float)
-
-
-# ---------------------------------------------------------------------------
-# Finite-difference helpers (useful for tests / tiny backends)
+# Finite-difference helper (useful for tests / tiny backends)
 # ---------------------------------------------------------------------------
 
 def jdot_qdot_fd(J_fn: Callable[[np.ndarray], np.ndarray],
@@ -297,8 +256,8 @@ def jdot_qdot_fd(J_fn: Callable[[np.ndarray], np.ndarray],
     -------
     (m,) ndarray
     """
-    q = asvec(q, len(q))
-    qd = asvec(qd, len(q))
+    q = asvec(q, np.asarray(q, float).size)
+    qd = asvec(qd, q.size)
     Jp = np.asarray(J_fn(q + eps * qd), float)
     Jm = np.asarray(J_fn(q - eps * qd), float)
     Jdot_dir = (Jp - Jm) / (2.0 * eps)   # m×n
@@ -330,9 +289,6 @@ __all__ = [
     "omega_from_Rdot",
     "alpha_from_Rddot",
     "classic_accel",
-    # Euler / Quaternion
-    "euler_zyx_E",
-    "quat_E",
     # FD helper
     "jdot_qdot_fd",
 ]
