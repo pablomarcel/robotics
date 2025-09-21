@@ -175,6 +175,18 @@ class URDFRobot(_BaseRobot):
 
 
 class solvers:
+    # ---------------------- Inverse Velocity (resolved rates) ----------------------
+    @staticmethod
+    def _task_mask_from_xdot(x: np.ndarray, eps: float = 1e-12) -> np.ndarray:
+        """
+        Build a boolean mask of task rows to keep based on which desired
+        components are numerically non-zero. If all are ~0, keep all rows.
+        """
+        mask = np.abs(x) > eps
+        if not mask.any():
+            mask[:] = True
+        return mask
+
     @staticmethod
     def resolved_rates(
         J: np.ndarray,
@@ -183,48 +195,40 @@ class solvers:
         weights: Optional[Sequence[float]] = None,
     ) -> np.ndarray:
         """
-        Solve q̇ from Ẋ = J q̇ via *masked* least squares with stability near singularities.
+        Solve q̇ from Ẋ = J q̇ using **masked** damped least squares.
 
-        We first select task rows whose desired rates are (numerically) non-zero,
-        then solve LS on that reduced system. If the reduced system is
-        well-conditioned relative to `damping`, we switch to the undamped
-        Moore–Penrose solution for an exact fit; otherwise we use a damped
-        SVD pseudo-inverse.
+        We only fit rows whose desired components are non-zero (|Ẋ_i|>eps). This
+        prevents orientation (or other) rows with zero targets from polluting a
+        translation-only task (the source of your failing test).
+
+        Unweighted:
+            q̇ = pinv_damped(J_sel, λ) Ẋ_sel
+        Weighted (diagonal W on task space):
+            let W^{1/2} = diag(sqrt(w_sel))
+            q̇ = pinv_damped(W^{1/2} J_sel, λ) (W^{1/2} Ẋ_sel)
         """
         J = np.asarray(J, dtype=float)
         x = np.asarray(Xdot, dtype=float).reshape(-1)
+        lam = float(damping) if damping is not None else 1e-9
 
-        # Row mask: keep rows where the user requested motion
-        mask = np.abs(x) > 1e-12
-        if not mask.any():
-            mask[:] = True  # nothing requested → keep all
-
+        # Select only active task rows
+        mask = solvers._task_mask_from_xdot(x)
         Jsel = J[mask, :]
         xsel = x[mask]
 
-        # Optional diagonal weights (apply then select)
         if weights is None:
-            A = Jsel
-            b = xsel
+            return pinv_damped(Jsel, lam=lam) @ xsel
         else:
             w = np.asarray(weights, dtype=float).reshape(-1)
             if w.size != J.shape[0]:
                 raise ValueError(f"weights has length {w.size}, expected {J.shape[0]}")
-            Wsqrt_sel = np.diag(np.sqrt(w[mask]))
-            A = Wsqrt_sel @ Jsel
-            b = Wsqrt_sel @ xsel
+            wsel = w[mask]
+            Wsqrt = np.diag(np.sqrt(wsel))
+            Jw = Wsqrt @ Jsel
+            Xw = Wsqrt @ xsel
+            return pinv_damped(Jw, lam=lam) @ Xw
 
-        # Choose damping strategy
-        lam = float(damping) if damping is not None else 0.0
-        s = np.linalg.svd(A, compute_uv=False)
-        if lam > 0.0 and s.size and lam < 0.1 * float(s.min()):
-            q = np.linalg.pinv(A) @ b
-        else:
-            lam_eff = lam if lam > 0.0 else 1e-9
-            q = pinv_damped(A, lam=lam_eff) @ b
-
-        return q
-
+    # ------------------------- Orientation utility (log map) ----------------------
     @staticmethod
     def _rotvec_from_R(R: np.ndarray) -> np.ndarray:
         """
@@ -241,15 +245,16 @@ class solvers:
                                    R[1, 0] - R[0, 1]])
         s = np.sin(theta)
         if abs(s) < 1e-12:
-            # extremely close to pi: fall back to numerical
+            # extremely close to pi: guarded scaling
             return 0.5 * np.array([R[2, 1] - R[1, 2],
                                    R[0, 2] - R[2, 0],
                                    R[1, 0] - R[0, 1]]) * (theta / (s if s != 0 else 1.0))
-        K = (theta / (2.0 * s))
+        K = theta / (2.0 * s)
         return K * np.array([R[2, 1] - R[1, 2],
                              R[0, 2] - R[2, 0],
                              R[1, 0] - R[0, 1]])
 
+    # --------------------------- Newton–Raphson IK (masked) -----------------------
     @staticmethod
     def newton_ik(
         robot: _BaseRobot,
@@ -263,7 +268,7 @@ class solvers:
         """
         Newton–Raphson inverse kinematics on pose x = [p; orientation].
 
-        Task selection:
+        Task selection (static mask built from x_target):
           - If 'p' in x_target, include translational rows (0..2).
           - If 'R' or 'euler' in x_target, include orientation rows (3..5).
           - If neither, defaults to position-only with current orientation held.
@@ -289,7 +294,7 @@ class solvers:
             ori_active = False
 
         if R_des is None:
-            # Keep initial orientation as reference if no orientation target.
+            # Hold the initial orientation if none provided
             _, Tn0 = robot._fk_all(q)
             R_des = Tn0[:3, :3]
 
@@ -300,7 +305,7 @@ class solvers:
         if ori_active:
             task_mask[3:] = True
         if not task_mask.any():
-            task_mask[:3] = True  # default to position-only
+            task_mask[:3] = True  # default: position-only
 
         res_hist: List[float] = []
         converged = False
@@ -314,7 +319,7 @@ class solvers:
             # Residual
             dp = (p_des - p) if pos_active else np.zeros(3, dtype=float)
             if ori_active:
-                # Spatial error as rotvec of R_des * R^T
+                # Orientation error as rotation vector of R_des * R^T
                 Rerr = R_des @ R.T
                 w_err = solvers._rotvec_from_R(Rerr)
             else:
