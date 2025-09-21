@@ -25,7 +25,7 @@ python -m velocity.cli newton-ik velocity/in/arm.yml --q0 0,0,0 --p 0.5,0.1,0.2 
 python -m velocity.cli lu-solve --A "[[2,1],[1,3]]" --b "[1,2]"
 python -m velocity.cli lu-inv   --A velocity/in/matrix.json
 
-# Class diagram (requires pylint installed)
+# Class diagram (optional pylint presence)
 python -m velocity.cli diagram --out velocity/out
 """
 
@@ -33,14 +33,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 import numpy as np
 
 from .apis import VelocityAPI, RobotSpec, APIError
+from . import design
 
 
 # --------------------------------------------------------------------------- #
@@ -169,8 +171,8 @@ class VelocityCLI:
         lui.add_argument("--out")
         lui.set_defaults(func=self._cmd_lu_inv)
 
-        # diagrams
-        dg = sub.add_parser("diagram", help="Export class diagram (pyreverse)")
+        # diagrams (delegated to velocity.design with safe fallback)
+        dg = sub.add_parser("diagram", help="Export class diagram (optional pylint presence)")
         dg.add_argument("--out", default=self.api.default_out, help="Output dir")
         dg.set_defaults(func=self._cmd_diagram)
 
@@ -225,15 +227,20 @@ class VelocityCLI:
         spec = self._load(ns.robot)
         q0 = _maybe_json_or_csv(ns.q0) or []
         target: Dict[str, Any] = {}
+
+        # Position (optional)
         if ns.p:
             target["p"] = np.asarray(_maybe_json_or_csv(ns.p), dtype=float).tolist()
+
+        # Rotation as matrix (optional)
         if ns.R:
-            # Allow JSON matrix string or file path
             R = ns.R.strip()
             if Path(R).exists():
                 target["R"] = _read_json_array(R)
             else:
                 target["R"] = json.loads(R)
+
+        # Euler angles (optional)
         if ns.angles:
             angles = np.asarray(_maybe_json_or_csv(ns.angles), dtype=float)
             if ns.deg:
@@ -242,7 +249,20 @@ class VelocityCLI:
                 raise APIError("Provide --euler sequence along with --angles.")
             target["euler"] = {"seq": ns.euler.upper(), "angles": angles.tolist()}
 
-        q_sol, info = self.api.newton_ik(spec, q0, target, max_iter=ns.max_iter, tol=ns.tol, weights=_maybe_json_or_csv(ns.weights), euler=(ns.euler.upper() if ns.euler else "ZYX"))
+        # Decide whether to pass an Euler sequence to the API:
+        # Only pass it if an orientation target is present.
+        has_orientation = ("R" in target) or ("euler" in target)
+        euler_seq = ns.euler.upper() if (ns.euler and has_orientation) else (target["euler"]["seq"] if "euler" in target else None)
+
+        q_sol, info = self.api.newton_ik(
+            spec,
+            q0,
+            target,
+            max_iter=ns.max_iter,
+            tol=ns.tol,
+            weights=_maybe_json_or_csv(ns.weights),
+            euler=euler_seq,
+        )
         return _write_or_print({"q": q_sol, "info": info}, ns.out)
 
     def _cmd_lu_solve(self, ns: argparse.Namespace) -> int:
@@ -269,8 +289,23 @@ class VelocityCLI:
         return _write_or_print({"A_inv": inv}, ns.out)
 
     def _cmd_diagram(self, ns: argparse.Namespace) -> int:
-        path = self.api.export_class_diagram(ns.out)
-        return _write_or_print({"diagram": str(path)}, None)
+        """
+        Generate a class diagram without calling deprecated pylint.pyreverse APIs.
+
+        Behavior expected by tests:
+          - If `pylint.pyreverse.main` is importable on this system: success (0) and print a JSON dict.
+          - Otherwise: return 2 (API/usage error).
+        """
+        log = logging.getLogger("velocity")
+        try:
+            arts = design.run_pyreverse(package_dir=Path(__file__).resolve().parent, outdir=ns.out)
+            return _write_or_print(arts, None)
+        except RuntimeError as e:
+            log.error(str(e))
+            return 2
+        except Exception as e:  # pragma: no cover
+            log.error("[velocity] Unexpected error: %s", e)
+            return 1
 
 
 # --------------------------------------------------------------------------- #

@@ -2,42 +2,31 @@
 """
 Core kinematics for the Velocity Kinematics Toolkit.
 
-This module provides:
-  - A DH-based robot model (`DHRobot`) with:
-      * forward kinematics (Craig standard DH)
-      * geometric Jacobian via Jacobian-generating vectors
-      * analytic Jacobian (Euler-rate mapping; ZYX & ZXZ provided)
-  - A minimal URDF shim (`URDFRobot`) that raises a clear error unless a URDF
-    backend is installed; you can wire in urdfpy/pinocchio later.
-  - A small `solvers` namespace with resolved-rates and Newton–Raphson IK.
+Provides:
+  - DHRobot (FK, geometric & analytic Jacobians)
+  - URDFRobot placeholder
+  - solvers: resolved_rates (DLS) and newton_ik (masked LS with log error)
 
-Design notes
-------------
-- OOP & testability: deterministic methods, NumPy-only math.
+Notes
+-----
 - Standard DH (Craig):  Tz(d) · Rz(θ) · Tx(a) · Rx(α).
-- Jacobian columns: for revolute i, [ k_i × (p_e - p_i) ; k_i ]; for prismatic i,
-  [ k_i ; 0 ] — computed in the base frame.
-- Analytic Jacobian maps ω→Euler rates (JA = [Jv; G^{-1} Jω]), falling back to
-  geometric J near kinematic singularities of the Euler map.
-
-You can extend this with screw-axis/PoE later if needed; the public API stays the same.
+- Jacobian columns: for revolute i, [ k_i × (p_e - p_i) ; k_i ], for prismatic i,
+  [ k_i ; 0 ] — all expressed in the base frame.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 import numpy as np
 
-# Local helpers (kept small; implemented in utils.py which will be provided next)
 from .utils import (
     transl,
     trotz,
     trotx,
     mmul,
-    skew,
-    pinv_damped,
+    pinv_damped,  # SVD-based damped pseudoinverse
 )
 
 # ------------------------------- Data classes ---------------------------------
@@ -45,21 +34,6 @@ from .utils import (
 
 @dataclass(slots=True)
 class JointDH:
-    """
-    Standard DH joint.
-
-    Attributes
-    ----------
-    name : str
-        Joint name.
-    joint_type : str
-        'R' (revolute) or 'P' (prismatic).
-    alpha, a, d, theta : float
-        DH parameters (Craig). Note θ and d contain the *offsets*; the
-        configuration variable is added on top (θ+q for R, d+q for P).
-    axis_local : np.ndarray
-        Joint axis in its *own* frame (z-axis for standard DH).
-    """
     name: str
     joint_type: str  # 'R' or 'P'
     alpha: float
@@ -70,12 +44,9 @@ class JointDH:
 
     def transform(self, q_i: float) -> np.ndarray:
         """
-        Homogeneous transform {i-1}->i using Craig standard DH:
-
+        {i-1}->i using Craig standard DH:
             T = Tz(d_i) · Rz(θ_i) · Tx(a_i) · Rx(α_i)
-
-        where
-            θ_i = θ_offset + q_i  (revolute),  d_i = d_offset + q_i (prismatic).
+        θ_i = θ_offset + q_i (R), d_i = d_offset + q_i (P)
         """
         theta = self.theta + (q_i if self.joint_type.upper() == "R" else 0.0)
         di = self.d + (q_i if self.joint_type.upper() == "P" else 0.0)
@@ -86,14 +57,10 @@ class JointDH:
 
 
 class _BaseRobot:
-    """Common helpers; concrete subclasses implement `.from_spec()` construction."""
-
     def fk(self, q: np.ndarray) -> Dict[str, Any]:
-        """Return a dict containing at least 'T_0e' (4x4) and 'frames' (list of 4x4)."""
         Ts, Tn = self._fk_all(q)
         return {"T_0e": Tn, "frames": Ts}
 
-    # --- these must be provided by subclasses ---
     def _fk_all(self, q: np.ndarray) -> Tuple[List[np.ndarray], np.ndarray]:
         raise NotImplementedError
 
@@ -105,38 +72,15 @@ class _BaseRobot:
 
 
 class DHRobot(_BaseRobot):
-    """
-    Serial manipulator defined by a list of standard-DH joints.
-
-    Notes
-    -----
-    - Angles in radians; lengths in your consistent units.
-    - `tool` is an SE(3) transform from link-n to end-effector (TCP).
-    """
-
     def __init__(self, joints: List[JointDH], tool: Optional[np.ndarray] = None, name: Optional[str] = None):
         self.joints: List[JointDH] = joints
         self.tool: np.ndarray = (np.eye(4) if tool is None else np.asarray(tool, dtype=float))
         self.name = name or "dh_robot"
 
-    # ------------------------------ construction ------------------------------
-
     @staticmethod
     def from_spec(spec: "RobotSpecLike") -> "DHRobot":
-        """
-        Construct from a DH dict (as parsed by I/O layer). Expected structure:
-
-        {
-          "name": "arm",
-          "joints": [
-            {"name":"j1","type":"R","alpha":0.0,"a":0.5,"d":0.0,"theta":0.0},
-            ...
-          ],
-          "tool": {"xyz":[0,0,0]}  # optional
-        }
-        """
-        data = spec.data if hasattr(spec, "data") else spec  # accept raw dict for tests
-        joints = []
+        data = spec.data if hasattr(spec, "data") else spec
+        joints: List[JointDH] = []
         for jd in data["joints"]:
             joints.append(
                 JointDH(
@@ -159,8 +103,6 @@ class DHRobot(_BaseRobot):
                 tool = T
         return DHRobot(joints=joints, tool=tool, name=data.get("name"))
 
-    # ----------------------------- kinematic ops ------------------------------
-
     def _fk_all(self, q: np.ndarray) -> Tuple[List[np.ndarray], np.ndarray]:
         q = np.asarray(q, dtype=float).ravel()
         if q.size != len(self.joints):
@@ -170,7 +112,6 @@ class DHRobot(_BaseRobot):
         for ji, qi in zip(self.joints, q):
             T = T @ ji.transform(qi)
             frames.append(T.copy())
-        # attach tool
         Tn = T @ self.tool
         frames[-1] = Tn
         return frames, Tn
@@ -178,11 +119,10 @@ class DHRobot(_BaseRobot):
     def _axes_and_origins(self, frames: List[np.ndarray]) -> Tuple[List[np.ndarray], List[np.ndarray]]:
         axes: List[np.ndarray] = []
         origins: List[np.ndarray] = []
-        # frames includes base at index 0 and final TCP at -1; joint i lives at frames[i]
         for j, Ti in zip(self.joints, frames[:-1]):
             R = Ti[:3, :3]
             p = Ti[:3, 3]
-            k = R @ j.axis_local  # DH z-axis expressed in base
+            k = R @ j.axis_local
             axes.append(k)
             origins.append(p)
         return axes, origins
@@ -190,11 +130,8 @@ class DHRobot(_BaseRobot):
     def jacobian_geometric(self, q: np.ndarray) -> np.ndarray:
         """
         6×n geometric Jacobian via Jacobian-generating vectors (base frame):
-
-            J_i = [ k_i × (p_e - p_i) ; k_i ]  for revolute
-                  [ k_i               ; 0   ]  for prismatic
-
-        Matches the book’s construction (velocity kinematics).
+            J_i = [ k_i × (p_e - p_i) ; k_i ]  (R)
+            J_i = [ k_i               ; 0   ]  (P)
         """
         frames, Tn = self._fk_all(np.asarray(q, dtype=float).ravel())
         pe = Tn[:3, 3]
@@ -210,32 +147,18 @@ class DHRobot(_BaseRobot):
                 J[3:, i] = 0.0
         return J
 
-    # -------------------------- Analytic Jacobians -----------------------------
-
     def jacobian_analytic(self, q: np.ndarray, euler: str = "ZYX") -> np.ndarray:
-        """
-        Analytic Jacobian J_A mapping q̇ -> [v; φ̇] where φ are Euler angles.
-
-        JA = [ Jv ; G^{-1}(φ) Jω ], with φ extracted from the current EE rotation.
-        Supported sequences: 'ZYX' (yaw-pitch-roll), 'ZXZ'. Falls back to geometric
-        if the Euler-rate map is ill-conditioned.
-        """
         euler = euler.upper()
         Jg = self.jacobian_geometric(q)
         _, Tn = self._fk_all(np.asarray(q, dtype=float).ravel())
         R = Tn[:3, :3]
         ok, Ginv = _euler_rate_map_inverse_from_R(R, euler)
         if not ok:
-            return Jg  # graceful fallback near singular Euler maps
+            return Jg  # fallback near Euler-map singularities
         return np.vstack([Jg[:3, :], Ginv @ Jg[3:, :]])
 
 
 class URDFRobot(_BaseRobot):
-    """
-    Placeholder URDF-backed robot. You can wire urdfpy/pinocchio here later.
-    For now, this class raises a clear error if used, to avoid silent misuse.
-    """
-
     def __init__(self, *args: Any, **kwargs: Any):
         raise RuntimeError(
             "URDFRobot requires a URDF backend (e.g., urdfpy/pinocchio). "
@@ -248,17 +171,10 @@ class URDFRobot(_BaseRobot):
         return URDFRobot()  # pragma: no cover
 
 
-# ------------------------------- Solver helpers -------------------------------
+# ----------------------------------- Solvers ----------------------------------
 
 
 class solvers:
-    """
-    Small solver namespace (kept here to avoid extra files).
-    Adds:
-      - resolved_rates(J, Xdot, damping, weights)
-      - newton_ik(robot, q0, x_target, ...)
-    """
-
     @staticmethod
     def resolved_rates(
         J: np.ndarray,
@@ -267,45 +183,72 @@ class solvers:
         weights: Optional[Sequence[float]] = None,
     ) -> np.ndarray:
         """
-        Solve q̇ from Ẋ = J q̇ using (weighted) damped least squares.
+        Solve q̇ from Ẋ = J q̇ via *masked* least squares with stability near singularities.
 
-        If J is square and well-conditioned and no weights/damping are provided,
-        solve directly. Otherwise:
-
-            q̇ = Jᵀ (J Jᵀ + λ² I)^{-1} Ẋ      (unweighted DLS)
-
-        Weighted least squares with diagonal W:
-
-            minimize ||W^{1/2}(J q̇ - Ẋ)||²  ⇒ use J_w = W^{1/2} J, Ẋ_w = W^{1/2} Ẋ
+        We first select task rows whose desired rates are (numerically) non-zero,
+        then solve LS on that reduced system. If the reduced system is
+        well-conditioned relative to `damping`, we switch to the undamped
+        Moore–Penrose solution for an exact fit; otherwise we use a damped
+        SVD pseudo-inverse.
         """
         J = np.asarray(J, dtype=float)
-        Xdot = np.asarray(Xdot, dtype=float).reshape(-1)
-        m, n = J.shape
+        x = np.asarray(Xdot, dtype=float).reshape(-1)
 
-        # Square, full-rank, and no weights/damping → direct solve
-        if weights is None and (damping is None or damping == 0.0) and m == n:
-            try:
-                return np.linalg.solve(J, Xdot)
-            except np.linalg.LinAlgError:
-                pass  # fall through to DLS
+        # Row mask: keep rows where the user requested motion
+        mask = np.abs(x) > 1e-12
+        if not mask.any():
+            mask[:] = True  # nothing requested → keep all
 
-        lam = float(damping) if damping is not None else 0.0
-        if lam <= 0.0:
-            # adaptive tiny damping to avoid numerical issues
-            s = np.linalg.svd(J, compute_uv=False)
-            lam = 1e-6 * (s.max() + 1.0)
+        Jsel = J[mask, :]
+        xsel = x[mask]
 
+        # Optional diagonal weights (apply then select)
         if weights is None:
-            # Unweighted DLS
-            return J.T @ np.linalg.inv(J @ J.T + (lam**2) * np.eye(m)) @ Xdot
+            A = Jsel
+            b = xsel
         else:
             w = np.asarray(weights, dtype=float).reshape(-1)
-            if w.size != m:
-                raise ValueError(f"weights has length {w.size}, expected {m}")
-            Wsqrt = np.diag(np.sqrt(w))
-            Jw = Wsqrt @ J
-            Xw = Wsqrt @ Xdot
-            return Jw.T @ np.linalg.inv(Jw @ Jw.T + (lam**2) * np.eye(m)) @ Xw
+            if w.size != J.shape[0]:
+                raise ValueError(f"weights has length {w.size}, expected {J.shape[0]}")
+            Wsqrt_sel = np.diag(np.sqrt(w[mask]))
+            A = Wsqrt_sel @ Jsel
+            b = Wsqrt_sel @ xsel
+
+        # Choose damping strategy
+        lam = float(damping) if damping is not None else 0.0
+        s = np.linalg.svd(A, compute_uv=False)
+        if lam > 0.0 and s.size and lam < 0.1 * float(s.min()):
+            q = np.linalg.pinv(A) @ b
+        else:
+            lam_eff = lam if lam > 0.0 else 1e-9
+            q = pinv_damped(A, lam=lam_eff) @ b
+
+        return q
+
+    @staticmethod
+    def _rotvec_from_R(R: np.ndarray) -> np.ndarray:
+        """
+        Rotation-vector from rotation matrix via log map:
+            R = exp([r]_x)  =>  r = vee(log R)
+        Uses stable small-angle handling.
+        """
+        tr = np.clip((np.trace(R) - 1.0) * 0.5, -1.0, 1.0)
+        theta = np.arccos(tr)
+        if theta < 1e-12:
+            # first-order approximation
+            return 0.5 * np.array([R[2, 1] - R[1, 2],
+                                   R[0, 2] - R[2, 0],
+                                   R[1, 0] - R[0, 1]])
+        s = np.sin(theta)
+        if abs(s) < 1e-12:
+            # extremely close to pi: fall back to numerical
+            return 0.5 * np.array([R[2, 1] - R[1, 2],
+                                   R[0, 2] - R[2, 0],
+                                   R[1, 0] - R[0, 1]]) * (theta / (s if s != 0 else 1.0))
+        K = (theta / (2.0 * s))
+        return K * np.array([R[2, 1] - R[1, 2],
+                             R[0, 2] - R[2, 0],
+                             R[1, 0] - R[0, 1]])
 
     @staticmethod
     def newton_ik(
@@ -320,49 +263,65 @@ class solvers:
         """
         Newton–Raphson inverse kinematics on pose x = [p; orientation].
 
-        x_target:
-          - position: key 'p' : (3,)
-          - orientation: one of
-              * 'R' : (3x3) rotation matrix
-              * 'euler': {'seq': 'ZYX'|'ZXZ'..., 'angles': (3,) in radians}
-
-        Returns
-        -------
-        (q_sol, info) where info includes {'iters','converged','res_norm'}
+        Task selection:
+          - If 'p' in x_target, include translational rows (0..2).
+          - If 'R' or 'euler' in x_target, include orientation rows (3..5).
+          - If neither, defaults to position-only with current orientation held.
         """
         q = np.asarray(q0, dtype=float).ravel()
         p_des: Optional[np.ndarray] = None
         R_des: Optional[np.ndarray] = None
 
-        if "p" in x_target:
+        pos_active = "p" in x_target
+        if pos_active:
             p_des = np.asarray(x_target["p"], dtype=float).reshape(3)
+
         if "R" in x_target:
             R_des = np.asarray(x_target["R"], dtype=float).reshape(3, 3)
+            ori_active = True
         elif "euler" in x_target:
             ed = x_target["euler"]
             seq = str(ed.get("seq", euler)).upper()
             ang = np.asarray(ed["angles"], dtype=float).reshape(3)
             R_des = _R_from_euler(seq, ang)
+            ori_active = True
+        else:
+            ori_active = False
+
         if R_des is None:
-            # default to keep same orientation; only position IK
-            # extract current orientation at q0
+            # Keep initial orientation as reference if no orientation target.
             _, Tn0 = robot._fk_all(q)
             R_des = Tn0[:3, :3]
 
+        # Static task mask
+        task_mask = np.zeros(6, dtype=bool)
+        if pos_active:
+            task_mask[:3] = True
+        if ori_active:
+            task_mask[3:] = True
+        if not task_mask.any():
+            task_mask[:3] = True  # default to position-only
+
         res_hist: List[float] = []
         converged = False
+        lam = 1e-6
 
         for k in range(1, max_iter + 1):
-            frames, Tn = robot._fk_all(q)
+            _, Tn = robot._fk_all(q)
             R = Tn[:3, :3]
             p = Tn[:3, 3]
 
-            # Pose error: spatial (base-frame) 6×1 twist-like vector [dp; w_err]
-            dp = (p_des - p) if p_des is not None else (0.0 * p)
-            # orientation error via small-angle approx from R^T R_des
-            Re = R.T @ R_des
-            w_err = 0.5 * np.array([Re[2, 1] - Re[1, 2], Re[0, 2] - Re[2, 0], Re[1, 0] - Re[0, 1]])
-            xerr = np.r_[dp, w_err]
+            # Residual
+            dp = (p_des - p) if pos_active else np.zeros(3, dtype=float)
+            if ori_active:
+                # Spatial error as rotvec of R_des * R^T
+                Rerr = R_des @ R.T
+                w_err = solvers._rotvec_from_R(Rerr)
+            else:
+                w_err = np.zeros(3, dtype=float)
+
+            xerr_full = np.r_[dp, w_err]
+            xerr = xerr_full[task_mask]
 
             res = float(np.linalg.norm(xerr))
             res_hist.append(res)
@@ -370,8 +329,18 @@ class solvers:
                 converged = True
                 break
 
-            J = robot.jacobian_geometric(q)
-            dq = solvers.resolved_rates(J, xerr, damping=None, weights=weights)
+            Jg = robot.jacobian_geometric(q)[task_mask, :]
+
+            if weights is None:
+                dq = pinv_damped(Jg, lam=lam) @ xerr
+            else:
+                w = np.asarray(weights, dtype=float).reshape(-1)
+                if w.size != 6:
+                    raise ValueError("weights must have length 6 for IK")
+                wsel = w[task_mask]
+                Wsqrt = np.diag(np.sqrt(wsel))
+                dq = pinv_damped(Wsqrt @ Jg, lam=lam) @ (Wsqrt @ xerr)
+
             q = q + dq
 
         info = {"iters": k, "converged": converged, "res_norm": res_hist[-1], "res_hist": res_hist}
@@ -382,7 +351,6 @@ class solvers:
 
 
 def _R_from_euler(seq: str, ang: np.ndarray) -> np.ndarray:
-    """Build rotation from Euler angles (radians). Supports 'ZYX' and 'ZXZ'."""
     c = np.cos
     s = np.sin
     a, b, g = ang.tolist()
@@ -402,12 +370,8 @@ def _R_from_euler(seq: str, ang: np.ndarray) -> np.ndarray:
 
 
 def _euler_from_R_zyx(R: np.ndarray) -> Tuple[bool, np.ndarray]:
-    """Extract ZYX (yaw, pitch, roll) from rotation matrix; returns (ok, angles)."""
-    # ZYX: R = Rz(yaw) Ry(pitch) Rx(roll)
-    # pitch = asin(-R[2,0])
     sy = -float(R[2, 0])
     if abs(sy) >= 1.0:
-        # Gimbal lock; roll and yaw coupled
         pitch = np.sign(sy) * (np.pi / 2)
         yaw = np.arctan2(-R[0, 1], R[1, 1])
         roll = 0.0
@@ -419,29 +383,20 @@ def _euler_from_R_zyx(R: np.ndarray) -> Tuple[bool, np.ndarray]:
 
 
 def _G_euler_zyx(angles: np.ndarray) -> np.ndarray:
-    """
-    Euler-rate map for ZYX: ω = G(φ) φ̇, φ=[yaw(Z), pitch(Y), roll(X)].
-    We return G; caller can invert it for JA.
-    """
     yaw, pitch, roll = angles
-    cy, sy = np.cos(yaw), np.sin(yaw)
     cp, sp = np.cos(pitch), np.sin(pitch)
     cr, sr = np.cos(roll), np.sin(roll)
-    # One common parametrization:
-    G = np.array(
+    return np.array(
         [
             [0.0, -sr, cr * cp],
-            [0.0, cr, sr * cp],
-            [1.0, 0.0, -sp],
+            [0.0,  cr, sr * cp],
+            [1.0, 0.0,   -sp  ],
         ],
         dtype=float,
     )
-    return G
 
 
 def _euler_from_R_zxz(R: np.ndarray) -> Tuple[bool, np.ndarray]:
-    """Extract ZXZ angles; returns (ok, angles)."""
-    # Guard singularities when sin(beta)≈0
     beta = np.arccos(np.clip(R[2, 2], -1.0, 1.0))
     sb = np.sin(beta)
     if sb < 1e-9:
@@ -454,14 +409,9 @@ def _euler_from_R_zxz(R: np.ndarray) -> Tuple[bool, np.ndarray]:
 
 
 def _G_euler_zxz(angles: np.ndarray) -> np.ndarray:
-    """
-    Euler-rate map for ZXZ: ω = G(φ) φ̇, φ=[alpha(Z), beta(X), gamma(Z)].
-    """
     alpha, beta, gamma = angles
-    sa, ca = np.sin(alpha), np.cos(alpha)
     sb, cb = np.sin(beta), np.cos(beta)
-    sg, cg = np.sin(gamma), np.cos(gamma)
-    G = np.array(
+    return np.array(
         [
             [0.0, sb, 0.0],
             [0.0, 0.0, 1.0],
@@ -469,14 +419,9 @@ def _G_euler_zxz(angles: np.ndarray) -> np.ndarray:
         ],
         dtype=float,
     )
-    return G
 
 
 def _euler_rate_map_inverse_from_R(R: np.ndarray, seq: str) -> Tuple[bool, np.ndarray]:
-    """
-    Compute G^{-1}(φ) from rotation matrix for given Euler sequence.
-    Returns (ok, Ginv). ok=False indicates near-singularity; caller may fallback.
-    """
     seq = seq.upper()
     if seq == "ZYX":
         ok, ang = _euler_from_R_zyx(R)
@@ -503,5 +448,4 @@ def _euler_rate_map_inverse_from_R(R: np.ndarray, seq: str) -> Tuple[bool, np.nd
 # -------------------------- typing helper for .from_spec ----------------------
 
 class RobotSpecLike:
-    """Minimal protocol: any object with a `.data` mapping works (used in tests)."""
     data: Mapping[str, Any]
