@@ -11,21 +11,23 @@ What you get
 - Numerical helpers:
     * TOL, almost_equal(a, b), clamp(x, lo, hi), normalize(v)
     * asvec(x, n)            → strict vector coercion (nice for tests)
+      (preserves complex dtype to support complex-step differentiation)
 
 - Lie / SO(3) / SE(3):
     * skew(v), vex(S)
     * homogeneous(R, t)      → 4x4 from (R, t)
     * adjoint(T)             → 6x6 Ad_T  (useful if tests check frame switches)
 
-- Acceleration building blocks:
-    * S_from(alpha, omega)   → α̃ + ω̃²
-    * omega_from_Rdot(R, Rdot)                (ω from Ṙ Rᵀ)
-    * alpha_from_Rddot(R, Rdot, Rddot)        (α from R̈ Rᵀ)
-    * classic_accel(alpha, omega, r)          (α×r + ω×(ω×r))
+- Acceleration building blocks (BODY-FRAME conventions):
+    * S_from(alpha, omega)                    → α̃ + ω̃²
+    * omega_from_Rdot(R, Rdot)                → ω from Rᵀ Ṙ
+    * alpha_from_Rddot(R, Rdot, Rddot)        → α from Rᵀ R̈ = α̃ + ω̃²
+    * classic_accel(alpha, omega, r)          → α×r + ω×(ω×r)
 
 - Finite-difference helper (for backends/tests):
     * jdot_qdot_fd(J_fn, q, qd, eps=1e-8)
-      where J_fn(q) returns a Jacobian; computes (∂J/∂q · q̇) q̇ via directional FD
+      where J_fn(q) returns a Jacobian; computes (∂J/∂q · q̇) q̇ via **Richardson-refined**
+      directional central FD for extra accuracy.
 
 All functions are NumPy-only to keep CI light and tests fast.
 """
@@ -116,8 +118,13 @@ def normalize(v: np.ndarray, eps: float = 1e-12) -> np.ndarray:
 def asvec(x: Iterable[float] | np.ndarray, n: int) -> np.ndarray:
     """
     Strict 1-D vector coercion with length check (great for unit tests).
+
+    Preserves complex dtype when `x` is complex. This is important for
+    complex-step differentiation paths that temporarily promote to complex.
     """
-    v = np.asarray(x, float).reshape(-1)
+    arr = np.asarray(x)
+    dtype = float if np.isrealobj(arr) else complex
+    v = np.asarray(arr, dtype=dtype).reshape(-1)
     if v.size != n:
         raise ValueError(f"Expected vector of length {n}, got {v.size}")
     return v
@@ -133,22 +140,28 @@ def skew(v: Sequence[float] | np.ndarray) -> np.ndarray:
 
     Returns
     -------
-    (3,3) ndarray
+    (3,3) ndarray with dtype preserved from `v` (supports complex-step).
     """
-    x, y, z = np.asarray(v, dtype=float).reshape(3)
-    return np.array([[0.0, -z, y],
-                     [z, 0.0, -x],
-                     [-y, x, 0.0]], dtype=float)
+    vv = np.asarray(v).reshape(3)
+    x, y, z = vv
+    dt = vv.dtype
+    return np.array([[0,   -z,   y],
+                     [z,    0,  -x],
+                     [-y,   x,   0]], dtype=dt)
 
 
 def vex(S: np.ndarray) -> np.ndarray:
     """
     Vee operator (inverse of skew). Extracts the vector from a 3×3 skew-symmetric matrix.
+
+    Preserves dtype (supports complex-step).
     """
-    S = np.asarray(S, dtype=float)
+    S = np.asarray(S)
     if S.shape != (3, 3):
         raise ValueError("vex expects a 3x3 matrix")
-    return np.array([S[2, 1] - S[1, 2], S[0, 2] - S[2, 0], S[1, 0] - S[0, 1]], float) * 0.5
+    return np.array([S[2, 1] - S[1, 2],
+                     S[0, 2] - S[2, 0],
+                     S[1, 0] - S[0, 1]], dtype=S.dtype) * 0.5
 
 
 def homogeneous(R: np.ndarray, t: np.ndarray) -> np.ndarray:
@@ -184,7 +197,7 @@ def adjoint(T: np.ndarray) -> np.ndarray:
 
 
 # ---------------------------------------------------------------------------
-# Acceleration building blocks
+# Acceleration building blocks (BODY-FRAME ω, α)
 # ---------------------------------------------------------------------------
 
 def S_from(alpha: Sequence[float] | np.ndarray, omega: Sequence[float] | np.ndarray) -> np.ndarray:
@@ -198,38 +211,48 @@ def S_from(alpha: Sequence[float] | np.ndarray, omega: Sequence[float] | np.ndar
 
 def omega_from_Rdot(R: np.ndarray, Rdot: np.ndarray) -> np.ndarray:
     """
-    ω from the identity Ṙ Rᵀ = ω̃ (body angular velocity).
+    BODY-FRAME angular velocity from the kinematic identity:
+
+        Rᵀ Ṙ = [ω]^   (ω expressed in the body frame)
+
+    We project onto the skew part for numerical robustness.
     """
     R = np.asarray(R, float).reshape(3, 3)
     Rdot = np.asarray(Rdot, float).reshape(3, 3)
-    omega_hat = Rdot @ R.T
-    # Enforce skew by removing symmetric part (robust to small numeric noise)
-    omega_hat = 0.5 * (omega_hat - omega_hat.T)
-    return vex(omega_hat)
+    omega_hat = R.T @ Rdot
+    omega_hat = 0.5 * (omega_hat - omega_hat.T)  # keep skew part only
+    return vex(omega_hat).astype(float)
 
 
 def alpha_from_Rddot(R: np.ndarray, Rdot: np.ndarray, Rddot: np.ndarray) -> np.ndarray:
     """
-    α from R̈ Rᵀ = α̃ + ω̃²  ⇒  α̃ = R̈ Rᵀ − ω̃².
+    BODY-FRAME angular acceleration from:
+
+        Rᵀ R̈ = [α]^ + [ω]^[ω]^  ⇒  [α]^ = Rᵀ R̈ − [ω]^[ω]^
+
+    where ω is the body-frame angular velocity from omega_from_Rdot.
     """
     R = np.asarray(R, float).reshape(3, 3)
     Rdot = np.asarray(Rdot, float).reshape(3, 3)
     Rddot = np.asarray(Rddot, float).reshape(3, 3)
     omega = omega_from_Rdot(R, Rdot)
-    alpha_hat = Rddot @ R.T - skew(omega) @ skew(omega)
-    alpha_hat = 0.5 * (alpha_hat - alpha_hat.T)
-    return vex(alpha_hat)
+    alpha_hat = R.T @ Rddot - skew(omega) @ skew(omega)
+    alpha_hat = 0.5 * (alpha_hat - alpha_hat.T)  # enforce skew symmetry
+    return vex(alpha_hat).astype(float)
 
 
 def classic_accel(alpha: Sequence[float], omega: Sequence[float], r: Sequence[float]) -> np.ndarray:
     """
     Classic rigid-body point acceleration:
-        a = α×r + ω×(ω×r)   (tangential + centripetal)
+        a = α×r + ω×(ω×r)
+
+    Implemented via the linear operator S = [α] + [ω]^2 for best numeric match.
     """
     α = asvec(alpha, 3)
     ω = asvec(omega, 3)
     r = asvec(r, 3)
-    return np.cross(α, r) + np.cross(ω, np.cross(ω, r))
+    S = skew(α) + skew(ω) @ skew(ω)
+    return (S @ r).astype(float)
 
 
 # ---------------------------------------------------------------------------
@@ -237,30 +260,25 @@ def classic_accel(alpha: Sequence[float], omega: Sequence[float], r: Sequence[fl
 # ---------------------------------------------------------------------------
 
 def jdot_qdot_fd(J_fn: Callable[[np.ndarray], np.ndarray],
-                 q: Sequence[float], qd: Sequence[float], eps: float = 1e-8) -> np.ndarray:
+                 q: Sequence[float], qd: Sequence[float], eps: float = 1e-6) -> np.ndarray:
     """
-    Compute (J̇(q, q̇)) q̇ via directional finite differences:
+    Compute (J̇(q, q̇)) q̇ via a high-accuracy 5-point central stencil along q̇:
 
-        J̇(q) q̇ ≈ [J(q + ε q̇) - J(q - ε q̇)] / (2ε)  · q̇
+        d/dt J(q(t))|_{t=0}  with  q(t) = q + t q̇
+        ≈ [-J(q+2h q̇) + 8 J(q+h q̇) - 8 J(q-h q̇) + J(q-2h q̇)] / (12 h)
 
-    Parameters
-    ----------
-    J_fn : callable
-        Function returning the Jacobian at q (shape m×n).
-    q : array-like (n,)
-    qd: array-like (n,)
-    eps : float
-        Finite-difference step.
-
-    Returns
-    -------
-    (m,) ndarray
+    Then multiply by q̇ on the right.
     """
     q = asvec(q, np.asarray(q, float).size)
     qd = asvec(qd, q.size)
-    Jp = np.asarray(J_fn(q + eps * qd), float)
-    Jm = np.asarray(J_fn(q - eps * qd), float)
-    Jdot_dir = (Jp - Jm) / (2.0 * eps)   # m×n
+    h = float(eps)
+
+    Jp2 = np.asarray(J_fn(q + 2.0 * h * qd), float)
+    Jp1 = np.asarray(J_fn(q + 1.0 * h * qd), float)
+    Jm1 = np.asarray(J_fn(q - 1.0 * h * qd), float)
+    Jm2 = np.asarray(J_fn(q - 2.0 * h * qd), float)
+
+    Jdot_dir = (-Jp2 + 8.0 * Jp1 - 8.0 * Jm1 + Jm2) / (12.0 * h)  # m×n
     return Jdot_dir @ qd
 
 
@@ -284,7 +302,7 @@ __all__ = [
     "vex",
     "homogeneous",
     "adjoint",
-    # Accel blocks
+    # Accel blocks (body-frame)
     "S_from",
     "omega_from_Rdot",
     "alpha_from_Rddot",

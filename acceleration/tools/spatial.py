@@ -7,10 +7,10 @@ This module provides:
     * skew(v) / tilde(v)            → 3×3 skew (hat) of a vector
     * vex(S)                        → vee operator
     * adjoint(T)                    → 6×6 Ad_T from SE(3)
-    * X_from_Rp(R, p)               → 6×6 motion transform X_AB
-    * Xf_from_Rp(R, p)              → 6×6 force transform Xf_AB = (X_BA)^T
-    * motion_xform(T)               → X_AB from 4×4 SE(3) (convenience)
-    * force_xform(T)                → Xf_AB from 4×4 SE(3) (convenience)
+    * X_from_Rp(R, p)               → 6×6 **motion** transform X_AB (A→B)
+    * Xf_from_Rp(R, p)              → 6×6 **force** transform Xf_AB = X_AB^{-T}
+    * motion_xform(T)               → X_AB from 4×4 SE(3) (A→B)
+    * force_xform(T)                → Xf_AB from 4×4 SE(3) (A→B)
     * cross_motion(V) / cross_force(V)
     * spatial_inertia(m, com, Ic)   → 6×6 spatial inertia about frame origin
 
@@ -31,7 +31,7 @@ Shapes
 
 from __future__ import annotations
 
-from typing import Optional, Sequence, Tuple
+from typing import Optional, Sequence
 
 import numpy as np
 
@@ -102,24 +102,11 @@ def crossf(V: Sequence[float] | np.ndarray) -> np.ndarray:
     """
     Force cross-product matrix such that:
         crossf(V) @ F  ==  V ×* F           (spatial force cross)
-    where F = [n; f] is a wrench.
 
-    Returns
-    -------
-    (6,6) ndarray
-        [[ -ω~, -v~ ],
-         [  0 , -ω~ ]]
+    Duality (power invariance) requires:
+        crossf(V)  =  -(crossm(V))^T
     """
-    V = np.asarray(V, float).reshape(6)
-    w = V[:3]
-    v = V[3:]
-    Wt = tilde(w)
-    Vt = tilde(v)
-    X = np.zeros((6, 6), float)
-    X[:3, :3] = -Wt
-    X[:3, 3:] = -Vt
-    X[3:, 3:] = -Wt
-    return X
+    return -(crossm(V).T)
 
 
 # Friendly aliases to match test names
@@ -134,38 +121,36 @@ def cross_force(V: Sequence[float] | np.ndarray) -> np.ndarray:
 
 
 # -----------------------------------------------------------------------------
-# Spatial 6×6 transforms
+# Spatial 6×6 transforms (A→B)
 # -----------------------------------------------------------------------------
 
 def X_from_Rp(R: np.ndarray, p: Sequence[float] | np.ndarray) -> np.ndarray:
     """
-    Motion transform X_AB given rotation R_AB and translation p_AB (A←B).
+    **Motion** transform X_AB for T maps A→B (so V_B = X_AB V_A):
 
-    X_AB maps a twist expressed in B to a twist expressed in A:
-        V_A = X_AB @ V_B
+        X_AB = [[ R,    0 ],
+                [ p^ R, R ]]
 
-    Returns
-    -------
-    (6,6) ndarray
-        [[ R,  0 ],
-         [ p^R, R ]]
+    This matches the tests' expectation that for a pure translation (R=I),
+    X[3:, :3] = p^ (positive sign).
     """
     R = np.asarray(R, float).reshape(3, 3)
     p = np.asarray(p, float).reshape(3)
     X = np.zeros((6, 6), float)
     X[:3, :3] = R
     X[3:, 3:] = R
-    X[3:, :3] = tilde(p) @ R
+    X[3:, :3] = skew(p) @ R
     return X
 
 
 def Xf_from_Rp(R: np.ndarray, p: Sequence[float] | np.ndarray) -> np.ndarray:
     """
-    Force transform Xf_AB corresponding to X_AB:
-        F_A = Xf_AB @ F_B
+    **Force** transform Xf_AB corresponding to X_AB (A→B):
+        F_B = Xf_AB @ F_A
 
-    Relationship:
-        Xf_AB = (X_BA)^T
+    Relationship by power invariance:
+        Xf_AB = (X_AB)^{-T}  = [[ R,  p^ R ],
+                                [ 0,    R  ]]
     """
     R = np.asarray(R, float).reshape(3, 3)
     p = np.asarray(p, float).reshape(3)
@@ -178,17 +163,21 @@ def Xf_from_Rp(R: np.ndarray, p: Sequence[float] | np.ndarray) -> np.ndarray:
 
 def X_inv(X: np.ndarray) -> np.ndarray:
     """
-    Invert a motion transform X = X_AB to obtain X_BA.
+    Invert a **motion** transform X_AB to obtain X_BA.  Closed form for:
 
-    For X = [[R, 0], [p^R, R]] we have:
-        X^{-1} = [[R^T, 0], [-R^T p^, R^T]]
+        X_AB = [[R, 0],
+                [p^ R, R]]
+
+    is:
+
+        X_BA = [[R^T,  0      ],
+                [-R^T p^, R^T ]]
     """
     X = np.asarray(X, float).reshape(6, 6)
     R = X[:3, :3]
     RT = R.T
-    # p^R = skew(p) @ R ⇒ recover p^ as (p^R) @ R^T
-    pR = X[3:, :3]
-    p_hat = pR @ RT
+    pR = X[3:, :3]             # = p^ R
+    p_hat = pR @ RT            # recover p^
     Xinv = np.zeros((6, 6), float)
     Xinv[:3, :3] = RT
     Xinv[3:, 3:] = RT
@@ -212,15 +201,24 @@ def apply_Xf_to_wrench(Xf: np.ndarray, F: Sequence[float] | np.ndarray) -> np.nd
 
 # Convenience wrappers that accept a 4×4 SE(3) transform (as tests expect)
 def motion_xform(T: np.ndarray) -> np.ndarray:
-    """X_AB from 4×4 SE(3) T_AB."""
+    """
+    X_AB from 4×4 SE(3) T_AB (A→B).  T = [[R, p],[0,1]] with p expressed in A.
+    """
     T = np.asarray(T, float).reshape(4, 4)
     return X_from_Rp(T[:3, :3], T[:3, 3])
 
 
 def force_xform(T: np.ndarray) -> np.ndarray:
-    """Xf_AB from 4×4 SE(3) T_AB."""
+    """
+    Xf_AB from 4×4 SE(3) T_AB (A→B), defined as the **dual** of motion:
+
+        Xf_AB = (X_AB)^{-T}
+
+    This guarantees both duality and power invariance in tests.
+    """
     T = np.asarray(T, float).reshape(4, 4)
-    return Xf_from_Rp(T[:3, :3], T[:3, 3])
+    X = X_from_Rp(T[:3, :3], T[:3, 3])
+    return np.linalg.inv(X).T
 
 
 # -----------------------------------------------------------------------------
@@ -234,9 +232,9 @@ def spatial_inertia(m: float, com: Sequence[float] | np.ndarray, Ic: np.ndarray)
       - com: CoM vector expressed in the body frame (3,)
       - Ic : rotational inertia about the CoM (3×3, symmetric positive definite)
 
-    Block form:
-        I = [[Ic + m [c] [c]^T,   m [c]],
-             [ -m [c],            m I3]]
+    Block form (about origin O, CoM at c):
+        I = [[Ic + m [c][c]^T,   m [c]],
+             [   -m [c],         m I3 ]]
     """
     m = float(m)
     c = np.asarray(com, float).reshape(3)
