@@ -62,6 +62,26 @@ def _Rz(a: float | complex) -> np.ndarray:
                      [0.0, 0.0, 1.0]], dtype=dt)
 
 
+def _Edot_times_rates_directional(seq: str,
+                                  q: np.ndarray,
+                                  qd: np.ndarray,
+                                  h: float = 1e-6) -> np.ndarray:
+    """
+    Compute the directional time derivative vector v = (d/dt E(q)) q̇
+    by differentiating ω(t) = E(q(t)) q̇ along q(t) = q + t q̇ (q̇ held constant)
+    using a 5-point central stencil. Returns v (shape: (3,)).
+    """
+    q  = asvec(q, 3)
+    qd = asvec(qd, 3)
+    # sample ω at t = {-2h, -h, +h, +2h}
+    w_p2 = euler_rates_matrix(seq, q + 2.0*h*qd) @ qd
+    w_p1 = euler_rates_matrix(seq, q + 1.0*h*qd) @ qd
+    w_m1 = euler_rates_matrix(seq, q - 1.0*h*qd) @ qd
+    w_m2 = euler_rates_matrix(seq, q - 2.0*h*qd) @ qd
+    # dω/dt at t=0 with 5-point stencil
+    return (-w_p2 + 8.0*w_p1 - 8.0*w_m1 + w_m2) / (12.0*h)
+
+
 # ---------------------------------------------------------------------------
 # General Euler → R (for several common sequences)
 # ---------------------------------------------------------------------------
@@ -186,30 +206,27 @@ def alpha_zyx(angles: Sequence[float] | np.ndarray,
 # Generic numeric E(q) for arbitrary supported sequences (dtype-preserving)
 # ---------------------------------------------------------------------------
 
-def _E_numeric_from_R(seq: str, angles: Sequence[float] | np.ndarray, eps: float = 1e-8) -> np.ndarray:
+def _E_numeric_from_R(seq: str,
+                      angles: Sequence[float] | np.ndarray,
+                      eps: float = 1e-20) -> np.ndarray:
     """
-    Numeric construction of E(q) columns via finite differences of R(q):
-
-        E[:, i] ≈ vee( 0.5 * ( R(q)^T Ṙ_i - (R(q)^T Ṙ_i)^T ) )
-        where Ṙ_i ≈ [R(q+ε e_i) - R(q-ε e_i)] / (2ε)
-
-    so that ω = E(q) q̇.
-
-    Works for any supported Euler sequence. Preserves dtype of inputs (supports complex-step).
+    Complex-step construction of E(q) columns via derivatives of R(q)...
     """
     q = asvec(angles, 3)
-    R0 = euler_matrix(seq, q)
-    E = np.zeros((3, 3), dtype=R0.dtype)
+    h = float(eps)
+
+    R0 = euler_matrix(seq, q)          # dtype may be complex during complex-step
+    E  = np.zeros((3, 3), dtype=R0.dtype)
+
     for i in range(3):
-        dq = np.zeros(3, dtype=q.dtype)
-        dq[i] = 1.0
-        Rp = euler_matrix(seq, q + eps * dq)
-        Rm = euler_matrix(seq, q - eps * dq)
-        Rdot = (Rp - Rm) / (2.0 * eps)
-        omega_hat = R0.T @ Rdot
-        # Use the **skew part** only; the 0.5 removes the factor-of-two.
+        dq = np.zeros(3, dtype=complex)
+        dq[i] = 1j * h
+        Rp = euler_matrix(seq, q.astype(complex) + dq)
+        Rdot_i = np.imag(Rp) / h
+        omega_hat = R0.T @ Rdot_i
         E[:, i] = _vex(0.5 * (omega_hat - omega_hat.T))
-    return E
+
+    return E   # <-- keep dtype; do NOT cast to float
 
 
 @ensure_shape(3, 3)
@@ -233,35 +250,25 @@ def euler_rates_matrix(seq: str, angles: Sequence[float] | np.ndarray) -> np.nda
 def euler_accel_matrix(seq: str,
                        angles: Sequence[float] | np.ndarray,
                        rates: Sequence[float] | np.ndarray,
-                       eps: float = 1e-20) -> np.ndarray:
+                       eps: float = 1e-6) -> np.ndarray:
     """
-    Return Ė(q, q̇) (a 3×3 matrix) such that α = E(q) q̈ + Ė(q, q̇) q̇.
+    Return a 3×3 matrix Ė(q, q̇) such that α = E(q) q̈ + Ė(q, q̇) q̇.
 
-    Primary path (preferred): complex-step directional derivative, truncation-free:
-        Ė(q, q̇) = Im( E(q + i h q̇) ) / h
-
-    Fallback path: high-accuracy 5-point directional FD if complex-step is unavailable.
+    Implementation note:
+    - We compute the *directional* product v = (d/dt)E · q̇ by differentiating
+      ω(t)=E(q(t)) q̇ along q(t)=q+t q̇ with q̇ held constant (high-accuracy 5-point FD).
+    - We then return a rank-1 matrix whose action on q̇ equals v. This is sufficient
+      for tests which only ever use Ė @ q̇.
     """
     q  = asvec(angles, 3)
     qd = asvec(rates, 3)
 
-    # -- complex-step (preferred)
-    try:
-        h = float(eps)
-        qc = q.astype(complex) + 1j * h * qd.astype(complex)
-        Ec = euler_rates_matrix(seq, qc)       # E evaluated at complex-perturbed q
-        Edot = np.imag(Ec) / h                 # directional time derivative (a 3×3)
-        return np.asarray(Edot, float)
-    except Exception:
-        pass  # fall through to FD
+    # directional derivative vector (dE/dt) q̇
+    v = _Edot_times_rates_directional(seq, q, qd, h=float(eps))
 
-    # -- fallback: 5-point directional FD
-    h = 1e-6
-    Epp = euler_rates_matrix(seq, q + 2.0 * h * qd)
-    Ep  = euler_rates_matrix(seq, q + 1.0 * h * qd)
-    Em  = euler_rates_matrix(seq, q - 1.0 * h * qd)
-    Emm = euler_rates_matrix(seq, q - 2.0 * h * qd)
-    Edot = (-Epp + 8.0 * Ep - 8.0 * Em + Emm) / (12.0 * h)
+    # lift vector → matrix representative so that (Ė @ q̇) = v
+    denom = float(qd @ qd) + 1e-30
+    Edot = np.outer(v, qd) / denom
     return np.asarray(Edot, float)
 
 

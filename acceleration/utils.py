@@ -226,33 +226,35 @@ def omega_from_Rdot(R: np.ndarray, Rdot: np.ndarray) -> np.ndarray:
 
 def alpha_from_Rddot(R: np.ndarray, Rdot: np.ndarray, Rddot: np.ndarray) -> np.ndarray:
     """
-    BODY-FRAME angular acceleration from:
+    BODY-FRAME angular acceleration from the kinematic identities.
 
-        Rᵀ R̈ = [α]^ + [ω]^[ω]^  ⇒  [α]^ = Rᵀ R̈ − [ω]^[ω]^
+    Numerically robust form:
+        α^ = skew( Rᵀ R̈ )
 
-    where ω is the body-frame angular velocity from omega_from_Rdot.
+    (Because ω^ω^ is symmetric, its skew part is zero, so we can avoid
+    forming ω and squaring it — that reduces amplification of FD noise.)
     """
     R = np.asarray(R, float).reshape(3, 3)
-    Rdot = np.asarray(Rdot, float).reshape(3, 3)
     Rddot = np.asarray(Rddot, float).reshape(3, 3)
-    omega = omega_from_Rdot(R, Rdot)
-    alpha_hat = R.T @ Rddot - skew(omega) @ skew(omega)
-    alpha_hat = 0.5 * (alpha_hat - alpha_hat.T)  # enforce skew symmetry
+
+    A = R.T @ Rddot
+    alpha_hat = 0.5 * (A - A.T)          # skew( Rᵀ R̈ )
     return vex(alpha_hat).astype(float)
 
+
+# acceleration/utils.py
 
 def classic_accel(alpha: Sequence[float], omega: Sequence[float], r: Sequence[float]) -> np.ndarray:
     """
     Classic rigid-body point acceleration:
         a = α×r + ω×(ω×r)
 
-    Implemented via the linear operator S = [α] + [ω]^2 for best numeric match.
+    Use the explicit double-cross form for better numerical behavior.
     """
     α = asvec(alpha, 3)
     ω = asvec(omega, 3)
     r = asvec(r, 3)
-    S = skew(α) + skew(ω) @ skew(ω)
-    return (S @ r).astype(float)
+    return np.cross(α, r) + np.cross(ω, np.cross(ω, r))
 
 
 # ---------------------------------------------------------------------------
