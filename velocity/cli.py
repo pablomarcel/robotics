@@ -5,7 +5,7 @@ Command-line interface for the Velocity Kinematics Toolkit.
 Design goals
 ------------
 - Zero non-stdlib dependencies (pure argparse).
-- Thin, testable commands that delegate to `VelocityAPI`.
+- Thin, testable commands; kinematics via core.* to support DH + URDF.
 - Exhaustive yet ergonomic flags (CSV/JSON inputs, files or literals).
 - No side effects unless explicitly requested (stdout or --out).
 
@@ -14,12 +14,15 @@ Examples
 # Forward kinematics on a DH YAML
 python -m velocity.cli fk velocity/in/planar2r.yml --q 0.3,0.2 --out velocity/out/fk.json
 
-# Geometric Jacobian and resolved rates
-python -m velocity.cli jacobian velocity/in/arm.urdf --q 0.1,0.2,0.3
+# Geometric / Analytic Jacobian (URDF or DH)
+python -m velocity.cli jacobian velocity/in/arm.urdf --q 0.1,0.2
+python -m velocity.cli jacobian-analytic velocity/in/arm.yml --q 0.1,0.2 --euler ZXZ
+
+# Resolved rates
 python -m velocity.cli resolved-rates velocity/in/arm.yml --q 0.1,0.2 --xdot 0.1,0,0,0,0,0
 
-# Newton–Raphson IK: position + ZYX Euler
-python -m velocity.cli newton-ik velocity/in/arm.yml --q0 0,0,0 --p 0.5,0.1,0.2 --euler zyx 10,20,0 --max-iter 100
+# Newton–Raphson IK (position + ZYX Euler)
+python -m velocity.cli newton-ik velocity/in/arm.yml --q0 0,0 --p 0.5,0.1,0.2 --euler zyx --angles 10,20,0 --deg
 
 # Linear algebra exercises (chapter 8.5+)
 python -m velocity.cli lu-solve --A "[[2,1],[1,3]]" --b "[1,2]"
@@ -41,8 +44,16 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 import numpy as np
 
-from .apis import VelocityAPI, RobotSpec, APIError
+# API kept for LU & diagram commands
+from .apis import VelocityAPI, APIError
 from . import design
+from . import core
+
+# Optional YAML (only needed when loading .yaml/.yml robot specs)
+try:
+    import yaml  # type: ignore
+except Exception:  # pragma: no cover
+    yaml = None
 
 
 # --------------------------------------------------------------------------- #
@@ -90,6 +101,38 @@ def _write_or_print(payload: Mapping[str, Any] | Sequence[Any] | Any, out: Optio
     else:
         print(_dump(payload))
     return 0
+
+
+# ----------------------------- Robot loader ---------------------------------- #
+
+def _load_robot_any(path_or_spec: str):
+    """
+    Accept:
+      - path to .yaml/.yml (DH or URDF wrapper)
+      - path to .json (DH or URDF wrapper)
+      - path to .urdf/.xml (raw URDF)
+    Returns a core.DHRobot or core.URDFRobot accordingly.
+    """
+    p = Path(path_or_spec)
+    sfx = p.suffix.lower()
+
+    # Raw URDF/XML → URDFRobot
+    if sfx in (".urdf", ".xml"):
+        return core.URDFRobot.from_spec(str(p))
+
+    # YAML/JSON wrapper
+    if sfx in (".yaml", ".yml", ".json"):
+        txt = p.read_text(encoding="utf-8")
+        data = yaml.safe_load(txt) if sfx in (".yaml", ".yml") else json.loads(txt)
+
+        # If wrapper has an 'urdf' key → URDFRobot
+        if isinstance(data, dict) and data.get("urdf"):
+            return core.URDFRobot.from_spec(data)
+
+        # Otherwise treat it as DH spec
+        return core.DHRobot.from_spec(data)
+
+    raise APIError(f"Unsupported robot spec extension: {p.suffix} (use .yaml/.yml/.json/.urdf/.xml)")
 
 
 # --------------------------------------------------------------------------- #
@@ -194,38 +237,37 @@ class VelocityCLI:
 
     # ------------------------------ subcommands ------------------------------
 
-    def _load(self, path: str) -> RobotSpec:
-        return self.api.load_robot(path)
+    # -- Kinematics via core.* so URDF works --
 
     def _cmd_fk(self, ns: argparse.Namespace) -> int:
-        spec = self._load(ns.robot)
-        q = _maybe_json_or_csv(ns.q) or []
-        fk = self.api.fk(spec, q)
-        return _write_or_print(fk, ns.out)
+        robot = _load_robot_any(ns.robot)
+        q = np.asarray(_maybe_json_or_csv(ns.q) or [], dtype=float)
+        out = robot.fk(q)
+        return _write_or_print(out, ns.out)
 
     def _cmd_jacobian(self, ns: argparse.Namespace) -> int:
-        spec = self._load(ns.robot)
-        q = _maybe_json_or_csv(ns.q) or []
-        J = self.api.jacobian_geometric(spec, q)
+        robot = _load_robot_any(ns.robot)
+        q = np.asarray(_maybe_json_or_csv(ns.q) or [], dtype=float)
+        J = robot.jacobian_geometric(q)
         return _write_or_print({"J": J}, ns.out)
 
     def _cmd_jacobian_analytic(self, ns: argparse.Namespace) -> int:
-        spec = self._load(ns.robot)
-        q = _maybe_json_or_csv(ns.q) or []
-        J = self.api.jacobian_analytic(spec, q, euler=ns.euler.upper())
+        robot = _load_robot_any(ns.robot)
+        q = np.asarray(_maybe_json_or_csv(ns.q) or [], dtype=float)
+        J = robot.jacobian_analytic(q, euler=ns.euler.upper())
         return _write_or_print({"J_A": J}, ns.out)
 
     def _cmd_resolved_rates(self, ns: argparse.Namespace) -> int:
-        spec = self._load(ns.robot)
-        q = _maybe_json_or_csv(ns.q) or []
-        xdot = _maybe_json_or_csv(ns.xdot) or []
-        weights = _maybe_json_or_csv(ns.weights)
-        qdot = self.api.resolved_rates(spec, q, xdot, damping=ns.damping, weights=weights)
+        robot = _load_robot_any(ns.robot)
+        q = np.asarray(_maybe_json_or_csv(ns.q) or [], dtype=float)
+        xdot = np.asarray(_maybe_json_or_csv(ns.xdot) or [], dtype=float)
+        J = robot.jacobian_geometric(q)
+        qdot = core.solvers.resolved_rates(J, xdot, damping=ns.damping, weights=_maybe_json_or_csv(ns.weights))
         return _write_or_print({"qdot": qdot}, ns.out)
 
     def _cmd_newton_ik(self, ns: argparse.Namespace) -> int:
-        spec = self._load(ns.robot)
-        q0 = _maybe_json_or_csv(ns.q0) or []
+        robot = _load_robot_any(ns.robot)
+        q0 = np.asarray(_maybe_json_or_csv(ns.q0) or [], dtype=float)
         target: Dict[str, Any] = {}
 
         # Position (optional)
@@ -241,29 +283,32 @@ class VelocityCLI:
                 target["R"] = json.loads(R)
 
         # Euler angles (optional)
+        euler_seq: Optional[str] = None
         if ns.angles:
             angles = np.asarray(_maybe_json_or_csv(ns.angles), dtype=float)
             if ns.deg:
                 angles = np.deg2rad(angles)
             if not ns.euler:
                 raise APIError("Provide --euler sequence along with --angles.")
-            target["euler"] = {"seq": ns.euler.upper(), "angles": angles.tolist()}
+            euler_seq = ns.euler.upper()
+            target["euler"] = {"seq": euler_seq, "angles": angles.tolist()}
 
-        # Decide whether to pass an Euler sequence to the API:
-        # Only pass it if an orientation target is present.
-        has_orientation = ("R" in target) or ("euler" in target)
-        euler_seq = ns.euler.upper() if (ns.euler and has_orientation) else (target["euler"]["seq"] if "euler" in target else None)
+        # Only pass euler if an orientation target is present
+        if ("R" not in target) and ("euler" not in target):
+            euler_seq = None
 
-        q_sol, info = self.api.newton_ik(
-            spec,
+        q_sol, info = core.solvers.newton_ik(
+            robot,
             q0,
             target,
             max_iter=ns.max_iter,
             tol=ns.tol,
             weights=_maybe_json_or_csv(ns.weights),
-            euler=euler_seq,
+            euler=euler_seq or "ZYX",
         )
         return _write_or_print({"q": q_sol, "info": info}, ns.out)
+
+    # -- Linear algebra & diagram via API (unchanged) --
 
     def _cmd_lu_solve(self, ns: argparse.Namespace) -> int:
         A = ns.A
