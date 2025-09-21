@@ -1,0 +1,6 @@
+name: planar2r
+joints:
+  - {name: j1, type: R, alpha: 0.0, a: 1.0, d: 0.0, theta: 0.0}
+  - {name: j2, type: R, alpha: 0.0, a: 1.0, d: 0.0, theta: 0.0}
+tool:
+  xyz: [0.0, 0.0, 0.0]
