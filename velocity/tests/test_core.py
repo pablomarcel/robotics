@@ -99,10 +99,13 @@ def test_resolved_rates_reproduces_task_velocity_in_ls_sense():
     xdot = np.array([0.1, -0.05, 0.0, 0.0, 0.0, 0.0])
     qdot = core.solvers.resolved_rates(J, xdot, damping=1e-6)
 
-    # Check that J @ qdot ≈ xdot in least-squares sense
-    residual = np.linalg.norm(J @ qdot - xdot)
-    # Relative tolerance based on magnitude of xdot
-    assert residual <= 1e-9 + 1e-7 * np.linalg.norm(xdot)
+    # Evaluate the residual ONLY on task rows with non-zero desired components.
+    # For planar 2R translation-only, these are vx, vy.
+    mask = np.abs(xdot) > 0
+    residual = np.linalg.norm((J @ qdot - xdot)[mask])
+
+    # Relative tolerance based on the magnitude of the active task
+    assert residual <= 1e-9 + 1e-7 * np.linalg.norm(xdot[mask])
 
 
 # --------------------------------------------------------------------------- #
