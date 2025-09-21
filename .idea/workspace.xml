@@ -4,30 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented urdf in the velocity module">
-      <change afterPath="$PROJECT_DIR$/acceleration/apis.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/backends/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/backends/base.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/backends/drake_backend.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/backends/numpy_backend.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/backends/pinoccio_backend.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/design.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/io.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_4.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_5.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tools/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tools/diagram.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tools/euler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tools/quaternion.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tools/spatial.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/utils.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented first cut in the acceleration module">
+      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_core_classic_helpers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_euler_quat.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_io_accel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_tools_spatial.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/conftest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/test_2r_forward_inverse.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_3.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/test_accel_transforms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_4.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/test_classic_accel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_5.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/test_cli_accel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/tools/euler.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tools/euler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/tools/spatial.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tools/spatial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +113,7 @@
       <workItem from="1758398888427" duration="584000" />
       <workItem from="1758402035633" duration="4263000" />
       <workItem from="1758409617683" duration="14196000" />
-      <workItem from="1758468448827" duration="5833000" />
+      <workItem from="1758468448827" duration="9806000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -324,7 +315,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758432011142</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="implemented first cut in the acceleration module">
+      <option name="closed" value="true" />
+      <created>1758476319461</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1758476319461</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -368,6 +367,7 @@
     <MESSAGE value="fixed all tests in the velocity module" />
     <MESSAGE value="implemented class diagrams in the velocity module" />
     <MESSAGE value="implemented urdf in the velocity module" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented urdf in the velocity module" />
+    <MESSAGE value="implemented first cut in the acceleration module" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented first cut in the acceleration module" />
   </component>
 </project>
