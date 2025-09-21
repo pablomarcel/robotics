@@ -4,18 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented first cut in the acceleration module">
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_core_classic_helpers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_design.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_euler_quat.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_io_accel.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/tests/test_tools_spatial.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented testing in the acceleration module. 16 tests failed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/conftest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/test_2r_forward_inverse.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_3.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/test_accel_transforms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_4.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/test_classic_accel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_5.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/test_cli_accel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/io.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/io.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/acceleration/tools/euler.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tools/euler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/acceleration/tools/spatial.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tools/spatial.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/acceleration/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/utils.py" afterDir="false" />
@@ -113,7 +104,7 @@
       <workItem from="1758398888427" duration="584000" />
       <workItem from="1758402035633" duration="4263000" />
       <workItem from="1758409617683" duration="14196000" />
-      <workItem from="1758468448827" duration="9806000" />
+      <workItem from="1758468448827" duration="13296000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -323,7 +314,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758476319461</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="implemented testing in the acceleration module. 16 tests failed">
+      <option name="closed" value="true" />
+      <created>1758487258440</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1758487258440</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -368,6 +367,7 @@
     <MESSAGE value="implemented class diagrams in the velocity module" />
     <MESSAGE value="implemented urdf in the velocity module" />
     <MESSAGE value="implemented first cut in the acceleration module" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented first cut in the acceleration module" />
+    <MESSAGE value="implemented testing in the acceleration module. 16 tests failed" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented testing in the acceleration module. 16 tests failed" />
   </component>
 </project>
