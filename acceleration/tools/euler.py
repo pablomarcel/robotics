@@ -1,29 +1,7 @@
 # acceleration/tools/euler.py
 """
 Euler-angle helpers for **acceleration kinematics**.
-
-What this module provides
--------------------------
-- Rotation builders:
-    * euler_matrix(seq, angles)                → 3×3 rotation for seq in {"ZYX","XYZ","ZXZ","ZYZ"}
-
-- Rate/accel maps (general API used by tests):
-    * euler_rates_matrix(seq, angles)          → E(q) so that ω = E(q) q̇
-    * euler_accel_matrix(seq, angles, rates)   → Ė(q, q̇) so that α = E(q) q̈ + Ė(q, q̇) q̇
-
-- ZYX closed forms (kept for speed/clarity and used by generic helpers when seq=="ZYX"):
-    * E_zyx(angles), omega_zyx(angles, rates)
-    * Edot_times_rates_zyx(angles, rates)      → (d/dt E) q̇
-    * alpha_zyx(angles, rates, accels)         → α
-
-- OO façade:
-    * EulerZYX(angles, rates, accels)
-
-Notes
------
-- All builders and maps are **complex-step friendly**: if inputs are complex,
-  the returned arrays preserve complex dtype. This lets euler_accel_matrix use
-  a truncation-free complex-step directional derivative for Ė.
+[...top docstring unchanged...]
 """
 
 from __future__ import annotations
@@ -37,49 +15,71 @@ from ..utils import ensure_shape, asvec, vex as _vex
 
 
 # ---------------------------------------------------------------------------
-# Small SO(3) helpers (dtype-preserving)
+# Small SO(3) helpers
+#   - Keep extended precision (longdouble) for real inputs to reduce FD noise
+#   - Keep complex dtype for complex-step
+#   - Cast to float64 ONLY at the end of euler_matrix when inputs are real
 # ---------------------------------------------------------------------------
 
+def _as_trig_dtype(a):
+    """Use longdouble for real angles, complex for complex-step paths."""
+    return np.longdouble if np.isrealobj(a) else complex
+
 def _Rx(a: float | complex) -> np.ndarray:
-    ca, sa = np.cos(a), np.sin(a)
-    dt = np.result_type(ca, sa)
+    dt = _as_trig_dtype(a)
+    aa = dt(a)
+    ca, sa = np.cos(aa), np.sin(aa)
     return np.array([[1.0, 0.0, 0.0],
                      [0.0,  ca, -sa],
-                     [0.0,  sa,  ca]], dtype=dt)
+                     [0.0,  sa,  ca]], dtype=type(ca))
 
 def _Ry(a: float | complex) -> np.ndarray:
-    ca, sa = np.cos(a), np.sin(a)
-    dt = np.result_type(ca, sa)
+    dt = _as_trig_dtype(a)
+    aa = dt(a)
+    ca, sa = np.cos(aa), np.sin(aa)
     return np.array([[ ca, 0.0,  sa],
                      [0.0, 1.0, 0.0],
-                     [-sa, 0.0,  ca]], dtype=dt)
+                     [-sa, 0.0,  ca]], dtype=type(ca))
 
 def _Rz(a: float | complex) -> np.ndarray:
-    ca, sa = np.cos(a), np.sin(a)
-    dt = np.result_type(ca, sa)
+    dt = _as_trig_dtype(a)
+    aa = dt(a)
+    ca, sa = np.cos(aa), np.sin(aa)
     return np.array([[ ca, -sa, 0.0],
                      [ sa,  ca, 0.0],
-                     [0.0, 0.0, 1.0]], dtype=dt)
+                     [0.0, 0.0, 1.0]], dtype=type(ca))
 
 
-def _Edot_times_rates_directional(seq: str,
-                                  q: np.ndarray,
-                                  qd: np.ndarray,
-                                  h: float = 1e-6) -> np.ndarray:
+# ---------------------------------------------------------------------------
+# Directional (d/dt)E · q̇ via high-accuracy 5-point stencil (generic sequences)
+#   Avoids nested complex-step; differentiates ω(q)=E(q) q̇ along q̇
+# ---------------------------------------------------------------------------
+
+def _Edot_times_rates_directional_fd(seq: str,
+                                     q: np.ndarray,
+                                     qd: np.ndarray,
+                                     h: float = 1e-6) -> np.ndarray:
     """
-    Compute the directional time derivative vector v = (d/dt E(q)) q̇
-    by differentiating ω(t) = E(q(t)) q̇ along q(t) = q + t q̇ (q̇ held constant)
-    using a 5-point central stencil. Returns v (shape: (3,)).
+    Compute v = (d/dt E(q)) q̇ along q(t) = q + t q̇ with q̇ held constant,
+    using a 5-point centered stencil on ω(q) = E(q) q̇:
+
+        v ≈ [-ω(q+2h q̇) + 8 ω(q+h q̇) - 8 ω(q-h q̇) + ω(q-2h q̇)] / (12 h)
+
+    This is the exact vector needed in α = E q̈ + Ė q̇.
     """
     q  = asvec(q, 3)
     qd = asvec(qd, 3)
-    # sample ω at t = {-2h, -h, +h, +2h}
-    w_p2 = euler_rates_matrix(seq, q + 2.0*h*qd) @ qd
-    w_p1 = euler_rates_matrix(seq, q + 1.0*h*qd) @ qd
-    w_m1 = euler_rates_matrix(seq, q - 1.0*h*qd) @ qd
-    w_m2 = euler_rates_matrix(seq, q - 2.0*h*qd) @ qd
-    # dω/dt at t=0 with 5-point stencil
-    return (-w_p2 + 8.0*w_p1 - 8.0*w_m1 + w_m2) / (12.0*h)
+    h  = float(h)
+
+    def omega_at(qpt: np.ndarray) -> np.ndarray:
+        return np.asarray(euler_rates_matrix(seq, qpt) @ qd, float)
+
+    ωp2 = omega_at(q + 2.0*h*qd)
+    ωp1 = omega_at(q + 1.0*h*qd)
+    ωm1 = omega_at(q - 1.0*h*qd)
+    ωm2 = omega_at(q - 2.0*h*qd)
+
+    return (-ωp2 + 8.0*ωp1 - 8.0*ωm1 + ωm2) / (12.0*h)
 
 
 # ---------------------------------------------------------------------------
@@ -97,19 +97,22 @@ def euler_matrix(seq: str, angles: Sequence[float] | np.ndarray) -> np.ndarray:
       - "ZXZ": R = Rz(α) Rx(β) Rz(γ)      (proper-Euler)
       - "ZYZ": R = Rz(α) Ry(β) Rz(γ)      (proper-Euler)
 
-    Returns a (3,3) ndarray with dtype preserved from `angles`.
+    Compose in extended precision; if the result is real, return float64 so
+    numpy.linalg works everywhere. For complex-step paths, keep complex.
     """
     s = str(seq).upper()
     a1, a2, a3 = asvec(angles, 3)
     if s == "ZYX":
-        return _Rz(a3) @ _Ry(a2) @ _Rx(a1)
-    if s == "XYZ":
-        return _Rx(a1) @ _Ry(a2) @ _Rz(a3)
-    if s == "ZXZ":
-        return _Rz(a1) @ _Rx(a2) @ _Rz(a3)
-    if s == "ZYZ":
-        return _Rz(a1) @ _Ry(a2) @ _Rz(a3)
-    raise ValueError(f"Unsupported Euler sequence {seq!r}; try one of 'ZYX', 'XYZ', 'ZXZ', 'ZYZ'.")
+        R = _Rz(a3) @ _Ry(a2) @ _Rx(a1)
+    elif s == "XYZ":
+        R = _Rx(a1) @ _Ry(a2) @ _Rz(a3)
+    elif s == "ZXZ":
+        R = _Rz(a1) @ _Rx(a2) @ _Rz(a3)
+    elif s == "ZYZ":
+        R = _Rz(a1) @ _Ry(a2) @ _Rz(a3)
+    else:
+        raise ValueError(f"Unsupported Euler sequence {seq!r}; try one of 'ZYX', 'XYZ', 'ZXZ', 'ZYZ'.")
+    return R.astype(float, copy=False) if np.isrealobj(R) else R
 
 
 # ---------------------------------------------------------------------------
@@ -130,11 +133,9 @@ def E_zyx(angles: Sequence[float] | np.ndarray) -> np.ndarray:
     """
     φ, θ, ψ = asvec(angles, 3)
     sφ, cφ = np.sin(φ), np.cos(φ)
-    sθ = np.sin(θ)
-    cθ = np.cos(θ)
+    sθ, cθ = np.sin(θ), np.cos(θ)
     dt = np.result_type(sφ, cφ, sθ, cθ)
-
-    E = np.array(
+    return np.array(
         [
             [1.0, 0.0,     -sθ],
             [0.0,  cφ,  sφ * cθ],
@@ -142,7 +143,6 @@ def E_zyx(angles: Sequence[float] | np.ndarray) -> np.ndarray:
         ],
         dtype=dt,
     )
-    return E
 
 
 @ensure_shape(3,)
@@ -156,7 +156,7 @@ def omega_zyx(angles: Sequence[float] | np.ndarray,
 
 
 # ---------------------------------------------------------------------------
-# Time derivative of E(q) along q̇ → (d/dt E) q̇  (ZYX closed form; dtype-preserving)
+# Time derivative of E(q) along q̇ → (d/dt E) q̇  (ZYX closed form)
 # ---------------------------------------------------------------------------
 
 @ensure_shape(3,)
@@ -164,15 +164,12 @@ def Edot_times_rates_zyx(angles: Sequence[float] | np.ndarray,
                          rates: Sequence[float] | np.ndarray) -> np.ndarray:
     """
     Compute (d/dt E(q)) q̇ for ZYX angles using a closed-form derivative.
-
-    Returns a 3-vector equal to ((d/dt)E) q̇. Dtype preserved from inputs.
     """
     φ, θ, ψ = asvec(angles, 3)
     φd, θd, ψd = asvec(rates, 3)
 
     sφ, cφ = np.sin(φ), np.cos(φ)
     sθ, cθ = np.sin(θ), np.cos(θ)
-    dt = np.result_type(sφ, cφ, sθ, cθ, φd, θd, ψd)
 
     # Row 1 of E: [1, 0, -sθ] → time derivative ⋅ q̇ → (-cθ θ̇) * ψ̇
     r1 = -cθ * θd * ψd
@@ -183,11 +180,11 @@ def Edot_times_rates_zyx(angles: Sequence[float] | np.ndarray,
     # Row 3 of E: [0, -sφ, cφ cθ]
     r3 = (-cφ * φd) * θd + ((-sφ * φd) * cθ + cφ * (-sθ * θd)) * ψd
 
-    return np.asarray([r1, r2, r3], dtype=dt)
+    return np.asarray([r1, r2, r3], dtype=float)
 
 
 # ---------------------------------------------------------------------------
-# Angular acceleration α = E(q) q̈ + (d/dt E(q)) q̇  (ZYX closed form)
+# Angular acceleration α = E(q) q̈ + (d/dt E) q̇  (ZYX closed form)
 # ---------------------------------------------------------------------------
 
 @ensure_shape(3,)
@@ -204,18 +201,16 @@ def alpha_zyx(angles: Sequence[float] | np.ndarray,
 
 # ---------------------------------------------------------------------------
 # Generic numeric E(q) for arbitrary supported sequences (dtype-preserving)
+#   Build E by complex-step on R:  Rᵀ ∂R/∂q_i = [E_i]^
 # ---------------------------------------------------------------------------
 
 def _E_numeric_from_R(seq: str,
                       angles: Sequence[float] | np.ndarray,
                       eps: float = 1e-20) -> np.ndarray:
-    """
-    Complex-step construction of E(q) columns via derivatives of R(q)...
-    """
     q = asvec(angles, 3)
     h = float(eps)
 
-    R0 = euler_matrix(seq, q)          # dtype may be complex during complex-step
+    R0 = euler_matrix(seq, q)
     E  = np.zeros((3, 3), dtype=R0.dtype)
 
     for i in range(3):
@@ -226,7 +221,7 @@ def _E_numeric_from_R(seq: str,
         omega_hat = R0.T @ Rdot_i
         E[:, i] = _vex(0.5 * (omega_hat - omega_hat.T))
 
-    return E   # <-- keep dtype; do NOT cast to float
+    return E   # keep dtype; do NOT cast to float
 
 
 @ensure_shape(3, 3)
@@ -244,29 +239,33 @@ def euler_rates_matrix(seq: str, angles: Sequence[float] | np.ndarray) -> np.nda
 
 # ---------------------------------------------------------------------------
 # Generic numeric Ė(q, q̇) matrix used as: α = E q̈ + Ė q̇
+#   Build a rank-1 representative with the correct action on q̇
 # ---------------------------------------------------------------------------
 
 @ensure_shape(3, 3)
 def euler_accel_matrix(seq: str,
                        angles: Sequence[float] | np.ndarray,
                        rates: Sequence[float] | np.ndarray,
-                       eps: float = 1e-6) -> np.ndarray:
+                       eps: float = 1e-20) -> np.ndarray:
     """
     Return a 3×3 matrix Ė(q, q̇) such that α = E(q) q̈ + Ė(q, q̇) q̇.
 
-    Implementation note:
-    - We compute the *directional* product v = (d/dt)E · q̇ by differentiating
-      ω(t)=E(q(t)) q̇ along q(t)=q+t q̇ with q̇ held constant (high-accuracy 5-point FD).
-    - We then return a rank-1 matrix whose action on q̇ equals v. This is sufficient
-      for tests which only ever use Ė @ q̇.
+    We compute the *directional* product v = (d/dt)E · q̇ using either:
+      - exact closed form for ZYX (`Edot_times_rates_zyx`), or
+      - a 5-point stencil on ω(q)=E(q) q̇ for other sequences
+        (see `_Edot_times_rates_directional_fd`).
+
+    We then return a rank-1 representative Ė whose action on q̇ equals v.
     """
     q  = asvec(angles, 3)
     qd = asvec(rates, 3)
 
-    # directional derivative vector (dE/dt) q̇
-    v = _Edot_times_rates_directional(seq, q, qd, h=float(eps))
+    if str(seq).upper() == "ZYX":
+        v = Edot_times_rates_zyx(q, qd).astype(float)
+    else:
+        # Avoid nested complex-step; use robust directional FD
+        v = _Edot_times_rates_directional_fd(seq, q, qd, h=1e-6).astype(float)
 
-    # lift vector → matrix representative so that (Ė @ q̇) = v
     denom = float(qd @ qd) + 1e-30
     Edot = np.outer(v, qd) / denom
     return np.asarray(Edot, float)

@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented testing in the acceleration module. 7 tests failed">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="unable to fix the testing in the acceleration module">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/tests/test_tools_spatial.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tests/test_tools_spatial.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/acceleration/tools/euler.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tools/euler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/tools/spatial.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/tools/spatial.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/acceleration/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -102,7 +104,8 @@
       <workItem from="1758398888427" duration="584000" />
       <workItem from="1758402035633" duration="4263000" />
       <workItem from="1758409617683" duration="14196000" />
-      <workItem from="1758468448827" duration="14858000" />
+      <workItem from="1758468448827" duration="15070000" />
+      <workItem from="1758503015213" duration="6657000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -328,7 +331,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758492067138</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="unable to fix the testing in the acceleration module">
+      <option name="closed" value="true" />
+      <created>1758494363516</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1758494363516</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -349,7 +360,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented mobius.py" />
     <MESSAGE value="implemented mobius.py and manipulators.py" />
     <MESSAGE value="implemented kinematics.py" />
     <MESSAGE value="updated kinematics.py&#10;added vector functions" />
@@ -374,6 +384,7 @@
     <MESSAGE value="implemented first cut in the acceleration module" />
     <MESSAGE value="implemented testing in the acceleration module. 16 tests failed" />
     <MESSAGE value="implemented testing in the acceleration module. 7 tests failed" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented testing in the acceleration module. 7 tests failed" />
+    <MESSAGE value="unable to fix the testing in the acceleration module" />
+    <option name="LAST_COMMIT_MESSAGE" value="unable to fix the testing in the acceleration module" />
   </component>
 </project>
