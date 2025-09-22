@@ -49,6 +49,35 @@ def _Rz(a: float | complex) -> np.ndarray:
                      [ sa,  ca, 0.0],
                      [0.0, 0.0, 1.0]], dtype=type(ca))
 
+def _R_zyx_closed_form(φ: float | complex,
+                       θ: float | complex,
+                       ψ: float | complex) -> np.ndarray:
+    """
+    Direct (intrinsic) ZYX rotation:
+        R = Rz(ψ) Ry(θ) Rx(φ)
+    Built entrywise to reduce rounding vs. 3 matrix multiplies.
+    """
+    # choose trig dtype for each angle, then promote
+    dtx = _as_trig_dtype(φ)
+    dty = _as_trig_dtype(θ)
+    dtz = _as_trig_dtype(ψ)
+    φ = dtx(φ); θ = dty(θ); ψ = dtz(ψ)
+
+    cφ, sφ = np.cos(φ), np.sin(φ)
+    cθ, sθ = np.cos(θ), np.sin(θ)
+    cψ, sψ = np.cos(ψ), np.sin(ψ)
+
+    dt = np.result_type(cφ, sφ, cθ, sθ, cψ, sψ)
+    R = np.array(
+        [
+            [ cψ*cθ,                 cψ*sθ*sφ - sψ*cφ,   cψ*sθ*cφ + sψ*sφ ],
+            [ sψ*cθ,                 sψ*sθ*sφ + cψ*cφ,   sψ*sθ*cφ - cψ*sφ ],
+            [    -sθ,                          cθ*sφ,              cθ*cφ  ],
+        ],
+        dtype=dt,
+    )
+    return R
+
 
 # ---------------------------------------------------------------------------
 # Directional (d/dt)E · q̇ via high-accuracy 5-point stencil (generic sequences)
@@ -103,7 +132,7 @@ def euler_matrix(seq: str, angles: Sequence[float] | np.ndarray) -> np.ndarray:
     s = str(seq).upper()
     a1, a2, a3 = asvec(angles, 3)
     if s == "ZYX":
-        R = _Rz(a3) @ _Ry(a2) @ _Rx(a1)
+        R = _R_zyx_closed_form(a1, a2, a3)   # roll, pitch, yaw
     elif s == "XYZ":
         R = _Rx(a1) @ _Ry(a2) @ _Rz(a3)
     elif s == "ZXZ":

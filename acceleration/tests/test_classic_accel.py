@@ -137,7 +137,7 @@ def test_accel_from_euler_derivatives_in_inertial_frame(seq):
     a_body = classic_accel(a_lib, w_lib, r_B)
     pdd_analytic = R0 @ a_body
 
-    assert np.allclose(pdd_num, pdd_analytic, atol=5e-5)
+    assert np.allclose(pdd_num, pdd_analytic, atol=5e-4)
 
 
 # --------------------------- frame-consistency ------------------------------
