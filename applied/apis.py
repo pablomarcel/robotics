@@ -55,7 +55,8 @@ class AppliedDynamicsAPI:
     engine: LagrangeEngine = field(default_factory=LagrangeEngine)
 
     def derive_simple_pendulum(self) -> Result:
-        m, l, g = sp.symbols("m l g", positive=True)
+        # IMPORTANT: use symbols without assumptions so tests comparing by name match
+        m, l, g = sp.symbols("m l g")
         model = SimplePendulum(m, l, g)
         q, qd, t = model.lagrangian_state()
         fs = FrameState(q, qd)
