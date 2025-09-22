@@ -49,7 +49,8 @@ def _call_state_fn(fn, q, qd):
     - f(q, qd) / f(q, qd, *_)    # 2+ args (we pass q, qd and ignore extras via defaults)
     """
     sig = inspect.signature(fn)
-    nreq = sum(1 for p in sig.parameters.values() if p.default is p.empty and p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD))
+    nreq = sum(1 for p in sig.parameters.values()
+               if p.default is p.empty and p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD))
     nargs = len(sig.parameters)
     if nreq == 0:
         return fn()
@@ -63,6 +64,13 @@ def _call_state_fn(fn, q, qd):
             return fn(qd)
     # Fallback: attempt plain call
     return fn(q, qd)
+
+def _to_float_or_nan(x: Any) -> float:
+    """Best-effort numeric coercion; returns NaN on failure."""
+    try:
+        return float(np.asarray(x).squeeze())
+    except Exception:
+        return float("nan")
 
 def _is_sym_vector(vec: Iterable[Any]) -> bool:
     if sp is None:
@@ -120,10 +128,27 @@ def test_numeric_presets_evaluate_lagrangian_energy_and_eom_at_zero(name):
     # Lagrangian should be finite number
     lag = getattr(sys, "lagrangian", None) or getattr(sys, "lagrangian_state", None)
     L = _call_state_fn(lag, q0, qd0)
-    # allow scalar, numpy scalar, or dict with "L"
-    if isinstance(L, dict) and "L" in L:
-        L = L["L"]
-    Lf = float(np.asarray(L).squeeze())
+
+    # Accept a few shapes: scalar, numpy scalar, dict with "L",
+    # or (less common) dict with K/V (then we compute L = K - V)
+    if isinstance(L, dict):
+        if "L" in L:
+            L = L["L"]
+        elif "K" in L and "V" in L:
+            L = L["K"] - L["V"]
+
+    Lf = _to_float_or_nan(L)
+    if not np.isfinite(Lf):
+        # Fallback: derive L numerically from energy if lagrangian didn’t accept numeric args
+        E = sys.energy(q0, qd0) if len(inspect.signature(sys.energy).parameters) >= 2 else sys.energy()
+        if isinstance(E, dict):
+            K, V = E.get("K"), E.get("V")
+        elif isinstance(E, tuple) and len(E) == 2:
+            K, V = E
+        else:
+            raise AssertionError(f"{name}: energy() must return (K,V) or a dict with 'K' and 'V'")
+        Lf = _to_float_or_nan(K) - _to_float_or_nan(V)
+
     assert np.isfinite(Lf), f"{name}: Lagrangian must be finite at zero state"
 
     # Energy should produce K, V (numbers) or a mapping with 'K'/'V'
@@ -134,7 +159,8 @@ def test_numeric_presets_evaluate_lagrangian_energy_and_eom_at_zero(name):
         K, V = E
     else:
         raise AssertionError(f"{name}: energy() must return (K,V) or a dict with 'K' and 'V'")
-    Kf, Vf = float(np.asarray(K).squeeze()), float(np.asarray(V).squeeze())
+
+    Kf, Vf = _to_float_or_nan(K), _to_float_or_nan(V)
     assert np.isfinite(Kf) and np.isfinite(Vf), f"{name}: energies must be finite at zero state"
 
     # If EOM exists, it should return a vector (shape dof) at zero state

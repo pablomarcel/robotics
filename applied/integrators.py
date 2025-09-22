@@ -5,7 +5,7 @@ Numeric simulation layer for Applied Dynamics.
 Features
 --------
 - Symbolic → numeric adapter for Lagrangian systems:
-    Extracts M(q) and bias b(q, qd, t) from Euler–Lagrange equations symbolically.
+    Extract M(q) and bias b(q, qd, t) from Euler–Lagrange equations symbolically.
 - Fast RHS via sympy.lambdify
 - ODESolver facade:
     * Uses scipy.integrate.solve_ivp when available
@@ -94,17 +94,18 @@ class LagrangeRHS:
     # --------------------------- construction --------------------------- #
 
     @staticmethod
-    def _extract_mass_bias_from_eom(eom: sp.Matrix, q_syms: sp.Matrix, t_sym: sp.Symbol) -> Tuple[sp.Matrix, sp.Matrix, sp.Matrix]:
+    def _extract_mass_bias_from_eom(
+        eom: sp.Matrix, q_syms: sp.Matrix, t_sym: sp.Symbol
+    ) -> Tuple[sp.Matrix, sp.Matrix, sp.Matrix]:
         """
         From Euler–Lagrange equations e(q,qd,qdd,t)=0, return:
             (acc_syms, M(q), b(q,qd,t))   with e = M*a + b
         where `a` are placeholder symbols for qdd.
         """
         n = int(q_syms.shape[0])
-        # Build qd & qdd symbols as they appear in the equations
         qd_syms = sp.Matrix([sp.diff(qi, t_sym) for qi in q_syms])
         qdd_syms = [sp.diff(qi, t_sym, 2) for qi in q_syms]
-        a = sp.Matrix(sp.symbols("a1:%d" % (n+1)))  # a1..an
+        a = sp.Matrix(sp.symbols(f"a1:{n+1}"))  # a1..an
 
         # Replace qdd with 'a' so the system is linear in 'a'
         subs_qdd = {qdd: a[i] for i, qdd in enumerate(qdd_syms)}
@@ -124,38 +125,42 @@ class LagrangeRHS:
             - kinetic(fs), potential(fs), generalized_forces(fs)
         """
         q_syms, qd_syms, t_sym = model.lagrangian_state()
-        fs = FrameState(sp.Matrix(q_syms), sp.Matrix(qd_syms))
+        q_syms = sp.Matrix(q_syms)
+        qd_syms = sp.Matrix(qd_syms)
+
+        fs = FrameState(q_syms, qd_syms)
         K = sp.simplify(model.kinetic(fs))
         V = sp.simplify(model.potential(fs))
+
+        # Normalize generalized forces → (n,1) column, default zeros
         Q = model.generalized_forces(fs)
         if Q is None:
-            Q = sp.Matrix.zeros(len(q_syms), 1)
+            Q = sp.Matrix.zeros(q_syms.shape[0], 1)
         else:
             Q = sp.Matrix(Q)
-            if Q.shape == (len(q_syms),):
-                Q = Q.reshape(len(q_syms), 1)
+            if Q.shape == (q_syms.shape[0],):
+                Q = Q.reshape(q_syms.shape[0], 1)
 
         # Euler–Lagrange equations
         engine = LagrangeEngine()
-        # We need the *function constructors*, e.g., theta for theta(t)
+
+        # Derive **function constructors** robustly: "theta(t)" → Function('theta')
         q_funcs: List[sp.Function] = []
-        for qi in q_syms:
-            if isinstance(qi, sp.AppliedUndef):
-                q_funcs.append(qi.func)
-            else:
-                q_funcs.append(sp.Function(f"q{len(q_funcs)+1}"))
+        for idx, qi in enumerate(q_syms, start=1):
+            s = str(qi)
+            name = s.split("(", 1)[0] if "(" in s else f"q{idx}"
+            q_funcs.append(sp.Function(name))
+
         eom = engine.equations_of_motion(q_funcs, t_sym, K, V, Q)  # column vector
 
         # Extract M and b
-        acc_syms, M, b = cls._extract_mass_bias_from_eom(eom, sp.Matrix(q_syms), t_sym)
+        acc_syms, M, b = cls._extract_mass_bias_from_eom(eom, q_syms, t_sym)
 
         # Lambdify qdd = -M^{-1} b; use array-aware lambdas
-        # Build numeric input list ordering
         q_list  = list(q_syms)
         qd_list = list(qd_syms)
-
-        # create a function that evaluates M and b given (q, qd, t)
         inputs = q_list + qd_list + [t_sym]
+
         M_func = sp.lambdify(inputs, M, modules=["numpy"])
         B_func = sp.lambdify(inputs, b, modules=["numpy"])
 
@@ -169,8 +174,8 @@ class LagrangeRHS:
             return a.ravel()
 
         return cls(
-            q_syms=sp.Matrix(q_syms),
-            qd_syms=sp.Matrix(qd_syms),
+            q_syms=q_syms,
+            qd_syms=qd_syms,
             t_sym=t_sym,
             acc_syms=acc_syms,
             M_expr=M,
@@ -282,7 +287,7 @@ class ODESolver:
             method=self.cfg.method,
             rtol=self.cfg.rtol,
             atol=self.cfg.atol,
-            max_step=self.cfg.max_step,
+            max_step=(self.cfg.max_step if self.cfg.max_step is not None else np.inf),
             dense_output=self.cfg.dense_output,
             events=events,
             vectorized=False,

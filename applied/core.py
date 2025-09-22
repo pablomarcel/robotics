@@ -34,14 +34,16 @@ Matrix = sp.Matrix
 Expr = sp.Expr
 Symbol = sp.Symbol
 
+
 # ---------------------------------------------------------------------------
 # Small helper
 # ---------------------------------------------------------------------------
 
 def as_column(x) -> Matrix:
-    """Return `x` as a SymPy column Matrix."""
+    """Return `x` as a SymPy **column** Matrix."""
     m = sp.Matrix(x)
     return m if m.shape[1] == 1 else m.reshape(m.size, 1)
+
 
 # ---------------------------------------------------------------------------
 # Rigid body mass properties
@@ -140,7 +142,7 @@ class System(abc.ABC):
     # ----- convenience helpers used in models/tests -----
 
     def lagrangian(self) -> Expr:
-        """Compute ``L = K - V`` from the model's :class:`Energy`."""
+        """Compute ``L = K - V`` from the model's :class:`Energy` (symbolic)."""
         q, qd, _ = self.lagrangian_state()
         fs = FrameState(as_column(q), as_column(qd))
         K = self.energy().kinetic(fs)
@@ -169,20 +171,27 @@ class System(abc.ABC):
         q_sym = as_column(q_sym)
         qd_sym = as_column(qd_sym)
 
-        # Recover generalized **function constructors** from q(t).
-        # For theta(t) in q_sym, expr is AppliedUndef and expr.func is Function('theta').
+        # Recover **function constructors** from entries like "theta(t)" → Function('theta')
         q_funcs: List[sp.Function] = []
-        for expr in list(q_sym):
-            if isinstance(expr, sp.AppliedUndef):
-                q_funcs.append(expr.func)
-            else:
-                # Fallback: create a named function from the symbol
-                q_funcs.append(sp.Function(str(expr)))
+        for idx, expr in enumerate(q_sym, start=1):
+            s = str(expr)
+            name = s.split("(", 1)[0] if "(" in s else f"q{idx}"
+            q_funcs.append(sp.Function(name))
 
+        # Energies with the same symbolic state
         fs = FrameState(q_sym, qd_sym)
         K = sp.simplify(self.energy().kinetic(fs))
         V = sp.simplify(self.energy().potential(fs))
-        Q = sp.Matrix(self.generalized_forces(fs))
+
+        # Generalized forces → ensure a proper (n,1) column; default zeros if None.
+        Q_raw = self.generalized_forces(fs)
+        if Q_raw is None:
+            Q = sp.Matrix.zeros(q_sym.shape[0], 1)
+        else:
+            Q = sp.Matrix(Q_raw)
+            if Q.shape == (q_sym.shape[0],):
+                Q = Q.reshape(q_sym.shape[0], 1)
+            assert Q.shape == (q_sym.shape[0], 1), "generalized_forces must be a column vector of size dof"
 
         engine = LagrangeEngine()
         return engine.equations_of_motion(q_funcs, t, K, V, Q)
