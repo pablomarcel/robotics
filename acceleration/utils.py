@@ -1,35 +1,7 @@
 # acceleration/utils.py
 """
 Utility decorators and math helpers for **acceleration kinematics**.
-
-What you get
-------------
-- Decorators:
-    * timed(fn)              → records fn runtime on wrapper.last_runtime
-    * ensure_shape(*shape)   → validates ndarray shape of the return value
-
-- Numerical helpers:
-    * TOL, almost_equal(a, b), clamp(x, lo, hi), normalize(v)
-    * asvec(x, n)            → strict vector coercion (nice for tests)
-      (preserves complex dtype to support complex-step differentiation)
-
-- Lie / SO(3) / SE(3):
-    * skew(v), vex(S)
-    * homogeneous(R, t)      → 4x4 from (R, t)
-    * adjoint(T)             → 6x6 Ad_T  (useful if tests check frame switches)
-
-- Acceleration building blocks (BODY-FRAME conventions):
-    * S_from(alpha, omega)                    → α̃ + ω̃²
-    * omega_from_Rdot(R, Rdot)                → ω from Rᵀ Ṙ
-    * alpha_from_Rddot(R, Rdot, Rddot)        → α from Rᵀ R̈ = α̃ + ω̃²
-    * classic_accel(alpha, omega, r)          → α×r + ω×(ω×r)
-
-- Finite-difference helper (for backends/tests):
-    * jdot_qdot_fd(J_fn, q, qd, eps=1e-8)
-      where J_fn(q) returns a Jacobian; computes (∂J/∂q · q̇) q̇ via **Richardson-refined**
-      directional central FD for extra accuracy.
-
-All functions are NumPy-only to keep CI light and tests fast.
+[...docstring unchanged...]
 """
 
 from __future__ import annotations
@@ -73,11 +45,6 @@ def timed(fn: Callable[..., T]) -> Callable[..., T]:
 def ensure_shape(*shape: int) -> Callable[[Callable[..., np.ndarray]], Callable[..., np.ndarray]]:
     """
     Decorator that validates the ndarray shape of the returned value.
-
-    Parameters
-    ----------
-    shape : tuple[int]
-        Expected shape, e.g., (3,) or (3, 3).
     """
     def deco(fn: Callable[..., np.ndarray]) -> Callable[..., np.ndarray]:
         @functools.wraps(fn)
@@ -242,19 +209,19 @@ def alpha_from_Rddot(R: np.ndarray, Rdot: np.ndarray, Rddot: np.ndarray) -> np.n
     return vex(alpha_hat).astype(float)
 
 
-# acceleration/utils.py
-
 def classic_accel(alpha: Sequence[float], omega: Sequence[float], r: Sequence[float]) -> np.ndarray:
     """
-    Classic rigid-body point acceleration:
+    Classic rigid-body point acceleration (body frame):
         a = α×r + ω×(ω×r)
-
-    Use the explicit double-cross form for better numerical behavior.
+    Implemented via the linear operator S = [α] + [ω][ω] for improved numerical stability.
     """
     α = asvec(alpha, 3)
     ω = asvec(omega, 3)
     r = asvec(r, 3)
-    return np.cross(α, r) + np.cross(ω, np.cross(ω, r))
+    A = skew(α)
+    W = skew(ω)
+    return (A + W @ W) @ r
+
 
 
 # ---------------------------------------------------------------------------

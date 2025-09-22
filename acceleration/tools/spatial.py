@@ -2,17 +2,24 @@
 """
 Spatial-operator helpers for **acceleration kinematics**.
 
+Conventions (used throughout):
+- Twists (spatial motion):   v_B = X_AB v_A
+- Wrenches (spatial force):  f_B = X*_AB f_A  with  X*_AB = (X_AB^{-1})^T
+- Spatial inertia mapping:   I_B = X*_AB I_A X_BA   (power-invariant)
+
 This module provides:
 - 3×3 and 6×6 spatial algebra utilities:
     * skew(v) / tilde(v)            → 3×3 skew (hat) of a vector
     * vex(S)                        → vee operator
     * adjoint(T)                    → 6×6 Ad_T from SE(3)
     * X_from_Rp(R, p)               → 6×6 **motion** transform X_AB (A→B)
-    * Xf_from_Rp(R, p)              → 6×6 **force** transform Xf_AB = X_AB^{-T}
+    * Xf_from_Rp(R, p)              → 6×6 **force** transform X*_AB = X_AB^{-T}
     * motion_xform(T)               → X_AB from 4×4 SE(3) (A→B)
-    * force_xform(T)                → Xf_AB from 4×4 SE(3) (A→B)
+    * motion_xform_inv(T)           → X_BA from 4×4 SE(3) (A→B) via T_BA = T_AB^{-1}
+    * force_xform(T)                → X*_AB from 4×4 SE(3) (A→B)
     * cross_motion(V) / cross_force(V)
     * spatial_inertia(m, com, Ic)   → 6×6 spatial inertia about frame origin
+    * transform_inertia(T, I_A)     → safe inertia mapping I_B = X*_AB I_A X_BA
 
 - Point transport (classic rigid-body kinematics):
     * transport_velocity(omega, vB, r, v_rel=None)
@@ -145,11 +152,11 @@ def X_from_Rp(R: np.ndarray, p: Sequence[float] | np.ndarray) -> np.ndarray:
 
 def Xf_from_Rp(R: np.ndarray, p: Sequence[float] | np.ndarray) -> np.ndarray:
     """
-    **Force** transform Xf_AB corresponding to X_AB (A→B):
-        F_B = Xf_AB @ F_A
+    **Force** transform X*_AB corresponding to X_AB (A→B):
+        F_B = X*_AB @ F_A
 
     Relationship by power invariance:
-        Xf_AB = (X_AB)^{-T}  = [[ R,  p^ R ],
+        X*_AB = (X_AB)^{-T}  = [[ R,  p^ R ],
                                 [ 0,    R  ]]
     """
     R = np.asarray(R, float).reshape(3, 3)
@@ -208,11 +215,22 @@ def motion_xform(T: np.ndarray) -> np.ndarray:
     return X_from_Rp(T[:3, :3], T[:3, 3])
 
 
+def motion_xform_inv(T: np.ndarray) -> np.ndarray:
+    """
+    X_BA from 4×4 SE(3) T_AB (A→B) by using the inverse pose:
+        X_BA = X( T_BA ) with  T_BA = T_AB^{-1}
+    This avoids directly inverting a 6×6 matrix.
+    """
+    T = np.asarray(T, float).reshape(4, 4)
+    T_BA = np.linalg.inv(T)
+    return motion_xform(T_BA)
+
+
 def force_xform(T: np.ndarray) -> np.ndarray:
     """
-    Xf_AB from 4×4 SE(3) T_AB (A→B), defined as the **dual** of motion:
+    X*_AB from 4×4 SE(3) T_AB (A→B), defined as the **dual** of motion:
 
-        Xf_AB = (X_AB)^{-T}
+        X*_AB = (X_AB)^{-T}
 
     This guarantees both duality and power invariance in tests.
     """
@@ -247,6 +265,20 @@ def spatial_inertia(m: float, com: Sequence[float] | np.ndarray, Ic: np.ndarray)
     I[3:, :3] = -m * c_hat
     I[3:, 3:] = m * np.eye(3)
     return I
+
+
+def transform_inertia(T_AB: np.ndarray, I_A: np.ndarray) -> np.ndarray:
+    """
+    Map spatial inertia from frame A to frame B given T_AB with v_B = X_AB v_A:
+
+        I_B = X*_AB I_A X_BA
+
+    implemented using 4×4 poses (avoids directly inverting the 6×6).
+    """
+    X_AB = motion_xform(T_AB)
+    Xstar_AB = force_xform(T_AB)
+    X_BA = motion_xform_inv(T_AB)
+    return Xstar_AB @ I_A @ X_BA
 
 
 # -----------------------------------------------------------------------------
@@ -346,15 +378,18 @@ __all__ = [
     "crossf",
     "cross_motion",
     "cross_force",
+    # transforms
     "X_from_Rp",
     "Xf_from_Rp",
     "X_inv",
     "apply_X_to_twist",
     "apply_Xf_to_wrench",
     "motion_xform",
+    "motion_xform_inv",
     "force_xform",
     # spatial inertia
     "spatial_inertia",
+    "transform_inertia",
     # transport / classic
     "transport_velocity",
     "transport_acceleration",

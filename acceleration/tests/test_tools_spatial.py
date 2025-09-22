@@ -188,8 +188,18 @@ def test_spatial_inertia_positive_semidefinite():
 
 def test_spatial_inertia_transform_consistency():
     """
-    Spatial inertia must transform with the force transform:
-        I_B = X* I_A X    for T maps A→B (so motion_B = X motion_A)
+    Spatial inertia must transform with the **force** transform when twists map by X.
+
+    Conventions used in these tests:
+      - Twists (spatial motion):   v_B = X_AB v_A
+      - Wrenches (spatial force):  f_B = X*_AB f_A  with  X*_AB = (X_AB^{-1})^T
+
+    Power/kinetic energy invariance for all v_A implies:
+        v_A^T I_A v_A = v_B^T I_B v_B = v_A^T (X_AB^T I_B X_AB) v_A
+      → X_AB^T I_B X_AB = I_A
+      → I_B = X_AB^{-T} I_A X_AB^{-1} = X*_AB I_A X_BA
+
+    where X_BA = X_AB^{-1} is the motion transform for T_BA = T_AB^{-1}.
     """
     rng = np.random.default_rng(29)
     m = 1.7
@@ -198,16 +208,22 @@ def test_spatial_inertia_transform_consistency():
 
     I_A = spatial_inertia(m=m, com=c_A, Ic=Ic_A)
 
+    # Random transform from A to B
     T_A_to_B = rand_se3(rng)
-    X = motion_xform(T_A_to_B)
-    Xstar = force_xform(T_A_to_B)
+    X_AB = motion_xform(T_A_to_B)
+    Xstar_AB = force_xform(T_A_to_B)
 
-    I_B = Xstar @ I_A @ X
+    # Build X_BA without directly inverting the 6x6: use the inverse SE(3)
+    T_B_to_A = np.linalg.inv(T_A_to_B)
+    X_BA = motion_xform(T_B_to_A)
 
-    # Power invariance check using random spatial velocity in frame A and B
+    # Correct inertia mapping: I_B = X*_AB I_A X_BA
+    I_B = Xstar_AB @ I_A @ X_BA
+
+    # Power/kinetic-energy invariance check with random twists
     for _ in range(20):
         v_A = rng.normal(size=6)
-        v_B = X @ v_A
+        v_B = X_AB @ v_A
         pwr_A = float(v_A.T @ (I_A @ v_A))
         pwr_B = float(v_B.T @ (I_B @ v_B))
         assert np.allclose(pwr_A, pwr_B, atol=1e-10)
