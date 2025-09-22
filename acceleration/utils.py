@@ -182,10 +182,10 @@ def omega_from_Rdot(R: np.ndarray, Rdot: np.ndarray) -> np.ndarray:
 
         Rᵀ Ṙ = [ω]^   (ω expressed in the body frame)
 
-    We project onto the skew part for numerical robustness.
+    Compute in extended precision for robustness, then return float64.
     """
-    R = np.asarray(R, float).reshape(3, 3)
-    Rdot = np.asarray(Rdot, float).reshape(3, 3)
+    R = np.asarray(R, np.longdouble).reshape(3, 3)
+    Rdot = np.asarray(Rdot, np.longdouble).reshape(3, 3)
     omega_hat = R.T @ Rdot
     omega_hat = 0.5 * (omega_hat - omega_hat.T)  # keep skew part only
     return vex(omega_hat).astype(float)
@@ -193,35 +193,41 @@ def omega_from_Rdot(R: np.ndarray, Rdot: np.ndarray) -> np.ndarray:
 
 def alpha_from_Rddot(R: np.ndarray, Rdot: np.ndarray, Rddot: np.ndarray) -> np.ndarray:
     """
-    BODY-FRAME angular acceleration from the kinematic identities.
+    BODY-FRAME angular acceleration from the kinematic identities:
 
-    Numerically robust form:
-        α^ = skew( Rᵀ R̈ )
+        Rᵀ Ṙ = ω^
+        Rᵀ R̈ = α^ + ω^ ω^
 
-    (Because ω^ω^ is symmetric, its skew part is zero, so we can avoid
-    forming ω and squaring it — that reduces amplification of FD noise.)
+    Numerically robust computation in extended precision:
+        α^ = skew( Rᵀ R̈ - ω^ ω^ )
     """
-    R = np.asarray(R, float).reshape(3, 3)
-    Rddot = np.asarray(Rddot, float).reshape(3, 3)
+    R = np.asarray(R, np.longdouble).reshape(3, 3)
+    Rdot = np.asarray(Rdot, np.longdouble).reshape(3, 3)
+    Rddot = np.asarray(Rddot, np.longdouble).reshape(3, 3)
 
-    A = R.T @ Rddot
-    alpha_hat = 0.5 * (A - A.T)          # skew( Rᵀ R̈ )
-    return vex(alpha_hat).astype(float)
+    # ω^ = skew(Rᵀ Ṙ)
+    W = R.T @ Rdot
+    W = 0.5 * (W - W.T)
+
+    # α^ = skew( Rᵀ R̈ - ω^ ω^ )
+    A = R.T @ Rddot - (W @ W)
+    alpha_hat = 0.5 * (A - A.T)
+    return vex(alpha_hat)
 
 
 def classic_accel(alpha: Sequence[float], omega: Sequence[float], r: Sequence[float]) -> np.ndarray:
     """
     Classic rigid-body point acceleration (body frame):
         a = α×r + ω×(ω×r)
-    Implemented via the linear operator S = [α] + [ω][ω] for improved numerical stability.
-    """
-    α = asvec(alpha, 3)
-    ω = asvec(omega, 3)
-    r = asvec(r, 3)
-    A = skew(α)
-    W = skew(ω)
-    return (A + W @ W) @ r
 
+    Compute using the *double cross* in extended precision to reduce cancellation
+    relative to forming W @ (W @ r). Return float64.
+    """
+    α = np.asarray(alpha, np.longdouble).reshape(3)
+    ω = np.asarray(omega, np.longdouble).reshape(3)
+    rr = np.asarray(r,     np.longdouble).reshape(3)
+    a = np.cross(α, rr) + np.cross(ω, np.cross(ω, rr))
+    return np.asarray(a, float)
 
 
 # ---------------------------------------------------------------------------
