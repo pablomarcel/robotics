@@ -7,6 +7,9 @@ Subcommands
 design      - list or instantiate prebuilt dynamics presets
 diagram     - generate class diagrams (DOT/PlantUML/JSON/Graphviz)
 
+# Simple, test-oriented shortcuts (numeric presets):
+pendulum | spherical | planar2r | absorber
+
 Examples
 --------
 # Discover presets
@@ -25,18 +28,23 @@ python -m applied.cli diagram graphviz --fmt png --dpi 260 --outstem classes
 
 # Everything
 python -m applied.cli diagram all
+
+# Numeric shortcuts (used by smoke tests)
+python -m applied.cli pendulum
+python -m applied.cli spherical
+python -m applied.cli planar2r
+python -m applied.cli absorber
 """
 
 from __future__ import annotations
 
-from dataclasses import asdict, is_dataclass
 from pathlib import Path
 from typing import Iterable, Optional
 import argparse
 import json
 import sys
 
-from .design import DesignLibrary
+from .design import DesignLibrary, build_pendulum, build_spherical_pendulum, build_planar_2r, build_cart_absorber
 from .tools.diagram import (
     DiagramConfig,
     DiagramTool,
@@ -52,7 +60,6 @@ __all__ = ["main"]
 def _print_model_summary(model) -> None:
     """Pretty minimal, but testable, one-screen summary."""
     cls = type(model).__name__
-    # duck-typed: many of our dataclass specs propagate symbols/numbers
     fields = {}
     if hasattr(model, "__dict__"):
         fields = {k: v for k, v in model.__dict__.items() if not k.startswith("_")}
@@ -65,6 +72,22 @@ def _print_model_summary(model) -> None:
         print(f"Generalized coordinates: {getattr(model, 'q')}")
     if hasattr(model, "qd"):
         print(f"Generalized speeds: {getattr(model, 'qd')}")
+
+
+def _parse_packages_csv(s: str):
+    return tuple(x.strip() for x in s.split(",") if x.strip())
+
+
+def _make_tool(args) -> DiagramTool:
+    cfg = DiagramConfig(
+        packages=_parse_packages_csv(args.packages),
+        out_dir=Path(args.outdir),
+        theme=args.theme,
+        rankdir=args.rankdir,
+        cluster_by_module=not args.no_cluster,
+        add_legend=args.legend,
+    )
+    return DiagramTool(cfg)
 
 
 # ------------------------------ CLI wiring --------------------------------- #
@@ -112,28 +135,18 @@ def _build_parser() -> argparse.ArgumentParser:
     aa = subg.add_parser("all", help="Emit JSON, DOT, PlantUML and try Graphviz")
     add_common(aa)
 
+    # -- simple numeric shortcuts (used by smoke tests) ---------------------
+    sub.add_parser("pendulum", help="Build simple pendulum (numeric defaults) and print a summary")
+    sub.add_parser("spherical", help="Build spherical pendulum (numeric defaults) and print a summary")
+    sub.add_parser("planar2r", help="Build planar 2R (numeric defaults) and print a summary")
+    sub.add_parser("absorber", help="Build cart–pendulum absorber (numeric defaults) and print a summary")
+
     return p
-
-
-def _parse_packages_csv(s: str):
-    return tuple(x.strip() for x in s.split(",") if x.strip())
-
-
-def _make_tool(args) -> DiagramTool:
-    cfg = DiagramConfig(
-        packages=_parse_packages_csv(args.packages),
-        out_dir=Path(args.outdir),
-        theme=args.theme,
-        rankdir=args.rankdir,
-        cluster_by_module=not args.no_cluster,
-        add_legend=args.legend,
-    )
-    return DiagramTool(cfg)
 
 
 # ------------------------------ main --------------------------------------- #
 
-def main(argv: Optional[Iterable[str]] = None) -> None:  # pragma: no cover (covered in tests via calls)
+def main(argv: Optional[Iterable[str]] = None) -> int:  # return int for test expectations
     parser = _build_parser()
     args = parser.parse_args(argv)
 
@@ -143,7 +156,7 @@ def main(argv: Optional[Iterable[str]] = None) -> None:  # pragma: no cover (cov
         if args.list and not args.preset:
             for name in lib.available():
                 print(name)
-            return
+            return 0
         if not args.preset:
             parser.error("design requires --list or --preset NAME")
         model = lib.create(args.preset)
@@ -158,7 +171,7 @@ def main(argv: Optional[Iterable[str]] = None) -> None:  # pragma: no cover (cov
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
             print(str(path))
-        return
+        return 0
 
     # diagram subcommand
     if args.cmd == "diagram":
@@ -166,25 +179,47 @@ def main(argv: Optional[Iterable[str]] = None) -> None:  # pragma: no cover (cov
 
         if args.gcmd == "dot":
             print(tool.emit_dot(out_file=args.out))
-            return
+            return 0
         if args.gcmd == "plantuml":
             print(tool.emit_plantuml(out_file=args.out))
-            return
+            return 0
         if args.gcmd == "json":
             print(tool.export_model_json(out_file=args.out))
-            return
+            return 0
         if args.gcmd == "graphviz":
             try:
                 print(tool.render_graphviz(fmt=args.fmt, dpi=args.dpi, out_stem=args.outstem))
             except RuntimeError as e:
                 raise SystemExit(str(e))
-            return
+            return 0
         if args.gcmd == "all":
             arts = tool.render_all()
             for k, v in arts.items():
                 print(f"{k}: {v}")
-            return
+            return 0
+
+    # simple numeric shortcuts ------------------------------------------------
+    g = 9.81
+    if args.cmd == "pendulum":
+        model = build_pendulum(m=1.0, l=1.0, g=g)
+        _print_model_summary(model)
+        return 0
+    if args.cmd == "spherical":
+        model = build_spherical_pendulum(m=1.0, l=1.0, g=g)
+        _print_model_summary(model)
+        return 0
+    if args.cmd == "planar2r":
+        model = build_planar_2r(m1=1.0, m2=1.0, l1=1.0, l2=0.8, g=g)
+        _print_model_summary(model)
+        return 0
+    if args.cmd == "absorber":
+        model = build_cart_absorber(M=5.0, m=0.5, l=0.6, k=50.0, g=g)
+        _print_model_summary(model)
+        return 0
+
+    # Shouldn't reach here (argparse enforces subcommands)
+    return 1
 
 
 if __name__ == "__main__":  # pragma: no cover
-    main(sys.argv[1:])
+    sys.exit(main(sys.argv[1:]))
