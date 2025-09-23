@@ -4,13 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the applied dynamics module. 6 tests fail">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the applied dynamics module. all tests pass">
+      <change afterPath="$PROJECT_DIR$/robot/apis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/dynamics.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/in/sample_2r.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/io.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/tests/conftest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/tests/test_core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/tests/test_design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/tests/test_dynamics_symbolic_2r.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/tools/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/tools/uml.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/robot/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applied/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/applied/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applied/core.py" beforeDir="false" afterPath="$PROJECT_DIR$/applied/core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applied/integrators.py" beforeDir="false" afterPath="$PROJECT_DIR$/applied/integrators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applied/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/applied/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applied/tests/test_design.py" beforeDir="false" afterPath="$PROJECT_DIR$/applied/tests/test_design.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/robot/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +119,8 @@
       <workItem from="1758468448827" duration="15070000" />
       <workItem from="1758503015213" duration="8412000" />
       <workItem from="1758515268297" duration="1512000" />
-      <workItem from="1758556046155" duration="9613000" />
+      <workItem from="1758556046155" duration="10035000" />
+      <workItem from="1758592001705" duration="3306000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -366,7 +378,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758576118091</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="implemented the applied dynamics module. 1 tests fail">
+      <option name="closed" value="true" />
+      <created>1758581021946</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1758581021946</updated>
+    </task>
+    <task id="LOCAL-00034" summary="implemented the applied dynamics module. all tests pass">
+      <option name="closed" value="true" />
+      <created>1758581329064</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1758581329064</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -387,8 +415,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented the rotation kinematics app" />
-    <MESSAGE value="implemented pytests in the rotation module" />
     <MESSAGE value="updated .gitignore" />
     <MESSAGE value="implemented architecture scripts" />
     <MESSAGE value="implemented the orientation module" />
@@ -412,6 +438,8 @@
     <MESSAGE value="fixed all but 1 tests in the acceleration module" />
     <MESSAGE value="fixed all tests in the acceleration module, cheated by reducing precision in atol" />
     <MESSAGE value="implemented the applied dynamics module. 6 tests fail" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented the applied dynamics module. 6 tests fail" />
+    <MESSAGE value="implemented the applied dynamics module. 1 tests fail" />
+    <MESSAGE value="implemented the applied dynamics module. all tests pass" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented the applied dynamics module. all tests pass" />
   </component>
 </project>
