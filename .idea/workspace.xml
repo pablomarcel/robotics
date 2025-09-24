@@ -4,31 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the robot module. 3 out of 3 tests passed">
-      <change afterPath="$PROJECT_DIR$/path/apis.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/design.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/io.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/poly.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/robot.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/rotation.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/segment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/spatial.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tests/conftest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tests/test_poly.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tests/test_robot.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tests/test_rotation.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tests/test_segment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tests/test_spatial.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tests/test_time.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/time.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tools/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/tools/diagram.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/utils.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="first take of the path module">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/path/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path/apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/apis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path/rotation.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/rotation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path/spatial.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/spatial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path/tests/test_apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/tests/test_apis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path/tests/test_poly.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/tests/test_poly.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path/tests/test_spatial.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/tests/test_spatial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +113,9 @@
       <workItem from="1758515268297" duration="1512000" />
       <workItem from="1758556046155" duration="10035000" />
       <workItem from="1758592001705" duration="3715000" />
-      <workItem from="1758640345362" duration="2662000" />
+      <workItem from="1758640345362" duration="3049000" />
+      <workItem from="1758676286072" duration="72000" />
+      <workItem from="1758676869175" duration="2906000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -410,7 +397,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758596172245</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="first take of the path module">
+      <option name="closed" value="true" />
+      <created>1758648847498</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1758648847498</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -431,7 +426,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented architecture scripts" />
     <MESSAGE value="implemented the orientation module" />
     <MESSAGE value="implemented diagramming" />
     <MESSAGE value="implemented the motion module" />
@@ -456,6 +450,7 @@
     <MESSAGE value="implemented the applied dynamics module. 1 tests fail" />
     <MESSAGE value="implemented the applied dynamics module. all tests pass" />
     <MESSAGE value="implemented the robot module. 3 out of 3 tests passed" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented the robot module. 3 out of 3 tests passed" />
+    <MESSAGE value="first take of the path module" />
+    <option name="LAST_COMMIT_MESSAGE" value="first take of the path module" />
   </component>
 </project>
