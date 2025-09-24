@@ -1,6 +1,13 @@
+import importlib.util
 import numpy as np
 import pytest
 from path.apis import poly_api, ik2r_api
+
+def _has(mod: str) -> bool:
+    return importlib.util.find_spec(mod) is not None
+
+def _has_fastapi_httpx() -> bool:
+    return _has("fastapi") and _has("httpx")
 
 def test_poly_api_quintic_returns_coeffs():
     resp = poly_api(kind="quintic", t0=0, tf=1, q0=10, qf=45, samples=10)
@@ -14,7 +21,7 @@ def test_ik2r_line_basic():
     assert len(resp["th1"]) == 20
     assert len(resp["th2"]) == 20
 
-@pytest.mark.skipif("fastapi" not in [m.name for m in pytest.freeze_includes()], reason="FastAPI not installed")
+@pytest.mark.skipif(not _has_fastapi_httpx(), reason="FastAPI/HTTPX not installed")
 def test_http_fastapi_smoke():
     from fastapi.testclient import TestClient
     from path.apis import get_http_app
