@@ -4,34 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="all tests pass in the path module">
-      <change afterPath="$PROJECT_DIR$/control/cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/design.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/io.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/tools/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/apis.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/design.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/io.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/tests/test_cli_smoke.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/tests/test_core_double_integrator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/tests/test_toppraline.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/tools/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/tools/diagram.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/tools/trace_uml.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/utils.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemente the time optimal control module. all 3 tests passed">
+      <change afterPath="$PROJECT_DIR$/control/tests/conftest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/tests/test_cli_smoke.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/tests/test_msd_pd.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/tests/test_pendulum_linearize_pid.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/tests/test_robot_computed_torque.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/tools/diagram_tool.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/tools/trace.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytest.ini" beforeDir="false" afterPath="$PROJECT_DIR$/pytest.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/time/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/apis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/time/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/apis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/core.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/design.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/design.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/io.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/io.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +125,8 @@
       <workItem from="1758682089050" duration="1351000" />
       <workItem from="1758684561640" duration="1493000" />
       <workItem from="1758690733404" duration="1932000" />
-      <workItem from="1758692950955" duration="2155000" />
+      <workItem from="1758692950955" duration="2329000" />
+      <workItem from="1758725953453" duration="2101000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -435,7 +424,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758681348063</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="implemente the time optimal control module. all 3 tests passed">
+      <option name="closed" value="true" />
+      <created>1758695745722</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1758695745722</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -456,7 +453,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented diagramming" />
     <MESSAGE value="implemented the motion module" />
     <MESSAGE value="implemented diagrams in the motion module" />
     <MESSAGE value="implemented the forward module" />
@@ -481,6 +477,7 @@
     <MESSAGE value="implemented the robot module. 3 out of 3 tests passed" />
     <MESSAGE value="first take of the path module" />
     <MESSAGE value="all tests pass in the path module" />
-    <option name="LAST_COMMIT_MESSAGE" value="all tests pass in the path module" />
+    <MESSAGE value="implemente the time optimal control module. all 3 tests passed" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemente the time optimal control module. all 3 tests passed" />
   </component>
 </project>
