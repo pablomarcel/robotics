@@ -4,16 +4,34 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="first take of the path module">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="all tests pass in the path module">
+      <change afterPath="$PROJECT_DIR$/control/cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/io.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/tools/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/apis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/design.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/io.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/tests/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/tests/test_cli_smoke.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/tests/test_core_double_integrator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/tests/test_toppraline.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/tools/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/tools/diagram.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/tools/trace_uml.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/timeopt/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/path/apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/apis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/path/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/path/rotation.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/rotation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/path/spatial.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/spatial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/path/tests/test_apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/tests/test_apis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/path/tests/test_poly.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/tests/test_poly.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/path/tests/test_spatial.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/tests/test_spatial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pytest.ini" beforeDir="false" afterPath="$PROJECT_DIR$/pytest.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/time/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/apis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/time/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +133,11 @@
       <workItem from="1758592001705" duration="3715000" />
       <workItem from="1758640345362" duration="3049000" />
       <workItem from="1758676286072" duration="72000" />
-      <workItem from="1758676869175" duration="2906000" />
+      <workItem from="1758676869175" duration="3700000" />
+      <workItem from="1758682089050" duration="1351000" />
+      <workItem from="1758684561640" duration="1493000" />
+      <workItem from="1758690733404" duration="1932000" />
+      <workItem from="1758692950955" duration="2155000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -405,7 +427,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758648847498</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="all tests pass in the path module">
+      <option name="closed" value="true" />
+      <created>1758681348063</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1758681348063</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -426,7 +456,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented the orientation module" />
     <MESSAGE value="implemented diagramming" />
     <MESSAGE value="implemented the motion module" />
     <MESSAGE value="implemented diagrams in the motion module" />
@@ -451,6 +480,7 @@
     <MESSAGE value="implemented the applied dynamics module. all tests pass" />
     <MESSAGE value="implemented the robot module. 3 out of 3 tests passed" />
     <MESSAGE value="first take of the path module" />
-    <option name="LAST_COMMIT_MESSAGE" value="first take of the path module" />
+    <MESSAGE value="all tests pass in the path module" />
+    <option name="LAST_COMMIT_MESSAGE" value="all tests pass in the path module" />
   </component>
 </project>
