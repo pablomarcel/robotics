@@ -31,7 +31,7 @@ include = [
   "applied",
   "robot",
   "path",
-  "time",
+  "timeopt",
 ]
 exclude = ["**/tests*", "**/__pycache__*"]
 
