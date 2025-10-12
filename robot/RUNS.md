@@ -57,6 +57,9 @@ pip install pytest-cov        # if you want coverage
 
 ```bash
 runroot python -m robot.cli --help
+```
+
+```bash
 runroot python -m robot.tools.uml --help
 ```
 
@@ -94,6 +97,9 @@ runroot python -m robot.cli planar2r   --l1 1.2 --l2 0.8   --m1 2.0 --m2 1.5
 ### 3.3 Choose engine (symbolic or pinocchio‑stub)
 ```bash
 runroot python -m robot.cli planar2r --engine sympy
+```
+
+```bash
 runroot python -m robot.cli planar2r --engine pinocchio
 ```
 
@@ -122,6 +128,9 @@ runroot python -m robot.cli from-yaml sample_2r.yaml --engine sympy --q 0.2 -0.3
 ### 4.2 Sympy vs Pinocchio engine
 ```bash
 runroot python -m robot.cli from-yaml sample_2r.yaml --engine sympy   --q 0.1 0.2 --qd 0.0 0.0 --qdd 0 0
+```
+
+```bash
 runroot python -m robot.cli from-yaml sample_2r.yaml --engine pinocchio --q 0.1 0.2 --qd 0.0 0.0 --qdd 0 0
 ```
 
@@ -151,11 +160,15 @@ runroot python -m robot.cli from-yaml sample_2r.yaml --engine sympy --q 0.5 0.1 
 ```bash
 # (A) No accelerations provided -> τ computed with q̈=0
 runroot python -m robot.cli planar2r --q 0.2 0.3 --qd 0.1 -0.2 --g 9.81
+```
 
 # (B) With accelerations
+```bash
 runroot python -m robot.cli planar2r --q 0.2 0.3 --qd 0.1 -0.2 --qdd 0.5 -0.1
+```
 
 # (C) Heavy link 2
+```bash
 runroot python -m robot.cli planar2r --m2 5.0 --q 0.2 -0.3 --qd 0.15 0.0 --qdd 0 0
 ```
 
@@ -171,8 +184,10 @@ runroot python -m robot.cli planar2r --m2 5.0 --q 0.2 -0.3 --qd 0.15 0.0 --qdd 0
 ```bash
 # (D) Provide q, q̇ only (statics torque if q̇=0, q̈=0)
 runroot python -m robot.cli from-yaml sample_2r.yaml --q 0.5 -0.2 --qd 0 0
+```
 
 # (E) Dynamic state
+```bash
 runroot python -m robot.cli from-yaml sample_2r.yaml --q 0.3 0.1 --qd 0.2 -0.1 --qdd 1.0 -0.4 --g 9.81
 ```
 
@@ -198,7 +213,10 @@ Each run writes a JSON with some or all keys:
 
 ```bash
 runroot python -m robot.tools.uml --engine pyreverse --out robot/out/uml
-open robot/out/uml/classes.png   # macOS; Linux: xdg-open
+```
+
+```bash
+runroot open robot/out/uml/classes.png   # macOS; Linux: xdg-open
 ```
 
 ---
