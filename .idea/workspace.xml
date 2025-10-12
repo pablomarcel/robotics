@@ -4,22 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemente the time optimal control module. all 3 tests passed">
-      <change afterPath="$PROJECT_DIR$/control/tests/conftest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/tests/test_cli_smoke.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/tests/test_msd_pd.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/tests/test_pendulum_linearize_pid.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/tests/test_robot_computed_torque.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/tools/diagram_tool.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/tools/trace.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="implemented the control techniques module. all tests pass">
+      <change afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/apis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/core.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/design.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/design.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/io.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/io.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,22 +44,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "develop",
+    "last_opened_file_path": "/Users/pablomontijo/Control/robotics",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/intro/prompts" />
@@ -80,8 +69,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-PY-252.25557.178" />
-        <option value="bundled-python-sdk-ce6832f46686-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.178" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-PY-252.26830.99" />
+        <option value="bundled-python-sdk-164cda30dcd9-0af03a5fa574-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.26830.99" />
       </set>
     </attachedChunks>
   </component>
@@ -126,7 +115,11 @@
       <workItem from="1758684561640" duration="1493000" />
       <workItem from="1758690733404" duration="1932000" />
       <workItem from="1758692950955" duration="2329000" />
-      <workItem from="1758725953453" duration="2101000" />
+      <workItem from="1758725953453" duration="2631000" />
+      <workItem from="1759004268930" duration="991000" />
+      <workItem from="1759031101814" duration="203000" />
+      <workItem from="1759095089082" duration="737000" />
+      <workItem from="1760230034687" duration="963000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -432,7 +425,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758695745722</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="implemente the control techniques module. 1 test fails">
+      <option name="closed" value="true" />
+      <created>1758730227541</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1758730227541</updated>
+    </task>
+    <task id="LOCAL-00040" summary="implemented the control techniques module. all tests pass">
+      <option name="closed" value="true" />
+      <created>1758730672628</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1758730672628</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -453,8 +462,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented the motion module" />
-    <MESSAGE value="implemented diagrams in the motion module" />
     <MESSAGE value="implemented the forward module" />
     <MESSAGE value="implemented the inverse module. 14 tests failed" />
     <MESSAGE value="fixed the tests in the inverse module" />
@@ -478,6 +485,8 @@
     <MESSAGE value="first take of the path module" />
     <MESSAGE value="all tests pass in the path module" />
     <MESSAGE value="implemente the time optimal control module. all 3 tests passed" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemente the time optimal control module. all 3 tests passed" />
+    <MESSAGE value="implemente the control techniques module. 1 test fails" />
+    <MESSAGE value="implemented the control techniques module. all tests pass" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented the control techniques module. all tests pass" />
   </component>
 </project>
