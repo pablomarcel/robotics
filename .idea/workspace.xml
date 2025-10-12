@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="started all RUNS.md commands">
-      <change afterPath="$PROJECT_DIR$/velocity/tools/lu.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="kind of &quot;batch&quot; fixed run commands">
+      <change afterPath="$PROJECT_DIR$/rotation/in/R.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation/in/basis.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/velocity/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/velocity/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/robot/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/rotation/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timeopt/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/timeopt/RUNS.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,7 +132,7 @@
       <workItem from="1759095089082" duration="737000" />
       <workItem from="1760230034687" duration="1238000" />
       <workItem from="1760233288201" duration="2003000" />
-      <workItem from="1760294501674" duration="7296000" />
+      <workItem from="1760294501674" duration="10298000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -476,7 +478,23 @@
       <option name="project" value="LOCAL" />
       <updated>1760304598309</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="finish velocity/RUNS.md">
+      <option name="closed" value="true" />
+      <created>1760309230355</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1760309230355</updated>
+    </task>
+    <task id="LOCAL-00045" summary="kind of &quot;batch&quot; fixed run commands">
+      <option name="closed" value="true" />
+      <created>1760310123420</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1760310123420</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -497,8 +515,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented a server" />
-    <MESSAGE value="implemented the angular kinematics module" />
     <MESSAGE value="implemented the velocity kinematics module. 9 tests failed" />
     <MESSAGE value="fixed all tests but 1 in the velocity module" />
     <MESSAGE value="fixed all tests in the velocity module" />
@@ -522,6 +538,8 @@
     <MESSAGE value="Created README.md and LICENSE" />
     <MESSAGE value="updated coverage files" />
     <MESSAGE value="started all RUNS.md commands" />
-    <option name="LAST_COMMIT_MESSAGE" value="started all RUNS.md commands" />
+    <MESSAGE value="finish velocity/RUNS.md" />
+    <MESSAGE value="kind of &quot;batch&quot; fixed run commands" />
+    <option name="LAST_COMMIT_MESSAGE" value="kind of &quot;batch&quot; fixed run commands" />
   </component>
 </project>

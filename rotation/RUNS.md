@@ -61,7 +61,11 @@ You can invoke via module or the console script (if installed as a package).
 ### Compose a rotation matrix
 ```bash
 runroot python -m rotation.rot_cli compose local zyz "10,20,30" --degrees
+```
+
 # or
+
+```bash
 rot-cli compose local zyz "10,20,30" --degrees
 ```
 
@@ -69,8 +73,10 @@ rot-cli compose local zyz "10,20,30" --degrees
 ```bash
 # Compose then decompose (degrees)
 runroot python -m rotation.rot_cli decompose local zyz --from-angles "10,20,30" --degrees
+```
 
 # Decompose from CSV
+```bash
 runroot python -m rotation.rot_cli decompose global zyx --from-csv rotation/in/R.csv
 ```
 
@@ -78,8 +84,10 @@ runroot python -m rotation.rot_cli decompose global zyx --from-csv rotation/in/R
 ```bash
 # Inline points: "x;y;z|x;y;z|..."
 runroot python -m rotation.rot_cli transform local zyz "10,20,30"   --degrees --points "1;0;0|0;1;0|0;0;1"
+```
 
 # From CSV under rotation/in/
+```bash
 runroot python -m rotation.rot_cli transform local zyz "10,20,30"   --degrees --points basis.csv --save P_transformed.csv
 ```
 
@@ -102,6 +110,9 @@ runroot python -m rotation.rot_cli align "0.2, 0.3, 0.9"
 ```bash
 runroot python -m rotation.rot_cli check --from-angles "10,20,30"   --mode local --seq zyz --degrees
 # Or from CSV:
+```
+
+```bash
 runroot python -m rotation.rot_cli check --from-csv rotation/in/R.csv
 ```
 
@@ -109,8 +120,10 @@ runroot python -m rotation.rot_cli check --from-csv rotation/in/R.csv
 ```bash
 # General proper/TB sequences
 runroot python -m rotation.rot_cli E zyz --convention local --frame body
+```
 
 # RPY convenience (ZYX) + RPY column reordering
+```bash
 runroot python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
 ```
 
@@ -118,8 +131,10 @@ runroot python -m rotation.rot_cli E zyx --convention local --frame body --rpy-o
 ```bash
 # ω from rates (units follow --degrees)
 runroot python -m rotation.rot_cli angvel local zyz "10,20,30" "0.1,0.2,0.3"   --degrees --frame body
+```
 
 # rates from ω
+```bash
 runroot python -m rotation.rot_cli rates local zyz "10,20,30" "0.7,0.2,0.1"   --degrees --frame body
 ```
 
@@ -144,11 +159,15 @@ Exports the Facade + APIs class diagram, and dumps any runtime trace captured by
 ```bash
 # PlantUML
 runroot python -m rotation.app puml    -o rotation/out/app_class.puml
+```
 
 # Mermaid
+```bash
 runroot python -m rotation.app mermaid -o rotation/out/app_class.mmd
+```
 
 # Dump runtime sequence edges (same sink the CLI uses)
+```bash
 runroot python -m rotation.app runtime -o rotation/out/runtime_sequence.puml
 ```
 
@@ -161,9 +180,11 @@ We use `pydeps` to write JSON and our helper to convert to Mermaid.
 ```bash
 # JSON of intra-package imports
 pydeps rotation --only rotation --noshow --no-output   --deps-output rotation/out/arch.json
+```
 
+```bash
 # Convert to Mermaid (requires rotation/tools/deps_to_mermaid.py)
-runroot python -m rotation.tools.deps_to_mermaid rotation/out/arch.json   > rotation/out/deps_imports.mmd
+runroot python -m rotation.tools.deps_to_mermaid rotation/out/arch.json   > out/deps_imports.mmd
 ```
 
 Optional ASCII import listing (pure runroot python):
@@ -177,7 +198,7 @@ runroot python -m rotation.tools.arch_ascii rotation > rotation/out/imports_asci
 
 ```bash
 # Writes a Mermaid flowchart of static call edges it can infer
-runroot python -m rotation.tools.ast_callgraph rotation   > rotation/out/callgraph_ast.mmd
+runroot python -m rotation.tools.ast_callgraph rotation   > out/callgraph_ast.mmd
 ```
 
 ---
@@ -188,18 +209,22 @@ Profile one CLI run and view in the browser or export HTML.
 
 ```bash
 # JSON trace
-viztracer -o rotation/out/trace.json -m rotation.rot_cli   angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+runroot viztracer -o rotation/out/trace.json -m rotation.rot_cli   angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+```
 
 # Open viewer (served on http://localhost:9001)
-vizviewer rotation/out/trace.json
+```bash
+runroot vizviewer rotation/out/trace.json
+```
 
 # Self-contained HTML report
-viztracer -o rotation/out/trace.html --html -m rotation.rot_cli   compose local zyz "10,20,30" --degrees
+```bash
+runroot viztracer -o rotation/out/trace.html --html -m rotation.rot_cli   compose local zyz "10,20,30" --degrees
 ```
 
 **Tip:** to include more/less detail:
 ```bash
-viztracer -o rotation/out/trace.json   --min_duration 0.0005 --max_stack_depth 20   -m rotation.rot_cli compose local zyz "10,20,30" --degrees
+runroot viztracer -o rotation/out/trace.json   --min_duration 0.0005 --max_stack_depth 20   -m rotation.rot_cli compose local zyz "10,20,30" --degrees
 ```
 
 ---

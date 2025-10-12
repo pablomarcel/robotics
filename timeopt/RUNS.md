@@ -107,7 +107,10 @@ runroot python -m timeopt.cli --help
 ### 3.2 Generate class diagram via CLI
 ```bash
 # Write a PlantUML (.puml) to time/out and render to PNG
-runroot python -m timeopt.cli diagram --package timeopt --out time/out/timeopt.puml
+runroot python -m timeopt.cli diagram --package timeopt --out timeopt/out/timeopt.puml
+```
+
+```bash
 plantuml -tpng time/out/timeopt.puml -o .
 # Result: time/out/timeopt.png
 ```
