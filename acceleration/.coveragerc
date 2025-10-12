@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = acceleration
+
+[html]
+directory = acceleration/out/htmlcov
+
+[report]
+show_missing = True

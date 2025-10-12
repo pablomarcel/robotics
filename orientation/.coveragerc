@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = orientation
+
+[html]
+directory = orientation/out/htmlcov
+
+[report]
+show_missing = True

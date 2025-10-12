@@ -1,0 +1,5 @@
+pytest orientation/tests \
+  --override-ini addopts= \
+  --cov \
+  --cov-config=orientation/.coveragerc \
+  --cov-report=term-missing

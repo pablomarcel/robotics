@@ -1,0 +1,5 @@
+pytest velocity/tests \
+  --override-ini addopts= \
+  --cov \
+  --cov-config=velocity/.coveragerc \
+  --cov-report=term-missing

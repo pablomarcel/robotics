@@ -1,0 +1,5 @@
+pytest angular/tests \
+  --override-ini addopts= \
+  --cov \
+  --cov-config=angular/.coveragerc \
+  --cov-report=term-missing

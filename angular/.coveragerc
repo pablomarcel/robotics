@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = angular
+
+[html]
+directory = angular/out/htmlcov
+
+[report]
+show_missing = True

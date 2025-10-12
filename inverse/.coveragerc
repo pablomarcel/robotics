@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = inverse
+
+[html]
+directory = inverse/out/htmlcov
+
+[report]
+show_missing = True
