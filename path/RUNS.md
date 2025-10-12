@@ -3,7 +3,7 @@
 This README lists **all the practical run commands** you’ll need for this project:
 - how to set up a virtual environment
 - how to run the unit tests (TDD)
-- how to use the programmatic API from Python
+- how to use the programmatic API from runroot python
 - how to run the optional HTTP API server
 - how to call the HTTP endpoints with `curl`
 - how to generate a class diagram from the codebase
@@ -29,16 +29,44 @@ This README lists **all the practical run commands** you’ll need for this proj
 >
 > All IO is explicit and normally goes under `path/in` and `path/out`.
 
+## -1) One-time session bootstrap (copy/paste once per new shell)
+```bash
+# --- run-from-root helpers ----------------------------------------------------
+# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+_mc_root() {
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git rev-parse --show-toplevel
+    return
+  fi
+  # Fallback: ascend until we find a recognizable root marker.
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
+      echo "$d"; return
+    fi
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# Run a command from the project root (without changing your current shell dir)
+runroot() { ( cd "$(_mc_root)" && "$@" ); }
+
+# Ensure out/ exists where the app expects to write
+runroot mkdir -p path/out
+# -----------------------------------------------------------------------------
+```
+
 ---
 
 ## 0) Environment Setup
 
-> Requires Python 3.11+
+> Requires runroot python 3.11+
 
 ```bash
-python -m venv .venv
+runroot python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
-python -m pip install --upgrade pip
+runroot python -m pip install --upgrade pip
 
 # Minimal dev set (tests + optional HTTP)
 pip install pytest pytest-sugar pytest-xdist coverage
@@ -77,12 +105,12 @@ coverage html
 
 ---
 
-## 2) Programmatic API (Python)
+## 2) Programmatic API (runroot python)
 
 ### 2.1 Polynomials
 
 ```bash
-python - <<'PY'
+runroot python - <<'PY'
 import numpy as np
 from path.apis import poly_api
 
@@ -96,7 +124,7 @@ PY
 ### 2.2 2R Inverse Kinematics Along a Line
 
 ```bash
-python - <<'PY'
+runroot python - <<'PY'
 import numpy as np
 from path.apis import ik2r_api
 resp = ik2r_api(l1=0.25, l2=0.25, path_type="line", x0=0.2, y0=0.1, x1=0.1, y1=0.2, samples=20)
@@ -107,7 +135,7 @@ PY
 ### 2.3 Rotation Path (Angle-Axis)
 
 ```bash
-python - <<'PY'
+runroot python - <<'PY'
 import numpy as np
 from path.apis import rot_api
 R0 = np.eye(3).tolist()
@@ -158,7 +186,7 @@ curl -s http://localhost:8000/rot   -H 'Content-Type: application/json'   -d '{"
 Use the `PathPlannerApp` with `IOManager` to write to `path/out`:
 
 ```bash
-python - <<'PY'
+runroot python - <<'PY'
 import numpy as np
 from path.app import PathPlannerApp
 from path.core import BoundaryConditions
@@ -187,7 +215,7 @@ Two options are shown; pick whichever you have tools for.
 ### 5.1 Using `py2puml`
 
 ```bash
-# Generate PlantUML from Python packages
+# Generate PlantUML from runroot python packages
 py2puml path path/out/diagram.puml
 
 # Render PNG/SVG (requires local plantuml CLI)
@@ -216,7 +244,7 @@ Most textbook paths are covered by the following classes/methods:
 
 You can assert the exact polynomial coefficients and sampled values via:
 ```bash
-python - <<'PY'
+runroot python - <<'PY'
 import numpy as np
 from path.app import PathPlannerApp
 from path.core import BoundaryConditions
@@ -254,7 +282,7 @@ uvicorn path.apis:get_http_app --host 0.0.0.0 --port 9000
 mkdir -p path/out && py2puml path path/out/diagram.puml && plantuml -tpng path/out/diagram.puml
 
 # Export sample LSPB trajectory
-python - <<'PY'
+runroot python - <<'PY'
 import numpy as np
 from path.app import PathPlannerApp
 from path.core import BoundaryConditions

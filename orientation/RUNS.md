@@ -5,14 +5,42 @@ This bundle contains an exhaustive list of run commands for the **object‑orien
 The CLI lives at `orientation/cli.py` and exposes **file-friendly** verbs so you don’t have to fight shell parsing.
 It also keeps results in `orientation/out/` and reads inputs from `orientation/in/` when you use the batch runner.
 
+## -1) One-time session bootstrap (copy/paste once per new shell)
+```bash
+# --- run-from-root helpers ----------------------------------------------------
+# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+_mc_root() {
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git rev-parse --show-toplevel
+    return
+  fi
+  # Fallback: ascend until we find a recognizable root marker.
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
+      echo "$d"; return
+    fi
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# Run a command from the project root (without changing your current shell dir)
+runroot() { ( cd "$(_mc_root)" && "$@" ); }
+
+# Ensure out/ exists where the app expects to write
+runroot mkdir -p orientation/out
+# -----------------------------------------------------------------------------
+```
+
 ---
 
 ## Quick sanity checks
 
 ```bash
 # help
-python -m orientation.cli -h
-python -m orientation.cli matrix-from-axis -h
+runroot python -m orientation.cli -h
+runroot python -m orientation.cli matrix-from-axis -h
 ```
 
 ---
@@ -21,56 +49,56 @@ python -m orientation.cli matrix-from-axis -h
 
 ### 1) Axis–angle → matrix
 ```bash
-python -m orientation.cli matrix-from-axis --axis 0 0 1 --phi 1.57079632679
-python -m orientation.cli matrix-from-axis --axis 1 0 0 --phi 0.3 --save R_x.csv
+runroot python -m orientation.cli matrix-from-axis --axis 0 0 1 --phi 1.57079632679
+runroot python -m orientation.cli matrix-from-axis --axis 1 0 0 --phi 0.3 --save R_x.csv
 ```
 
 ### 2) Compose two axis–angle turns (R2 * R1)
 ```bash
-python -m orientation.cli compose-axis --phi1 0.4 --axis1 1 0 0 --phi2 0.7 --axis2 0 0 1 --save R_comp.csv
+runroot python -m orientation.cli compose-axis --phi1 0.4 --axis1 1 0 0 --phi2 0.7 --axis2 0 0 1 --save R_comp.csv
 ```
 
 ### 3) Matrix → quaternion (Euler parameters e0 e1 e2 e3)
 ```bash
-python -m orientation.cli to-quat --matrix 1 0 0  0 1 0  0 0 1
+runroot python -m orientation.cli to-quat --matrix 1 0 0  0 1 0  0 0 1
 ```
 
 ### 4) Quaternion → matrix
 ```bash
-python -m orientation.cli from-quat --quat 0.9238795 0 0.3826834 0 --save R_q.csv
+runroot python -m orientation.cli from-quat --quat 0.9238795 0 0.3826834 0 --save R_q.csv
 ```
 
 ### 5) Rodrigues vector → matrix
 ```bash
-python -m orientation.cli rodrigues-to-matrix --w 0.1 0.2 0.3 --save R_rod.csv
+runroot python -m orientation.cli rodrigues-to-matrix --w 0.1 0.2 0.3 --save R_rod.csv
 ```
 
 ### 6) Matrix → Rodrigues vector
 ```bash
-python -m orientation.cli matrix-to-rodrigues --matrix 1 0 0  0 1 0  0 0 1
+runroot python -m orientation.cli matrix-to-rodrigues --matrix 1 0 0  0 1 0  0 0 1
 ```
 
 ### 7) Euler angles → matrix (order configurable)
 ```bash
-python -m orientation.cli euler-to-matrix --angles 0.3 0.2 0.1 --order ZYX
-python -m orientation.cli euler-to-matrix --angles 10 5 2 --order XYZ --deg --save R_eul.csv
+runroot python -m orientation.cli euler-to-matrix --angles 0.3 0.2 0.1 --order ZYX
+runroot python -m orientation.cli euler-to-matrix --angles 10 5 2 --order XYZ --deg --save R_eul.csv
 ```
 
 ### 8) Matrix → Euler angles
 ```bash
-python -m orientation.cli matrix-to-euler --matrix 0.936293 0.289629 -0.198669 -0.275096 0.957826 0.077458 0.218351 0.0 0.975870 --order ZYX
-python -m orientation.cli matrix-to-euler --matrix 1 0 0  0 0 -1  0 1 0 --order ZXZ --deg
+runroot python -m orientation.cli matrix-to-euler --matrix 0.936293 0.289629 -0.198669 -0.275096 0.957826 0.077458 0.218351 0.0 0.975870 --order ZYX
+runroot python -m orientation.cli matrix-to-euler --matrix 1 0 0  0 0 -1  0 1 0 --order ZXZ --deg
 ```
 
 ### 9) Exponential map: `exp(omega^)`
 ```bash
-python -m orientation.cli expmap --omega 0.2 0.0 0.0 --save R_exp.csv
+runroot python -m orientation.cli expmap --omega 0.2 0.0 0.0 --save R_exp.csv
 ```
 
 ### 10) Random SO(3) sampling
 ```bash
-python -m orientation.cli random-so3 --n 5
-python -m orientation.cli random-so3 --n 100 --out random_100.json
+runroot python -m orientation.cli random-so3 --n 5
+runroot python -m orientation.cli random-so3 --n 100 --out random_100.json
 ```
 
 ---
@@ -86,13 +114,13 @@ These variants read matrices from files:
 
 ### 11) Matrix → quaternion (file)
 ```bash
-python -m orientation.cli to-quat-file --in samples/matrix_example.csv
-python -m orientation.cli to-quat-file --in samples/matrix_I.csv
+runroot python -m orientation.cli to-quat-file --in samples/matrix_example.csv
+runroot python -m orientation.cli to-quat-file --in samples/matrix_I.csv
 ```
 
 ### 12) Matrix → Rodrigues (file)
 ```bash
-python -m orientation.cli matrix-to-rodrigues-file --in samples/matrix_I.csv
+runroot python -m orientation.cli matrix-to-rodrigues-file --in samples/matrix_I.csv
 ```
 
 *(If you also need a “matrix-from-file” verb for bulk processing, we can add it too.)*
@@ -104,7 +132,7 @@ python -m orientation.cli matrix-to-rodrigues-file --in samples/matrix_I.csv
 Put a JSON list of jobs under `orientation/in/` and run:
 ```bash
 cp samples/jobs.json orientation/in/jobs.json
-python -m orientation.cli batch --in jobs.json --out results.json
+runroot python -m orientation.cli batch --in jobs.json --out results.json
 ```
 
 The batch file supports the same ops as the CLI:
@@ -117,7 +145,7 @@ The batch file supports the same ops as the CLI:
 
 ### Option A — Standalone diagram tool (recommended)
 ```bash
-python -m orientation.tools.gen_diagram              # writes orientation/out/class_diagram.puml
+runroot python -m orientation.tools.gen_diagram              # writes orientation/out/class_diagram.puml
 ```
 
 Render to PNG via Kroki (no installs):
@@ -127,7 +155,7 @@ curl -s -H "Content-Type: text/plain"   --data-binary @orientation/out/class_dia
 
 ### Option B — Multi-format via design.py
 ```bash
-python - <<'PY'
+runroot python - <<'PY'
 from pathlib import Path
 from orientation.design import generate_diagram
 generate_diagram(Path("orientation/out"))
@@ -145,7 +173,7 @@ curl -s -H "Content-Type: text/plain"   --data-binary @orientation/out/class_dia
 - Prefer the **file‑based** verbs to avoid word-splitting issues.
 - If you really want to inline a CSV file into `--matrix`, scrub commas and newlines:
   ```bash
-  python -m orientation.cli to-quat --matrix $(tr ',\n' '  ' < orientation/out/R_comp.csv | xargs)
+  runroot python -m orientation.cli to-quat --matrix $(tr ',\n' '  ' < orientation/out/R_comp.csv | xargs)
   ```
   but again: file-based is cleaner.
 

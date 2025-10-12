@@ -6,9 +6,37 @@ This README collects **all run commands** you’ll use for the `angular` module
 
 > Conventions
 > - Inputs live in `angular/in/`, outputs in `angular/out/`.
-> - The CLI is exposed via `python -m angular.app`.
-> - The diagram generator CLI is exposed via `python -m angular.tools.diagram`.
+> - The CLI is exposed via `runroot python -m angular.app`.
+> - The diagram generator CLI is exposed via `runroot python -m angular.tools.diagram`.
 > - All examples assume you’re in the project root (where the `angular/` package lives).
+
+## -1) One-time session bootstrap (copy/paste once per new shell)
+```bash
+# --- run-from-root helpers ----------------------------------------------------
+# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+_mc_root() {
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git rev-parse --show-toplevel
+    return
+  fi
+  # Fallback: ascend until we find a recognizable root marker.
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
+      echo "$d"; return
+    fi
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# Run a command from the project root (without changing your current shell dir)
+runroot() { ( cd "$(_mc_root)" && "$@" ); }
+
+# Ensure out/ exists where the app expects to write
+runroot mkdir -p angular/out
+# -----------------------------------------------------------------------------
+```
 
 ---
 
@@ -16,7 +44,7 @@ This README collects **all run commands** you’ll use for the `angular` module
 
 ```bash
 # create / activate a virtual environment (example: venv)
-python -m venv .venv
+runroot python -m venv .venv
 source .venv/bin/activate            # (Linux/macOS)
 # or: .venv\Scripts\activate       # (Windows PowerShell)
 
@@ -30,7 +58,7 @@ pip install numpy graphviz pylint pytest pytest-cov
 
 Optional extras for diagrams:
 ```bash
-# Needed to render .dot -> images via python-graphviz
+# Needed to render .dot -> images via runroot python-graphviz
 pip install graphviz
 
 # (Optional) For pyreverse (alternative UML using pylint)
@@ -54,14 +82,14 @@ pytest --cov=angular --cov-report=term-missing angular/tests -q
 
 ---
 
-## 2) Angular CLI — `python -m angular.app`
+## 2) Angular CLI — `runroot python -m angular.app`
 
 ### 2.1 Build Rotation from Euler
 
 ```bash
-python -m angular.app from-euler --order ZYX --angles 0.3,0.1,-0.2
+runroot python -m angular.app from-euler --order ZYX --angles 0.3,0.1,-0.2
 # Save to angular/out/
-python -m angular.app from-euler --order ZYX --angles 0.3,0.1,-0.2 --save R_zyx.npy
+runroot python -m angular.app from-euler --order ZYX --angles 0.3,0.1,-0.2 --save R_zyx.npy
 ```
 
 **Flags**
@@ -71,7 +99,7 @@ python -m angular.app from-euler --order ZYX --angles 0.3,0.1,-0.2 --save R_zyx.
 ### 2.2 Compute ω̃ from Ṙ and R
 
 ```bash
-python -m angular.app omega-from-Rdot   --R 1,0,0,0,1,0,0,0,1   --Rdot 0,-0.3,0.2,0.3,0,-0.1,-0.2,0.1,0
+runroot python -m angular.app omega-from-Rdot   --R 1,0,0,0,1,0,0,0,1   --Rdot 0,-0.3,0.2,0.3,0,-0.1,-0.2,0.1,0
 ```
 
 **Flags**
@@ -81,7 +109,7 @@ python -m angular.app omega-from-Rdot   --R 1,0,0,0,1,0,0,0,1   --Rdot 0,-0.3,0.
 ### 2.3 Compute Ṙ from ω and R
 
 ```bash
-python -m angular.app Rdot-from-omega   --R 1,0,0,0,1,0,0,0,1   --omega 0.1,0.2,0.3
+runroot python -m angular.app Rdot-from-omega   --R 1,0,0,0,1,0,0,0,1   --omega 0.1,0.2,0.3
 ```
 
 **Flags**
@@ -91,7 +119,7 @@ python -m angular.app Rdot-from-omega   --R 1,0,0,0,1,0,0,0,1   --omega 0.1,0.2,
 ### 2.4 Velocity Matrix \( V = \. T \, T^{-1} \)
 
 ```bash
-python -m angular.app velocity-matrix   --R 1,0,0,0,1,0,0,0,1   --d 1,2,3   --Rdot 0,-0.3,0.2,0.3,0,-0.1,-0.2,0.1,0   --ddot 0.5,-0.2,0.7
+runroot python -m angular.app velocity-matrix   --R 1,0,0,0,1,0,0,0,1   --d 1,2,3   --Rdot 0,-0.3,0.2,0.3,0,-0.1,-0.2,0.1,0   --ddot 0.5,-0.2,0.7
 ```
 
 **Flags**
@@ -103,58 +131,58 @@ python -m angular.app velocity-matrix   --R 1,0,0,0,1,0,0,0,1   --d 1,2,3   --Rd
 ### 2.5 Rigid-Body Point Velocity \( v_P = ω×(r_P - d_B) + \. d_B \)
 
 ```bash
-python -m angular.app rigid-pt-vel   --omega 0,0,2   --rP 1,2,0   --dB 1,0,0   --dBdot 0,1,0
+runroot python -m angular.app rigid-pt-vel   --omega 0,0,2   --rP 1,2,0   --dB 1,0,0   --dBdot 0,1,0
 ```
 
 ### 2.6 Screw Decomposition from Twist
 
 ```bash
-python -m angular.app screw-from-twist --twist 0,0,1,0,0.2,0.1
+runroot python -m angular.app screw-from-twist --twist 0,0,1,0,0.2,0.1
 # prints JSON payload with axis s, moment m, and pitch p
 ```
 
 ---
 
-## 3) Class Diagram Generator — `python -m angular.tools.diagram`
+## 3) Class Diagram Generator — `runroot python -m angular.tools.diagram`
 
 All outputs default to `angular/out/`. You can customize `--outdir`.
 
 ### 3.1 Emit Graphviz DOT Text
 
 ```bash
-python -m angular.tools.diagram dot --out angular/out/classes.dot
+runroot python -m angular.tools.diagram dot --out angular/out/classes.dot
 # print to stdout
-python -m angular.tools.diagram dot --out ""
+runroot python -m angular.tools.diagram dot --out ""
 ```
 
 ### 3.2 Emit PlantUML Text
 
 ```bash
-python -m angular.tools.diagram plantuml --out angular/out/classes.puml
+runroot python -m angular.tools.diagram plantuml --out angular/out/classes.puml
 # print to stdout
-python -m angular.tools.diagram plantuml --out ""
+runroot python -m angular.tools.diagram plantuml --out ""
 ```
 
 ### 3.3 Export JSON Model
 
 ```bash
-python -m angular.tools.diagram json --out angular/out/classes.json
+runroot python -m angular.tools.diagram json --out angular/out/classes.json
 ```
 
-### 3.4 Render Graphviz (PNG/SVG/PDF) via python-graphviz
+### 3.4 Render Graphviz (PNG/SVG/PDF) via runroot python-graphviz
 
 ```bash
 # PNG with DPI
-python -m angular.tools.diagram graphviz --fmt png --dpi 300 --outstem classes
+runroot python -m angular.tools.diagram graphviz --fmt png --dpi 300 --outstem classes
 
 # SVG (resolution independent; ignores --dpi)
-python -m angular.tools.diagram graphviz --fmt svg --outstem classes
+runroot python -m angular.tools.diagram graphviz --fmt svg --outstem classes
 ```
 
 ### 3.5 Render Everything (best effort)
 
 ```bash
-python -m angular.tools.diagram all
+runroot python -m angular.tools.diagram all
 # Produces: JSON, DOT, PlantUML, and tries a Graphviz image.
 ```
 
@@ -172,9 +200,9 @@ python -m angular.tools.diagram all
 
 Examples:
 ```bash
-python -m angular.tools.diagram dot --rankdir TB --legend --out angular/out/diagram.dot
-python -m angular.tools.diagram plantuml --theme dark --no-cluster --out angular/out/diagram.puml
-python -m angular.tools.diagram graphviz --fmt pdf --outstem classes
+runroot python -m angular.tools.diagram dot --rankdir TB --legend --out angular/out/diagram.dot
+runroot python -m angular.tools.diagram plantuml --theme dark --no-cluster --out angular/out/diagram.puml
+runroot python -m angular.tools.diagram graphviz --fmt pdf --outstem classes
 ```
 
 ---
@@ -184,7 +212,7 @@ python -m angular.tools.diagram graphviz --fmt pdf --outstem classes
 If you prefer a one-shot function (requires `pylint` and Graphviz installed system-wide):
 
 ```bash
-python -c "from angular.design import generate_class_diagram; generate_class_diagram()"
+runroot python -c "from angular.design import generate_class_diagram; generate_class_diagram()"
 # Outputs PNGs into angular/out/ (if the helper exists in your tree)
 ```
 
@@ -199,7 +227,7 @@ python -c "from angular.design import generate_class_diagram; generate_class_dia
 
 Example:
 ```bash
-python -m angular.app from-euler --order ZYX --angles 0.3,0.1,-0.2 --save R_zyx.npy
+runroot python -m angular.app from-euler --order ZYX --angles 0.3,0.1,-0.2 --save R_zyx.npy
 ls angular/out/
 # R_zyx.npy
 ```
@@ -209,8 +237,8 @@ ls angular/out/
 ## 6) Troubleshooting
 
 - **NumPy errors**: Ensure arrays are comma-separated without spaces or quote the whole argument.
-- **graphviz render errors**: Install the `graphviz` Python package. If rendering still fails, ensure the Graphviz binaries are installed on your system or stick with DOT/PUML text outputs.
-- **Import issues**: Confirm you’re running from the project root and the `angular/` package is on `PYTHONPATH` (or install with `pip install -e .`).
+- **graphviz render errors**: Install the `graphviz` runroot python package. If rendering still fails, ensure the Graphviz binaries are installed on your system or stick with DOT/PUML text outputs.
+- **Import issues**: Confirm you’re running from the project root and the `angular/` package is on `runroot pythonPATH` (or install with `pip install -e .`).
 
 ---
 
@@ -218,14 +246,14 @@ ls angular/out/
 
 ```bash
 # 1) ω̃ from Ṙ Rᵀ
-python -m angular.app omega-from-Rdot --R 1,0,0,0,1,0,0,0,1 --Rdot 0,-0.3,0.2,0.3,0,-0.1,-0.2,0.1,0
+runroot python -m angular.app omega-from-Rdot --R 1,0,0,0,1,0,0,0,1 --Rdot 0,-0.3,0.2,0.3,0,-0.1,-0.2,0.1,0
 
 # 2) V = Ṫ T^{-1}
-python -m angular.app velocity-matrix --R 1,0,0,0,1,0,0,0,1 --d 1,2,3   --Rdot 0,-0.3,0.2,0.3,0,-0.1,-0.2,0.1,0 --ddot 0.5,-0.2,0.7
+runroot python -m angular.app velocity-matrix --R 1,0,0,0,1,0,0,0,1 --d 1,2,3   --Rdot 0,-0.3,0.2,0.3,0,-0.1,-0.2,0.1,0 --ddot 0.5,-0.2,0.7
 
 # 3) Rigid-body point velocity
-python -m angular.app rigid-pt-vel --omega 0,0,2 --rP 1,2,0 --dB 1,0,0 --dBdot 0,1,0
+runroot python -m angular.app rigid-pt-vel --omega 0,0,2 --rP 1,2,0 --dB 1,0,0 --dBdot 0,1,0
 
 # 4) Screw decomposition
-python -m angular.app screw-from-twist --twist 0,0,1,0,0.2,0.1
+runroot python -m angular.app screw-from-twist --twist 0,0,1,0,0.2,0.1
 ```

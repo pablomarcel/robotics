@@ -3,7 +3,35 @@
 This README is a **one-stop runbook** for your Robotics **time-optimal control** app (package: `timeopt`).  
 It covers **installation**, **tests**, **CLI** usage, **examples** (CasADi & TOPPRA), **class diagram generation**, and **docs**.
 
-> You’re on macOS with Python 3.11, `casadi==3.7.2`, `toppra==0.6.3`. Ipopt is **optional**; we auto-fallback to CasADi’s built‑in SQP.
+> You’re on macOS with runroot python 3.11, `casadi==3.7.2`, `toppra==0.6.3`. Ipopt is **optional**; we auto-fallback to CasADi’s built‑in SQP.
+
+## -1) One-time session bootstrap (copy/paste once per new shell)
+```bash
+# --- run-from-root helpers ----------------------------------------------------
+# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+_mc_root() {
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git rev-parse --show-toplevel
+    return
+  fi
+  # Fallback: ascend until we find a recognizable root marker.
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
+      echo "$d"; return
+    fi
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# Run a command from the project root (without changing your current shell dir)
+runroot() { ( cd "$(_mc_root)" && "$@" ); }
+
+# Ensure out/ exists where the app expects to write
+runroot mkdir -p timeopt/out
+# -----------------------------------------------------------------------------
+```
 
 ---
 
@@ -32,14 +60,14 @@ If your CLI module lives elsewhere (`time/cli.py` etc.), adjust the `-m <module>
 
 ### 1.1 Create / activate venv
 ```bash
-python3.11 -m venv .venv
+runroot python3.11 -m venv .venv
 source .venv/bin/activate
-python -V
+runroot python -V
 ```
 
 ### 1.2 Install dependencies (minimum to run tests)
 ```bash
-python -m pip install --upgrade pip
+runroot python -m pip install --upgrade pip
 pip install casadi==3.7.2 toppra==0.6.3 numpy scipy pytest pytest-sugar
 ```
 **Optional** (already in your env, but included for completeness):
@@ -73,27 +101,27 @@ Expected passing tests:
 
 ### 3.1 Discover commands
 ```bash
-python -m timeopt.cli --help
+runroot python -m timeopt.cli --help
 ```
 
 ### 3.2 Generate class diagram via CLI
 ```bash
 # Write a PlantUML (.puml) to time/out and render to PNG
-python -m timeopt.cli diagram --package timeopt --out time/out/timeopt.puml
+runroot python -m timeopt.cli diagram --package timeopt --out time/out/timeopt.puml
 plantuml -tpng time/out/timeopt.puml -o .
 # Result: time/out/timeopt.png
 ```
 
 ### 3.3 Run the double integrator (print JSON)
 ```bash
-python -m timeopt.cli run double-integrator \
+runroot python -m timeopt.cli run double-integrator \
   --name di_cli --x0 0.0 --xf 1.0 --m 1.0 --F 10.0 \
   --mu 0.0 --drag 0.0 --g 9.81
 ```
 
 ### 3.4 Run the 2R TOPPRA time-scaling along a straight line
 ```bash
-python -m timeopt.cli run 2r-path \
+runroot python -m timeopt.cli run 2r-path \
   --name twoR_cli \
   --y 0.5 --x0 1.9 --x1 0.5 --n 150 \
   --l1 1.0 --l2 1.0 --tau-max 100 100
@@ -103,11 +131,11 @@ python -m timeopt.cli run 2r-path \
 
 ---
 
-## 4) Python One-Liners (no CLI)
+## 4) runroot python One-Liners (no CLI)
 
 ### 4.1 CasADi: minimum-time double integrator
 ```bash
-python - <<'PY'
+runroot python - <<'PY'
 from timeopt.app import MinTimeDoubleIntegrator
 prob = MinTimeDoubleIntegrator("di_inline", x0=0.0, xf=1.0, m=1.0, F=10.0)
 res = prob.run()
@@ -117,7 +145,7 @@ PY
 
 ### 4.2 TOPPRA: 2R path time-parameterization (0.6.3 API)
 ```bash
-python - <<'PY'
+runroot python - <<'PY'
 import numpy as np
 from timeopt.design import Planar2RGeom
 from timeopt.app import TwoRPathTimeScaler, TwoRParams
@@ -140,7 +168,7 @@ We rely on `py2puml` to generate a PlantUML diagram for the `timeopt` package an
 # 5.1 Generate .puml
 py2puml timeopt time/out/timeopt.puml
 
-# 5.2 Render to PNG (PlantUML must be available; python package `plantuml` or system jar)
+# 5.2 Render to PNG (PlantUML must be available; runroot python package `plantuml` or system jar)
 plantuml -tpng time/out/timeopt.puml -o .
 
 # Output: time/out/timeopt.png
@@ -183,7 +211,7 @@ sphinx-autobuild docs docs/_build/html
 
 - **Ipopt not installed**: no problem—`MinTimeDoubleIntegrator` falls back to CasADi `sqpmethod` automatically.
 - **TOPPRA errors about shapes**: we implemented a shape-stable `inv_dyn` callback (returns `(2,)` for a single sample and `(N,2)` for batches). If you modify it, keep that contract.
-- **PlantUML not found**: install via `pip install plantuml` (Python wrapper) or install Java + PlantUML jar. Ensure `graphviz` is installed for PNG/SVG rendering.
+- **PlantUML not found**: install via `pip install plantuml` (runroot python wrapper) or install Java + PlantUML jar. Ensure `graphviz` is installed for PNG/SVG rendering.
 - **macOS Gatekeeper** sometimes blocks graphviz binaries; if `dot` is not found, try `brew reinstall graphviz` and ensure your PATH includes `/opt/homebrew/bin`.
 
 ---
@@ -198,13 +226,13 @@ source .venv/bin/activate
 pytest timeopt/tests -q
 
 # Double integrator quick run
-python - <<'PY'
+runroot python - <<'PY'
 from timeopt.app import MinTimeDoubleIntegrator
 print(MinTimeDoubleIntegrator("di", 0.0, 1.0, 1.0, 10.0).run().data)
 PY
 
 # 2R TOPPRA quick run
-python - <<'PY'
+runroot python - <<'PY'
 from timeopt.design import Planar2RGeom
 from timeopt.app import TwoRPathTimeScaler, TwoRParams
 geom = Planar2RGeom(1.0, 1.0)
