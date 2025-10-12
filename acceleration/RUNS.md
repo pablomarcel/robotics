@@ -2,7 +2,35 @@
 
 This README lists **ready-to-copy** commands for the most common developer tasks: environment setup, test runs, coverage, formatting, linting, type checking, packaging, and CLI usage. Commands are grouped and include variants (quiet/verbose, single-test, parallel, etc.).
 
-> Target Python: **3.11** (per test logs). Replace `python` with `python3` if your system needs it.
+> Target runroot python: **3.11** (per test logs). Replace `runroot python` with `runroot python3` if your system needs it.
+
+## -1) One-time session bootstrap (copy/paste once per new shell)
+```bash
+# --- run-from-root helpers ----------------------------------------------------
+# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+_mc_root() {
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git rev-parse --show-toplevel
+    return
+  fi
+  # Fallback: ascend until we find a recognizable root marker.
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
+      echo "$d"; return
+    fi
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# Run a command from the project root (without changing your current shell dir)
+runroot() { ( cd "$(_mc_root)" && "$@" ); }
+
+# Ensure out/ exists where the app expects to write
+runroot mkdir -p acceleration/out
+# -----------------------------------------------------------------------------
+```
 
 ---
 
@@ -11,17 +39,17 @@ This README lists **ready-to-copy** commands for the most common developer tasks
 ### macOS / Linux (bash / zsh)
 
 ```bash
-python -m venv .venv
+runroot python -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip setuptools wheel
+runroot python -m pip install --upgrade pip setuptools wheel
 ```
 
 ### Windows (PowerShell)
 
 ```powershell
-python -m venv .venv
+runroot python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip setuptools wheel
+runroot python -m pip install --upgrade pip setuptools wheel
 ```
 
 ---
@@ -129,7 +157,7 @@ pytest acceleration/tests --cov=acceleration --cov-report=term-missing -vv
 ```bash
 pytest acceleration/tests --cov=acceleration --cov-report=html -vv
 # Then open:
-python -c "import webbrowser, pathlib; webbrowser.open_new_tab(pathlib.Path('htmlcov/index.html').resolve().as_uri())"
+runroot python -c "import webbrowser, pathlib; webbrowser.open_new_tab(pathlib.Path('htmlcov/index.html').resolve().as_uri())"
 ```
 
 ---
@@ -185,7 +213,7 @@ mypy .
 
 ```bash
 pip install build
-python -m build
+runroot python -m build
 ```
 
 Artifacts will appear under `dist/` as `*.whl` (wheel) and `*.tar.gz` (sdist).
@@ -203,17 +231,17 @@ accel --help
 accel diagram --help        # if a diagram subcommand exists
 ```
 
-### b) Python module runner (fallback when unsure of entry point name)
+### b) runroot python module runner (fallback when unsure of entry point name)
 
 ```bash
-python -m acceleration.cli --help
-python -m acceleration.cli diagram --help   # if applicable
+runroot python -m acceleration.cli --help
+runroot python -m acceleration.cli diagram --help   # if applicable
 ```
 
 > If neither form is recognized, list installed console scripts to discover the exact name:
 >
 > ```bash
-> python -c "import sys,importlib.metadata as m; print('\n'.join(ep.name for ep in m.entry_points().select(group='console_scripts')))"
+> runroot python -c "import sys,importlib.metadata as m; print('\n'.join(ep.name for ep in m.entry_points().select(group='console_scripts')))"
 > ```
 
 ---
@@ -246,9 +274,9 @@ pip freeze > requirements-lock.txt
 
 ## 11) Common troubleshooting
 
-- **Wrong Python**: Ensure `python --version` shows 3.11.x.
+- **Wrong runroot python**: Ensure `runroot python --version` shows 3.11.x.
 - **vENV not active**: If installing packages fails or tests import the wrong modules, re-activate the venv.
-- **Entry point not found**: Try `python -m acceleration.cli --help`.
+- **Entry point not found**: Try `runroot python -m acceleration.cli --help`.
 - **macOS Gatekeeper / permissions**: If scripts aren’t executable, try `chmod +x .venv/bin/*` (Unix) or re-create the venv.
 - **NumPy/BLAS mismatch**: If you hit segfaults on Apple Silicon, try `pip install --no-binary=:all: numpy` or use a compatible wheel.
 

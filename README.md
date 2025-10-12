@@ -1,6 +1,6 @@
 # Robotics (Python) — CLI‑First Study & Design Suite
 
-> **Mission:** prove you can learn, reproduce, and *do* robot kinematics, dynamics, path planning, and control **without MATLAB®/Simulink®** — using Python, a modern CLI workflow, and open libraries.
+> **Mission:** learn, reproduce, and *do* robot kinematics, dynamics, path planning, and control **without MATLAB®/Simulink®** — using Python, a modern CLI workflow, and open libraries.
 
 This repo is a collection of focused, test‑driven Python packages (“tools”) that replicate and extend core workflows from **Reza N. Jazar, _Theory of Applied Robotics_ (3rd ed.)**. Each package ships with a friendly **CLI**, example inputs, and a **RUNS.md** full of copy‑paste commands. No notebooks required, no proprietary stack needed.
 

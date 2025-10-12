@@ -5,13 +5,41 @@
 
 **Updated:** 2025-10-12T20:21:37
 
+## -1) One-time session bootstrap (copy/paste once per new shell)
+```bash
+# --- run-from-root helpers ----------------------------------------------------
+# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+_mc_root() {
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git rev-parse --show-toplevel
+    return
+  fi
+  # Fallback: ascend until we find a recognizable root marker.
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
+      echo "$d"; return
+    fi
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# Run a command from the project root (without changing your current shell dir)
+runroot() { ( cd "$(_mc_root)" && "$@" ); }
+
+# Ensure out/ exists where the app expects to write
+runroot mkdir -p robot/out
+# -----------------------------------------------------------------------------
+```
+
 ---
 
 ## 0) Environment & install
 
 ```bash
 # (recommended) create venv
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+runroot python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
 # base deps
 pip install -U pip wheel
@@ -28,8 +56,8 @@ pip install pytest-cov        # if you want coverage
 ## 1) Quick sanity / help
 
 ```bash
-python -m robot.cli --help
-python -m robot.tools.uml --help
+runroot python -m robot.cli --help
+runroot python -m robot.tools.uml --help
 ```
 
 ---
@@ -55,28 +83,28 @@ pytest robot/tests --cov=robot --cov-report=term-missing
 
 ### 3.1 Default run (mid‑link COMs, unit lengths/masses)
 ```bash
-python -m robot.cli planar2r
+runroot python -m robot.cli planar2r
 ```
 
 ### 3.2 Specify geometry & inertial params
 ```bash
-python -m robot.cli planar2r   --l1 1.2 --l2 0.8   --m1 2.0 --m2 1.5
+runroot python -m robot.cli planar2r   --l1 1.2 --l2 0.8   --m1 2.0 --m2 1.5
 ```
 
 ### 3.3 Choose engine (symbolic or pinocchio‑stub)
 ```bash
-python -m robot.cli planar2r --engine sympy
-python -m robot.cli planar2r --engine pinocchio
+runroot python -m robot.cli planar2r --engine sympy
+runroot python -m robot.cli planar2r --engine pinocchio
 ```
 
 ### 3.4 Set state (q, q̇, q̈) and gravity
 ```bash
-python -m robot.cli planar2r   --q 0.2 -0.3   --qd 0.1 0.05   --qdd 0.0 0.0   --g 9.81
+runroot python -m robot.cli planar2r   --q 0.2 -0.3   --qd 0.1 0.05   --qdd 0.0 0.0   --g 9.81
 ```
 
 ### 3.5 Save to a custom path (creates directories)
 ```bash
-python -m robot.cli planar2r --out robot/out/runs/planar2r_run1.json
+runroot python -m robot.cli planar2r --out robot/out/runs/planar2r_run1.json
 ```
 
 ---
@@ -88,19 +116,19 @@ python -m robot.cli planar2r --out robot/out/runs/planar2r_run1.json
 ### 4.1 Use the included sample
 ```bash
 # file: robot/in/sample_2r.yaml
-python -m robot.cli from-yaml sample_2r.yaml --engine sympy --q 0.2 -0.3 --qd 0.1 0.05 --qdd 0 0 --g 9.81
+runroot python -m robot.cli from-yaml sample_2r.yaml --engine sympy --q 0.2 -0.3 --qd 0.1 0.05 --qdd 0 0 --g 9.81
 ```
 
 ### 4.2 Sympy vs Pinocchio engine
 ```bash
-python -m robot.cli from-yaml sample_2r.yaml --engine sympy   --q 0.1 0.2 --qd 0.0 0.0 --qdd 0 0
-python -m robot.cli from-yaml sample_2r.yaml --engine pinocchio --q 0.1 0.2 --qd 0.0 0.0 --qdd 0 0
+runroot python -m robot.cli from-yaml sample_2r.yaml --engine sympy   --q 0.1 0.2 --qd 0.0 0.0 --qdd 0 0
+runroot python -m robot.cli from-yaml sample_2r.yaml --engine pinocchio --q 0.1 0.2 --qd 0.0 0.0 --qdd 0 0
 ```
 
 ### 4.3 Different gravity direction/magnitude
 ```bash
 # Moon gravity
-python -m robot.cli from-yaml sample_2r.yaml --engine sympy --q 0.5 0.1 --qd 0.0 0.0 --qdd 0 0 --g 1.62
+runroot python -m robot.cli from-yaml sample_2r.yaml --engine sympy --q 0.5 0.1 --qd 0.0 0.0 --qdd 0 0 --g 1.62
 ```
 
 ---
@@ -122,13 +150,13 @@ python -m robot.cli from-yaml sample_2r.yaml --engine sympy --q 0.5 0.1 --qd 0.0
 **Examples:**
 ```bash
 # (A) No accelerations provided -> τ computed with q̈=0
-python -m robot.cli planar2r --q 0.2 0.3 --qd 0.1 -0.2 --g 9.81
+runroot python -m robot.cli planar2r --q 0.2 0.3 --qd 0.1 -0.2 --g 9.81
 
 # (B) With accelerations
-python -m robot.cli planar2r --q 0.2 0.3 --qd 0.1 -0.2 --qdd 0.5 -0.1
+runroot python -m robot.cli planar2r --q 0.2 0.3 --qd 0.1 -0.2 --qdd 0.5 -0.1
 
 # (C) Heavy link 2
-python -m robot.cli planar2r --m2 5.0 --q 0.2 -0.3 --qd 0.15 0.0 --qdd 0 0
+runroot python -m robot.cli planar2r --m2 5.0 --q 0.2 -0.3 --qd 0.15 0.0 --qdd 0 0
 ```
 
 ### Subcommand: `from-yaml`
@@ -142,10 +170,10 @@ python -m robot.cli planar2r --m2 5.0 --q 0.2 -0.3 --qd 0.15 0.0 --qdd 0 0
 **Examples:**
 ```bash
 # (D) Provide q, q̇ only (statics torque if q̇=0, q̈=0)
-python -m robot.cli from-yaml sample_2r.yaml --q 0.5 -0.2 --qd 0 0
+runroot python -m robot.cli from-yaml sample_2r.yaml --q 0.5 -0.2 --qd 0 0
 
 # (E) Dynamic state
-python -m robot.cli from-yaml sample_2r.yaml --q 0.3 0.1 --qd 0.2 -0.1 --qdd 1.0 -0.4 --g 9.81
+runroot python -m robot.cli from-yaml sample_2r.yaml --q 0.3 0.1 --qd 0.2 -0.1 --qdd 1.0 -0.4 --g 9.81
 ```
 
 ---
@@ -169,7 +197,7 @@ Each run writes a JSON with some or all keys:
 > Requires `pylint` (for `pyreverse`). PNGs will be saved to `robot/out/uml/`.
 
 ```bash
-python -m robot.tools.uml --engine pyreverse --out robot/out/uml
+runroot python -m robot.tools.uml --engine pyreverse --out robot/out/uml
 open robot/out/uml/classes.png   # macOS; Linux: xdg-open
 ```
 
@@ -179,7 +207,7 @@ open robot/out/uml/classes.png   # macOS; Linux: xdg-open
 
 ### 8.1 Run package as a module
 ```bash
-python -m robot.app planar2r --q 0.2 -0.3 --qd 0.1 0.05 --qdd 0 0
+runroot python -m robot.app planar2r --q 0.2 -0.3 --qd 0.1 0.05 --qdd 0 0
 ```
 
 ### 8.2 Lint (optional)

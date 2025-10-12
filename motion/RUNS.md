@@ -22,29 +22,57 @@ that may be unavailable locally.
 >   tests/     # pytest suite
 > ```
 
+## -1) One-time session bootstrap (copy/paste once per new shell)
+```bash
+# --- run-from-root helpers ----------------------------------------------------
+# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+_mc_root() {
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git rev-parse --show-toplevel
+    return
+  fi
+  # Fallback: ascend until we find a recognizable root marker.
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
+      echo "$d"; return
+    fi
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# Run a command from the project root (without changing your current shell dir)
+runroot() { ( cd "$(_mc_root)" && "$@" ); }
+
+# Ensure out/ exists where the app expects to write
+runroot mkdir -p motion/out
+# -----------------------------------------------------------------------------
+```
+
 ---
 
 ## 0) Setup
 
 ### Create & activate a virtual environment
 ```bash
-python3 -m venv .venv
+runroot python3 -m venv .venv
 source .venv/bin/activate     # Windows: .venv\Scripts\activate
-python -m pip install --upgrade pip
+runroot python -m pip install --upgrade pip
 ```
 
-### Install Python dependencies
+### Install runroot python dependencies
 ```bash
 pip install numpy pytest pytest-sugar pytest-cov
 # Optional backends (only if you want them):
-pip install graphviz           # Python bindings (still needs 'dot' executable to render)
+pip install graphviz           # runroot python bindings (still needs 'dot' executable to render)
 pip install pylint             # Provides 'pyreverse'
 ```
 
 ### (Optional) Make the package importable during development
 ```bash
-export PYTHONPATH="$PWD"
-# Windows PowerShell: $env:PYTHONPATH="$PWD"
+export runroot pythonPATH="$PWD"
+# Windows PowerShell: $env:runroot pythonPATH="$PWD"
 ```
 
 ---
@@ -87,67 +115,67 @@ All CLI entry points assume the current directory is the project root.
 
 ### Show CLI help
 ```bash
-python -m motion.cli --help
+runroot python -m motion.cli --help
 ```
 
 > Each subcommand also provides help, e.g.:
 ```bash
-python -m motion.cli se3 --help
-python -m motion.cli rotation --help
-python -m motion.cli screw --help
-python -m motion.cli plucker --help
-python -m motion.cli plane --help
-python -m motion.cli dh --help
+runroot python -m motion.cli se3 --help
+runroot python -m motion.cli rotation --help
+runroot python -m motion.cli screw --help
+runroot python -m motion.cli plucker --help
+runroot python -m motion.cli plane --help
+runroot python -m motion.cli dh --help
 ```
 
 ### Rotation examples
 ```bash
 # Build R from axis-angle (axis=0,0,1; phi=1.5708 rad) and print the 3x3:
-python -m motion.cli rotation axis-angle --axis 0 0 1 --phi 1.57079632679
+runroot python -m motion.cli rotation axis-angle --axis 0 0 1 --phi 1.57079632679
 
 # Canonical rotations:
-python -m motion.cli rotation rz --theta 1.2
-python -m motion.cli rotation rx --theta 0.5
-python -m motion.cli rotation ry --theta -0.7
+runroot python -m motion.cli rotation rz --theta 1.2
+runroot python -m motion.cli rotation rx --theta 0.5
+runroot python -m motion.cli rotation ry --theta -0.7
 ```
 
 ### SE(3) examples
 ```bash
 # Build SE3 from Rz(90deg) and t=[1,2,3], print 4x4 and apply to a point
-python -m motion.cli se3 from-rz --theta 1.57079632679 --t 1 2 3
-python -m motion.cli se3 apply --T "[[0,-1,0,1],[1,0,0,2],[0,0,1,3],[0,0,0,1]]" --p 1 0 0
+runroot python -m motion.cli se3 from-rz --theta 1.57079632679 --t 1 2 3
+runroot python -m motion.cli se3 apply --T "[[0,-1,0,1],[1,0,0,2],[0,0,1,3],[0,0,0,1]]" --p 1 0 0
 
 # Inverse and compose
-python -m motion.cli se3 inverse --T "[[0,-1,0,1],[1,0,0,2],[0,0,1,3],[0,0,0,1]]"
-python -m motion.cli se3 compose --A "<4x4 json>" --B "<4x4 json>"
+runroot python -m motion.cli se3 inverse --T "[[0,-1,0,1],[1,0,0,2],[0,0,1,3],[0,0,0,1]]"
+runroot python -m motion.cli se3 compose --A "<4x4 json>" --B "<4x4 json>"
 ```
 
 ### Screw motion examples
 ```bash
 # Screw with axis u=(0,0,1), point s=(0,0,0), pitch h=0.5, angle phi=pi/2
-python -m motion.cli screw to-matrix --u 0 0 1 --s 0 0 0 --h 0.5 --phi 1.57079632679
+runroot python -m motion.cli screw to-matrix --u 0 0 1 --s 0 0 0 --h 0.5 --phi 1.57079632679
 ```
 
 ### Plücker line examples
 ```bash
 # Build two lines from points, compute angle & distance
-python -m motion.cli plucker angle-distance --p1 0 0 0 --p2 1 0 0 --q1 0 1 1 --q2 0 2 3
+runroot python -m motion.cli plucker angle-distance --p1 0 0 0 --p2 1 0 0 --q1 0 1 1 --q2 0 2 3
 # Transform a line by SE(3)
-python -m motion.cli plucker transform --p1 0 0 0 --p2 1 0 0 --T "[[1,0,0,0.5],[0,1,0,-0.2],[0,0,1,0.3],[0,0,0,1]]"
+runroot python -m motion.cli plucker transform --p1 0 0 0 --p2 1 0 0 --T "[[1,0,0,0.5],[0,1,0,-0.2],[0,0,1,0.3],[0,0,0,1]]"
 ```
 
 ### Plane examples
 ```bash
 # Plane through point (0,0,1) with normal (0,0,1), distance of p=(0,0,2)
-python -m motion.cli plane distance --point 0 0 1 --normal 0 0 1 --p 0 0 2
+runroot python -m motion.cli plane distance --point 0 0 1 --normal 0 0 1 --p 0 0 2
 ```
 
 ### DH forward kinematics
 ```bash
 # Provide a small DH table (rows of a alpha d theta); prints final SE(3)
-python -m motion.cli dh fk --csv motion/in/my_dh.csv
+runroot python -m motion.cli dh fk --csv motion/in/my_dh.csv
 # Or inline JSON:
-python -m motion.cli dh fk --json "[[0.1, 0.0, 0.2, 0.0],[0.3, 1.5707963, 0.0, 0.5]]"
+runroot python -m motion.cli dh fk --json "[[0.1, 0.0, 0.2, 0.0],[0.3, 1.5707963, 0.0, 0.5]]"
 ```
 
 > All CLI commands accept `--out` flags when applicable to save artifacts under `motion/out`.
@@ -158,8 +186,8 @@ python -m motion.cli dh fk --json "[[0.1, 0.0, 0.2, 0.0],[0.3, 1.5707963, 0.0, 0
 
 The `IO` service centralizes atomic read/write under `motion/in` and `motion/out`.
 
-### Quick usage (Python REPL or script)
-```python
+### Quick usage (runroot python REPL or script)
+```runroot python
 from motion.io import IO
 import numpy as np
 
@@ -177,19 +205,19 @@ loaded = io.load_points_csv("cloud.csv")  # reads from motion/in by default
 
 ### Discover & JSON model
 ```bash
-python -m motion.tools.diagram discover --package motion
-python -m motion.tools.diagram json --out motion/out/classes.json
+runroot python -m motion.tools.diagram discover --package motion
+runroot python -m motion.tools.diagram json --out motion/out/classes.json
 ```
 
 ### PlantUML & Mermaid sources
 ```bash
-python -m motion.tools.diagram plantuml --out motion/out/classes.puml
-python -m motion.tools.diagram mermaid  --out motion/out/classes.mmd
+runroot python -m motion.tools.diagram plantuml --out motion/out/classes.puml
+runroot python -m motion.tools.diagram mermaid  --out motion/out/classes.mmd
 ```
 
 ### Render-all convenience (skips where unavailable)
 ```bash
-python -m motion.tools.diagram all
+runroot python -m motion.tools.diagram all
 # Produces: JSON, PlantUML, Mermaid; attempts Graphviz/pyreverse if available.
 ```
 
@@ -221,27 +249,27 @@ docker run --rm -v "$PWD":/work -w /work plantuml/plantuml   -tpng motion/out/cl
 
 ### Compute angle & distance between skew lines and save to JSON
 ```bash
-python -m motion.cli plucker angle-distance   --p1 0 0 0 --p2 1 0 0   --q1 0 1 1 --q2 0 2 3   --out motion/out/plucker_result.json
+runroot python -m motion.cli plucker angle-distance   --p1 0 0 0 --p2 1 0 0   --q1 0 1 1 --q2 0 2 3   --out motion/out/plucker_result.json
 ```
 
 ### Build a screw transform and apply it to points loaded from CSV
 ```bash
 # points in: motion/in/points.csv  (Nx3, no header)
-python -m motion.cli screw to-matrix --u 0 0 1 --s 0 0 0 --h 0.2 --phi 1.0 --out motion/out/screw_T.json
-python -m motion.cli se3 apply-points   --T motion/out/screw_T.json   --points motion/in/points.csv   --out motion/out/points_transformed.csv
+runroot python -m motion.cli screw to-matrix --u 0 0 1 --s 0 0 0 --h 0.2 --phi 1.0 --out motion/out/screw_T.json
+runroot python -m motion.cli se3 apply-points   --T motion/out/screw_T.json   --points motion/in/points.csv   --out motion/out/points_transformed.csv
 ```
 
 ### DH forward kinematics from CSV
 ```bash
-python -m motion.cli dh fk --csv motion/in/dh_table.csv --out motion/out/fk_T.json
+runroot python -m motion.cli dh fk --csv motion/in/dh_table.csv --out motion/out/fk_T.json
 ```
 
 ---
 
 ## 6) Troubleshooting & Tips
 
-- **Import errors**: ensure `export PYTHONPATH="$PWD"` (or install as a package).
-- **Graphviz errors**: Python `graphviz` package alone is not enough; `dot` must be on PATH to render. If not available, prefer Mermaid/PlantUML commands above.
+- **Import errors**: ensure `export runroot pythonPATH="$PWD"` (or install as a package).
+- **Graphviz errors**: runroot python `graphviz` package alone is not enough; `dot` must be on PATH to render. If not available, prefer Mermaid/PlantUML commands above.
 - **pyreverse issues**: Provided by `pylint`. If present but failing, use the `diagram all` command; it will continue with other outputs.
 
 ---
@@ -266,7 +294,7 @@ pytest motion/tests -k "plucker or se3 or rotation" -vv
 
 This toolkit follows semantic-ish versioning reported by:
 ```bash
-python - <<'PY'
+runroot python - <<'PY'
 from motion.utils import version_string
 print(version_string())
 PY

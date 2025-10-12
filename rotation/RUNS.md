@@ -9,6 +9,34 @@ This README collects repeatable commands for **running the CLI**, **exporting di
 
 ---
 
+## -1) One-time session bootstrap (copy/paste once per new shell)
+```bash
+# --- run-from-root helpers ----------------------------------------------------
+# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+_mc_root() {
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git rev-parse --show-toplevel
+    return
+  fi
+  # Fallback: ascend until we find a recognizable root marker.
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
+      echo "$d"; return
+    fi
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# Run a command from the project root (without changing your current shell dir)
+runroot() { ( cd "$(_mc_root)" && "$@" ); }
+
+# Ensure out/ exists where the app expects to write
+runroot mkdir -p rotation/out
+# -----------------------------------------------------------------------------
+```
+
 ## 0) Quick setup
 
 ```bash
@@ -16,7 +44,7 @@ This README collects repeatable commands for **running the CLI**, **exporting di
 source .venv/bin/activate  # or the equivalent on your system
 
 # Ensure output/input dirs exist
-python - <<'PY'
+runroot python - <<'PY'
 import os
 for d in ["rotation/out","rotation/in"]:
     os.makedirs(d, exist_ok=True)
@@ -32,7 +60,7 @@ You can invoke via module or the console script (if installed as a package).
 
 ### Compose a rotation matrix
 ```bash
-python -m rotation.rot_cli compose local zyz "10,20,30" --degrees
+runroot python -m rotation.rot_cli compose local zyz "10,20,30" --degrees
 # or
 rot-cli compose local zyz "10,20,30" --degrees
 ```
@@ -40,71 +68,71 @@ rot-cli compose local zyz "10,20,30" --degrees
 ### Decompose a matrix back to angles
 ```bash
 # Compose then decompose (degrees)
-python -m rotation.rot_cli decompose local zyz --from-angles "10,20,30" --degrees
+runroot python -m rotation.rot_cli decompose local zyz --from-angles "10,20,30" --degrees
 
 # Decompose from CSV
-python -m rotation.rot_cli decompose global zyx --from-csv rotation/in/R.csv
+runroot python -m rotation.rot_cli decompose global zyx --from-csv rotation/in/R.csv
 ```
 
 ### Active transform of points
 ```bash
 # Inline points: "x;y;z|x;y;z|..."
-python -m rotation.rot_cli transform local zyz "10,20,30"   --degrees --points "1;0;0|0;1;0|0;0;1"
+runroot python -m rotation.rot_cli transform local zyz "10,20,30"   --degrees --points "1;0;0|0;1;0|0;0;1"
 
 # From CSV under rotation/in/
-python -m rotation.rot_cli transform local zyz "10,20,30"   --degrees --points basis.csv --save P_transformed.csv
+runroot python -m rotation.rot_cli transform local zyz "10,20,30"   --degrees --points basis.csv --save P_transformed.csv
 ```
 
 ### Passive transform (coordinate change)
 ```bash
-python -m rotation.rot_cli passive local zyz "10,20,30" --degrees   --points "1;0;0|0;1;0|0;0;1"
+runroot python -m rotation.rot_cli passive local zyz "10,20,30" --degrees   --points "1;0;0|0;1;0|0;0;1"
 ```
 
 ### Repeat/exponentiate a rotation
 ```bash
-python -m rotation.rot_cli repeat local zyz "10,20,30" 12 --degrees
+runroot python -m rotation.rot_cli repeat local zyz "10,20,30" 12 --degrees
 ```
 
 ### Align body x-axis to a vector
 ```bash
-python -m rotation.rot_cli align "0.2, 0.3, 0.9"
+runroot python -m rotation.rot_cli align "0.2, 0.3, 0.9"
 ```
 
 ### Orthogonality check
 ```bash
-python -m rotation.rot_cli check --from-angles "10,20,30"   --mode local --seq zyz --degrees
+runroot python -m rotation.rot_cli check --from-angles "10,20,30"   --mode local --seq zyz --degrees
 # Or from CSV:
-python -m rotation.rot_cli check --from-csv rotation/in/R.csv
+runroot python -m rotation.rot_cli check --from-csv rotation/in/R.csv
 ```
 
 ### Closed-form `E(q)` matrices (symbolic)
 ```bash
 # General proper/TB sequences
-python -m rotation.rot_cli E zyz --convention local --frame body
+runroot python -m rotation.rot_cli E zyz --convention local --frame body
 
 # RPY convenience (ZYX) + RPY column reordering
-python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+runroot python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
 ```
 
 ### ω ↔ q̇ mappings
 ```bash
 # ω from rates (units follow --degrees)
-python -m rotation.rot_cli angvel local zyz "10,20,30" "0.1,0.2,0.3"   --degrees --frame body
+runroot python -m rotation.rot_cli angvel local zyz "10,20,30" "0.1,0.2,0.3"   --degrees --frame body
 
 # rates from ω
-python -m rotation.rot_cli rates local zyz "10,20,30" "0.7,0.2,0.1"   --degrees --frame body
+runroot python -m rotation.rot_cli rates local zyz "10,20,30" "0.7,0.2,0.1"   --degrees --frame body
 ```
 
 ### Batch jobs (JSON/YAML or simple key=value)
 ```bash
 # rotation/in/job.yaml must define a top-level 'tasks' list
-python -m rotation.rot_cli batch job.yaml
+runroot python -m rotation.rot_cli batch job.yaml
 ```
 
 ### Dump runtime-traced edges (from decorators)
 ```bash
 # From the CLI itself
-python -m rotation.rot_cli uml --out rotation/out/runtime_sequence.puml
+runroot python -m rotation.rot_cli uml --out rotation/out/runtime_sequence.puml
 ```
 
 ---
@@ -115,13 +143,13 @@ Exports the Facade + APIs class diagram, and dumps any runtime trace captured by
 
 ```bash
 # PlantUML
-python -m rotation.app puml    -o rotation/out/app_class.puml
+runroot python -m rotation.app puml    -o rotation/out/app_class.puml
 
 # Mermaid
-python -m rotation.app mermaid -o rotation/out/app_class.mmd
+runroot python -m rotation.app mermaid -o rotation/out/app_class.mmd
 
 # Dump runtime sequence edges (same sink the CLI uses)
-python -m rotation.app runtime -o rotation/out/runtime_sequence.puml
+runroot python -m rotation.app runtime -o rotation/out/runtime_sequence.puml
 ```
 
 ---
@@ -135,12 +163,12 @@ We use `pydeps` to write JSON and our helper to convert to Mermaid.
 pydeps rotation --only rotation --noshow --no-output   --deps-output rotation/out/arch.json
 
 # Convert to Mermaid (requires rotation/tools/deps_to_mermaid.py)
-python -m rotation.tools.deps_to_mermaid rotation/out/arch.json   > rotation/out/deps_imports.mmd
+runroot python -m rotation.tools.deps_to_mermaid rotation/out/arch.json   > rotation/out/deps_imports.mmd
 ```
 
-Optional ASCII import listing (pure Python):
+Optional ASCII import listing (pure runroot python):
 ```bash
-python -m rotation.tools.arch_ascii rotation > rotation/out/imports_ascii.txt
+runroot python -m rotation.tools.arch_ascii rotation > rotation/out/imports_ascii.txt
 ```
 
 ---
@@ -149,7 +177,7 @@ python -m rotation.tools.arch_ascii rotation > rotation/out/imports_ascii.txt
 
 ```bash
 # Writes a Mermaid flowchart of static call edges it can infer
-python -m rotation.tools.ast_callgraph rotation   > rotation/out/callgraph_ast.mmd
+runroot python -m rotation.tools.ast_callgraph rotation   > rotation/out/callgraph_ast.mmd
 ```
 
 ---
@@ -178,7 +206,7 @@ viztracer -o rotation/out/trace.json   --min_duration 0.0005 --max_stack_depth 2
 
 ## 6) PyCharm diagram quick notes (FYI)
 
-- Right-click a symbol (class/function/file) → **Diagrams** → **Show Diagram…** → Python.
+- Right-click a symbol (class/function/file) → **Diagrams** → **Show Diagram…** → runroot python.
 - Use toolbar to expand related classes / show method signatures.
 - This is IDE-only; for shareable artifacts, prefer the exporters above.
 
@@ -187,7 +215,7 @@ viztracer -o rotation/out/trace.json   --min_duration 0.0005 --max_stack_depth 2
 ## 7) Troubleshooting
 
 - **`pydeps: cannot find 'dot'`** — use the JSON+Mermaid path shown above (no Graphviz needed).
-- **`viztracer ... invalid choice: 'python'`** — when using `viztracer`, prefer the `-m package.module` form (see examples).
+- **`viztracer ... invalid choice: 'runroot python'`** — when using `viztracer`, prefer the `-m package.module` form (see examples).
 - **Missing output dirs** — they are auto-created by the CLI and exporters, but you can pre-create with:
   ```bash
   mkdir -p rotation/out rotation/in
@@ -200,13 +228,13 @@ viztracer -o rotation/out/trace.json   --min_duration 0.0005 --max_stack_depth 2
 
 ```bash
 # Class diagrams (both formats)
-python -m rotation.app puml -o rotation/out/app_class.puml && python -m rotation.app mermaid -o rotation/out/app_class.mmd
+runroot python -m rotation.app puml -o rotation/out/app_class.puml && runroot python -m rotation.app mermaid -o rotation/out/app_class.mmd
 
 # Import graph (Mermaid)
-pydeps rotation --only rotation --noshow --no-output   --deps-output rotation/out/arch.json && python -m rotation.tools.deps_to_mermaid rotation/out/arch.json   > rotation/out/deps_imports.mmd
+pydeps rotation --only rotation --noshow --no-output   --deps-output rotation/out/arch.json && runroot python -m rotation.tools.deps_to_mermaid rotation/out/arch.json   > rotation/out/deps_imports.mmd
 
 # Static call graph
-python -m rotation.tools.ast_callgraph rotation   > rotation/out/callgraph_ast.mmd
+runroot python -m rotation.tools.ast_callgraph rotation   > rotation/out/callgraph_ast.mmd
 
 # Quick ω from rates demo + trace
 viztracer -o rotation/out/trace.json -m rotation.rot_cli   angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body

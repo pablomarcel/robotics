@@ -2,7 +2,35 @@
 
 This README collects **all the practical run commands** for the `applied` package: CLI presets, diagram tooling, and a few programmatic snippets you can copy/paste.
 
-> Tip: All CLI examples below can be run either as `python -m applied.cli ...` **or** using the module’s entry-point in the same way from your project root. Replace paths as needed.
+> Tip: All CLI examples below can be run either as `runroot python -m applied.cli ...` **or** using the module’s entry-point in the same way from your project root. Replace paths as needed.
+
+## -1) One-time session bootstrap (copy/paste once per new shell)
+```bash
+# --- run-from-root helpers ----------------------------------------------------
+# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+_mc_root() {
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git rev-parse --show-toplevel
+    return
+  fi
+  # Fallback: ascend until we find a recognizable root marker.
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
+      echo "$d"; return
+    fi
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# Run a command from the project root (without changing your current shell dir)
+runroot() { ( cd "$(_mc_root)" && "$@" ); }
+
+# Ensure out/ exists where the app expects to write
+runroot mkdir -p applied/out
+# -----------------------------------------------------------------------------
+```
 
 ---
 
@@ -10,7 +38,7 @@ This README collects **all the practical run commands** for the `applied` packag
 
 ```bash
 # 1) Create & activate a venv (if you haven't)
-python3 -m venv .venv
+runroot python3 -m venv .venv
 source .venv/bin/activate         # on Windows: .venv\Scripts\activate
 
 # 2) Install the project (editable is handy during dev)
@@ -29,26 +57,26 @@ List and instantiate ready‑made dynamic models (symbolic and numeric variants)
 
 ### 1.1 List available presets
 ```bash
-python -m applied.cli design --list
+runroot python -m applied.cli design --list
 ```
 
 ### 1.2 Create a preset and print a short summary
 ```bash
 # symbolic
-python -m applied.cli design --preset pendulum_sym
-python -m applied.cli design --preset spherical_sym
-python -m applied.cli design --preset planar2r_sym
-python -m applied.cli design --preset absorber_sym
+runroot python -m applied.cli design --preset pendulum_sym
+runroot python -m applied.cli design --preset spherical_sym
+runroot python -m applied.cli design --preset planar2r_sym
+runroot python -m applied.cli design --preset absorber_sym
 
 # numeric
-python -m applied.cli design --preset pendulum_num
-python -m applied.cli design --preset planar2r_num
-python -m applied.cli design --preset absorber_num
+runroot python -m applied.cli design --preset pendulum_num
+runroot python -m applied.cli design --preset planar2r_num
+runroot python -m applied.cli design --preset absorber_num
 ```
 
 ### 1.3 Export a small JSON summary
 ```bash
-python -m applied.cli design --preset planar2r_num --export applied/out/planar2r_num.json
+runroot python -m applied.cli design --preset planar2r_num --export applied/out/planar2r_num.json
 ```
 
 > The JSON includes the preset name, model class, and parameter fields.
@@ -68,38 +96,38 @@ Generate DOT/PlantUML/JSON metadata for classes in the `applied` package. All su
 
 ### 2.1 Emit Graphviz DOT text
 ```bash
-python -m applied.cli diagram dot --out applied/out/classes.dot
+runroot python -m applied.cli diagram dot --out applied/out/classes.dot
 # with options
-python -m applied.cli diagram dot   --packages applied.core,applied.models   --outdir applied/out   --theme dark   --rankdir TB   --legend   --no-cluster   --out applied/out/classes_custom.dot
+runroot python -m applied.cli diagram dot   --packages applied.core,applied.models   --outdir applied/out   --theme dark   --rankdir TB   --legend   --no-cluster   --out applied/out/classes_custom.dot
 ```
 
 ### 2.2 Emit PlantUML text
 ```bash
-python -m applied.cli diagram plantuml --out applied/out/classes.puml
+runroot python -m applied.cli diagram plantuml --out applied/out/classes.puml
 ```
 
 ### 2.3 Export discovered model JSON (structure of classes/relations)
 ```bash
-python -m applied.cli diagram json --out applied/out/classes.json
+runroot python -m applied.cli diagram json --out applied/out/classes.json
 ```
 
-### 2.4 Render via python‑graphviz (PNG/SVG/PDF)
+### 2.4 Render via runroot python‑graphviz (PNG/SVG/PDF)
 ```bash
 # PNG with default DPI
-python -m applied.cli diagram graphviz --fmt png --dpi 220 --outstem applied/out/classes
+runroot python -m applied.cli diagram graphviz --fmt png --dpi 220 --outstem applied/out/classes
 
 # SVG
-python -m applied.cli diagram graphviz --fmt svg --outstem applied/out/classes_svg
+runroot python -m applied.cli diagram graphviz --fmt svg --outstem applied/out/classes_svg
 
 # PDF, top‑bottom layout and dark theme
-python -m applied.cli diagram graphviz   --fmt pdf   --dpi 260   --rankdir TB   --theme dark   --outstem applied/out/classes_pdf
+runroot python -m applied.cli diagram graphviz   --fmt pdf   --dpi 260   --rankdir TB   --theme dark   --outstem applied/out/classes_pdf
 ```
 
 ### 2.5 “All” at once (emit JSON, DOT, PlantUML and try Graphviz render)
 ```bash
-python -m applied.cli diagram all
+runroot python -m applied.cli diagram all
 # You can still customize the common options, e.g.:
-python -m applied.cli diagram all   --packages applied.core,applied.models   --outdir applied/out   --theme dark   --rankdir TB   --legend
+runroot python -m applied.cli diagram all   --packages applied.core,applied.models   --outdir applied/out   --theme dark   --rankdir TB   --legend
 ```
 
 ---
@@ -109,10 +137,10 @@ python -m applied.cli diagram all   --packages applied.core,applied.models   --o
 For convenience and parity with tests, the CLI accepts **top‑level aliases** that behave like a quick summary of the corresponding preset (exit code 0).
 
 ```bash
-python -m applied.cli pendulum
-python -m applied.cli spherical
-python -m applied.cli planar2r
-python -m applied.cli absorber
+runroot python -m applied.cli pendulum
+runroot python -m applied.cli spherical
+runroot python -m applied.cli planar2r
+runroot python -m applied.cli absorber
 ```
 
 > These print a one‑screen summary of the model (class name, its parameters, and its q/qd).
@@ -122,7 +150,7 @@ python -m applied.cli absorber
 ## 4) Programmatic usage (quick snippets)
 
 ### 4.1 Derive pendulum EOM symbolically
-```python
+```runroot python
 from applied.apis import AppliedDynamicsAPI
 r = AppliedDynamicsAPI().derive_simple_pendulum()
 eom, K, V, M = r.data["EOM"], r.data["K"], r.data["V"], r.data["M"]
@@ -130,7 +158,7 @@ print(eom), print(K), print(V), print(M)
 ```
 
 ### 4.2 Numeric integration of the pendulum (RK4 fallback if SciPy missing)
-```python
+```runroot python
 from applied.design import DesignLibrary
 from applied.integrators import LagrangeRHS, ODESolver, IntegratorConfig
 
@@ -164,7 +192,7 @@ pytest applied/tests -q
 
 ## 7) Troubleshooting
 
-- **Graphviz render errors**: ensure the Graphviz system binaries are installed and on your PATH (in addition to the `graphviz` Python package).
+- **Graphviz render errors**: ensure the Graphviz system binaries are installed and on your PATH (in addition to the `graphviz` runroot python package).
 - **SymPy simplify mismatches in custom scripts**: avoid mixing the same‐named symbols with different assumptions (e.g., `sp.symbols("m", positive=True)` vs `sp.symbols("m")`).
 
 Happy tinkering! 🛠️
