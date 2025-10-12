@@ -5,14 +5,14 @@
 This repo is a collection of focused, test‑driven Python packages (“tools”) that replicate and extend core workflows from **Reza N. Jazar, _Theory of Applied Robotics_ (3rd ed.)**. Each package ships with a friendly **CLI**, example inputs, and a **RUNS.md** full of copy‑paste commands. No notebooks required, no proprietary stack needed.
 
 <p align="center">
-  <em>“MATLAB® is not a skill. Understanding robotics is.”</em>
+  <em>“MATLAB® is not a skill.”</em>
 </p>
 
 ---
 
 ## Why this exists
 
-- I did not have a MATLAB® license - and I do not need one.
+- I did not have a MATLAB® license - and I do not need one (and don't want one).
 - Python’s ecosystem (NumPy, SciPy, SymPy, python‑control, etc.) does everything the textbooks require — but it’s code‑heavy.
 - So I wrapped the hard parts into clean **command‑line tools** with consistent I/O, file conventions, and tests.
 - The result is a **drop‑in study companion** and **reproducible design lab** for robotics.
