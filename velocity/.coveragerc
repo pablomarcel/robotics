@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = velocity
+
+[html]
+directory = velocity/out/htmlcov
+
+[report]
+show_missing = True

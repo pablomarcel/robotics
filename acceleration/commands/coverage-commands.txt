@@ -1,0 +1,5 @@
+pytest acceleration/tests \
+  --override-ini addopts= \
+  --cov \
+  --cov-config=acceleration/.coveragerc \
+  --cov-report=term-missing

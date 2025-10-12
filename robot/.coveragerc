@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = robot
+
+[html]
+directory = robot/out/htmlcov
+
+[report]
+show_missing = True

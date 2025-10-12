@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = applied
+
+[html]
+directory = applied/out/htmlcov
+
+[report]
+show_missing = True

@@ -1,0 +1,5 @@
+pytest path/tests \
+  --override-ini addopts= \
+  --cov \
+  --cov-config=path/.coveragerc \
+  --cov-report=term-missing

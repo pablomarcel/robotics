@@ -1,0 +1,5 @@
+pytest forward/tests \
+  --override-ini addopts= \
+  --cov \
+  --cov-config=forward/.coveragerc \
+  --cov-report=term-missing

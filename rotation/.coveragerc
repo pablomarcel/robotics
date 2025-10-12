@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = rotation
+
+[html]
+directory = rotation/out/htmlcov
+
+[report]
+show_missing = True
