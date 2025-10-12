@@ -4,36 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="updated coverage files">
-      <change afterPath="$PROJECT_DIR$/acceleration/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/applied/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/intro/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/intro/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inverse/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/motion/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/motion/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orientation/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/robot/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/robot/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeopt/RUNS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/velocity/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/velocity/RUNS.md" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="started all RUNS.md commands">
+      <change afterPath="$PROJECT_DIR$/velocity/tools/lu.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applied/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/applied/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/velocity/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/velocity/RUNS.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +130,7 @@
       <workItem from="1759095089082" duration="737000" />
       <workItem from="1760230034687" duration="1238000" />
       <workItem from="1760233288201" duration="2003000" />
-      <workItem from="1760294501674" duration="3607000" />
+      <workItem from="1760294501674" duration="7296000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -493,7 +468,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760235404321</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="started all RUNS.md commands">
+      <option name="closed" value="true" />
+      <created>1760304598309</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1760304598309</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -514,7 +497,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="fixed the tests in the inverse module" />
     <MESSAGE value="implemented a server" />
     <MESSAGE value="implemented the angular kinematics module" />
     <MESSAGE value="implemented the velocity kinematics module. 9 tests failed" />
@@ -539,6 +521,7 @@
     <MESSAGE value="implemented the control techniques module. all tests pass" />
     <MESSAGE value="Created README.md and LICENSE" />
     <MESSAGE value="updated coverage files" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated coverage files" />
+    <MESSAGE value="started all RUNS.md commands" />
+    <option name="LAST_COMMIT_MESSAGE" value="started all RUNS.md commands" />
   </component>
 </project>
