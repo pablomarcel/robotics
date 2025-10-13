@@ -77,7 +77,6 @@ orjson==3.11.3
 packaging==25.0
 pathos==0.3.4
 pathspec==0.12.1
-pdgen==0.3.2
 pillow==11.3.0
 pin==3.7.0
 plantuml==0.3.0
