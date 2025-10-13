@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="upgraded cli files to allow for sphinx documentation">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="ci: publish multi-package Sphinx docs to GitHub Pages">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -132,15 +133,7 @@
       <workItem from="1760233288201" duration="2003000" />
       <workItem from="1760294501674" duration="27414000" />
       <workItem from="1760334284929" duration="31000" />
-      <workItem from="1760370402125" duration="665000" />
-    </task>
-    <task id="LOCAL-00008" summary="implemented pytests in the rotation module">
-      <option name="closed" value="true" />
-      <created>1758150288504</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1758150288504</updated>
+      <workItem from="1760370402125" duration="1695000" />
     </task>
     <task id="LOCAL-00009" summary="updated .gitignore">
       <option name="closed" value="true" />
@@ -526,7 +519,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760334133548</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="ci: publish multi-package Sphinx docs to GitHub Pages">
+      <option name="closed" value="true" />
+      <created>1760371374407</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1760371374407</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -547,7 +548,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented the applied dynamics module. 6 tests fail" />
     <MESSAGE value="implemented the applied dynamics module. 1 tests fail" />
     <MESSAGE value="implemented the applied dynamics module. all tests pass" />
     <MESSAGE value="implemented the robot module. 3 out of 3 tests passed" />
@@ -572,6 +572,7 @@
     <MESSAGE value="committed forward/docs" />
     <MESSAGE value="committed inverse/docs" />
     <MESSAGE value="upgraded cli files to allow for sphinx documentation" />
-    <option name="LAST_COMMIT_MESSAGE" value="upgraded cli files to allow for sphinx documentation" />
+    <MESSAGE value="ci: publish multi-package Sphinx docs to GitHub Pages" />
+    <option name="LAST_COMMIT_MESSAGE" value="ci: publish multi-package Sphinx docs to GitHub Pages" />
   </component>
 </project>
