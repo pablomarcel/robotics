@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="fixed forward/RUNS.md.">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="fixed control/RUNS.md. updated control/apis.py">
+      <change afterPath="$PROJECT_DIR$/timeopt/in/dummy.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/control/RUNS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/apis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/angular/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applied/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/applied/RUNS.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +53,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "develop",
-    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/control",
+    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/acceleration",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -63,11 +65,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/acceleration" />
+      <recent name="$PROJECT_DIR$/angular" />
+      <recent name="$PROJECT_DIR$/applied" />
       <recent name="$PROJECT_DIR$/control" />
       <recent name="$PROJECT_DIR$/forward" />
-      <recent name="$PROJECT_DIR$/inverse" />
-      <recent name="$PROJECT_DIR$/motion/in" />
-      <recent name="$PROJECT_DIR$/motion" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/documentation" />
@@ -130,15 +132,7 @@
       <workItem from="1759095089082" duration="737000" />
       <workItem from="1760230034687" duration="1238000" />
       <workItem from="1760233288201" duration="2003000" />
-      <workItem from="1760294501674" duration="18316000" />
-    </task>
-    <task id="LOCAL-00001" summary="implemented manipulator.py">
-      <option name="closed" value="true" />
-      <created>1758063600590</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1758063600590</updated>
+      <workItem from="1760294501674" duration="19597000" />
     </task>
     <task id="LOCAL-00002" summary="implemented mobius.py">
       <option name="closed" value="true" />
@@ -524,7 +518,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760322227244</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="fixed control/RUNS.md. updated control/apis.py">
+      <option name="closed" value="true" />
+      <created>1760323873614</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1760323873615</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -545,7 +547,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented urdf in the velocity module" />
     <MESSAGE value="implemented first cut in the acceleration module" />
     <MESSAGE value="implemented testing in the acceleration module. 16 tests failed" />
     <MESSAGE value="implemented testing in the acceleration module. 7 tests failed" />
@@ -570,6 +571,7 @@
     <MESSAGE value="fixed motion/RUNS.md. updated motion/cli.py" />
     <MESSAGE value="fixed inverse/RUNS.md." />
     <MESSAGE value="fixed forward/RUNS.md." />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed forward/RUNS.md." />
+    <MESSAGE value="fixed control/RUNS.md. updated control/apis.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed control/RUNS.md. updated control/apis.py" />
   </component>
 </project>

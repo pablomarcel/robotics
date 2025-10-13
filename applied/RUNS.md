@@ -1,19 +1,20 @@
-# Applied Dynamics — Run Commands Cheat Sheet
+# Applied Dynamics — Clean Run Commands
 
-This README collects **all the practical run commands** for the `applied` package: CLI presets, diagram tooling, and a few programmatic snippets you can copy/paste.
+This sheet lists **only** the project‑root (`runroot`) **Python** commands you’ll typically use, plus a one‑time bootstrap snippet.
 
-> Tip: All CLI examples below can be run either as `runroot python -m applied.cli ...` **or** using the module’s entry-point in the same way from your project root. Replace paths as needed.
+> All commands assume you paste the bootstrap into your shell first. Each command below is in its own code block for copy/paste.
 
-## -1) One-time session bootstrap (copy/paste once per new shell)
+---
+
+## -1) One‑time shell bootstrap (paste once per new shell)
+
 ```bash
-# --- run-from-root helpers ----------------------------------------------------
-# Find project root: prefer Git; otherwise, walk up until we see a marker file.
+# Find project root via Git or common markers
 _mc_root() {
   if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     git rev-parse --show-toplevel
     return
   fi
-  # Fallback: ascend until we find a recognizable root marker.
   local d="$PWD"
   while [ "$d" != "/" ]; do
     if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
@@ -24,175 +25,144 @@ _mc_root() {
   echo "$PWD"
 }
 
-# Run a command from the project root (without changing your current shell dir)
+# Run any command from the repo root in a subshell
 runroot() { ( cd "$(_mc_root)" && "$@" ); }
+```
 
-# Ensure out/ exists where the app expects to write
-runroot mkdir -p applied/out
-# -----------------------------------------------------------------------------
+```bash
+runroot python -c "import pathlib; (pathlib.Path('applied')/'out').mkdir(parents=True, exist_ok=True)"
 ```
 
 ---
 
-## 0) Environment setup (suggested)
+## 0) Environment setup
 
 ```bash
-# 1) Create & activate a venv (if you haven't)
-runroot python3 -m venv .venv
-source .venv/bin/activate         # on Windows: .venv\Scripts\activate
+runroot python -m venv .venv
+```
 
-# 2) Install the project (editable is handy during dev)
-pip install -e .
+```bash
+runroot python -m pip install -e .
+```
 
-# 3) (Optional) extra tools for diagram rendering
-pip install graphviz              # for 'diagram graphviz' command (renders PNG/SVG/PDF)
-# Make sure Graphviz binaries are installed on your OS if you want high-quality layouts.
+```bash
+runroot python -m pip install graphviz
 ```
 
 ---
 
 ## 1) CLI — Design presets
 
-List and instantiate ready‑made dynamic models (symbolic and numeric variants).
-
-### 1.1 List available presets
 ```bash
 runroot python -m applied.cli design --list
 ```
 
-### 1.2 Create a preset and print a short summary
 ```bash
-# symbolic
 runroot python -m applied.cli design --preset pendulum_sym
-runroot python -m applied.cli design --preset spherical_sym
-runroot python -m applied.cli design --preset planar2r_sym
-runroot python -m applied.cli design --preset absorber_sym
+```
 
-# numeric
+```bash
+runroot python -m applied.cli design --preset spherical_sym
+```
+
+```bash
+runroot python -m applied.cli design --preset planar2r_sym
+```
+
+```bash
+runroot python -m applied.cli design --preset absorber_sym
+```
+
+```bash
 runroot python -m applied.cli design --preset pendulum_num
+```
+
+```bash
 runroot python -m applied.cli design --preset planar2r_num
+```
+
+```bash
 runroot python -m applied.cli design --preset absorber_num
 ```
 
-### 1.3 Export a small JSON summary
 ```bash
 runroot python -m applied.cli design --preset planar2r_num --export applied/out/planar2r_num.json
 ```
-
-> The JSON includes the preset name, model class, and parameter fields.
 
 ---
 
 ## 2) CLI — Diagram tooling
 
-Generate DOT/PlantUML/JSON metadata for classes in the `applied` package. All subcommands accept **common options**:
-
-- `--packages`   : CSV of packages to scan (default: `applied.core,applied.dynamics,applied.models,applied.io,applied.utils,applied.app,applied.apis,applied.tools`)
-- `--outdir`     : Output directory (default: `applied/out`)
-- `--theme`      : `light` or `dark` (default: `light`)
-- `--rankdir`    : `LR` or `TB` for left‑right or top‑bottom layout (default: `LR`)
-- `--legend`     : include a legend block
-- `--no-cluster` : do not group by module
-
-### 2.1 Emit Graphviz DOT text
 ```bash
 runroot python -m applied.cli diagram dot --out applied/out/classes.dot
-# with options
-runroot python -m applied.cli diagram dot   --packages applied.core,applied.models   --outdir applied/out   --theme dark   --rankdir TB   --legend   --no-cluster   --out applied/out/classes_custom.dot
 ```
 
-### 2.2 Emit PlantUML text
+```bash
+runroot python -m applied.cli diagram dot --packages applied.core,applied.models --outdir applied/out --theme dark --rankdir TB --legend --no-cluster --out applied/out/classes_custom.dot
+```
+
 ```bash
 runroot python -m applied.cli diagram plantuml --out applied/out/classes.puml
 ```
 
-### 2.3 Export discovered model JSON (structure of classes/relations)
 ```bash
 runroot python -m applied.cli diagram json --out applied/out/classes.json
 ```
 
-### 2.4 Render via runroot python‑graphviz (PNG/SVG/PDF)
 ```bash
-# PNG with default DPI
 runroot python -m applied.cli diagram graphviz --fmt png --dpi 220 --outstem applied/out/classes
-
-# SVG
-runroot python -m applied.cli diagram graphviz --fmt svg --outstem applied/out/classes_svg
-
-# PDF, top‑bottom layout and dark theme
-runroot python -m applied.cli diagram graphviz   --fmt pdf   --dpi 260   --rankdir TB   --theme dark   --outstem applied/out/classes_pdf
 ```
 
-### 2.5 “All” at once (emit JSON, DOT, PlantUML and try Graphviz render)
+```bash
+runroot python -m applied.cli diagram graphviz --fmt svg --outstem applied/out/classes_svg
+```
+
+```bash
+runroot python -m applied.cli diagram graphviz --fmt pdf --dpi 260 --rankdir TB --theme dark --outstem applied/out/classes_pdf
+```
+
 ```bash
 runroot python -m applied.cli diagram all
-# You can still customize the common options, e.g.:
-runroot python -m applied.cli diagram all   --packages applied.core,applied.models   --outdir applied/out   --theme dark   --rankdir TB   --legend
+```
+
+```bash
+runroot python -m applied.cli diagram all --packages applied.core,applied.models --outdir applied/out --theme dark --rankdir TB --legend
 ```
 
 ---
 
-## 3) CLI — Preset aliases (smoke‑test style)
-
-For convenience and parity with tests, the CLI accepts **top‑level aliases** that behave like a quick summary of the corresponding preset (exit code 0).
+## 3) CLI — Preset aliases
 
 ```bash
 runroot python -m applied.cli pendulum
+```
+
+```bash
 runroot python -m applied.cli spherical
+```
+
+```bash
 runroot python -m applied.cli planar2r
+```
+
+```bash
 runroot python -m applied.cli absorber
 ```
 
-> These print a one‑screen summary of the model (class name, its parameters, and its q/qd).
-
 ---
 
-## 4) Programmatic usage (quick snippets)
-
-### 4.1 Derive pendulum EOM symbolically
-```runroot python
-from applied.apis import AppliedDynamicsAPI
-r = AppliedDynamicsAPI().derive_simple_pendulum()
-eom, K, V, M = r.data["EOM"], r.data["K"], r.data["V"], r.data["M"]
-print(eom), print(K), print(V), print(M)
-```
-
-### 4.2 Numeric integration of the pendulum (RK4 fallback if SciPy missing)
-```runroot python
-from applied.design import DesignLibrary
-from applied.integrators import LagrangeRHS, ODESolver, IntegratorConfig
-
-sys = DesignLibrary().create("pendulum_num")
-rhs = LagrangeRHS.from_model(sys)
-y0 = rhs.pack_state([0.1], [0.0])  # initial angle 0.1 rad, zero speed
-cfg = IntegratorConfig(t_span=(0.0, 1.0), rk4_dt=1e-3)  # SciPy used if installed
-sol = ODESolver(cfg).solve(rhs, y0)
-
-print(sol.t.shape, sol.y.shape)   # times and stacked [q; qd]
-```
-
----
-
-## 5) Testing
+## 4) Testing (pytest via Python module)
 
 ```bash
-pytest -q
-# or only the applied tests
-pytest applied/tests -q
+runroot python -m pytest -q
+```
+
+```bash
+runroot python -m pytest applied/tests -q
 ```
 
 ---
 
-## 6) Outputs
+## 5) Outputs
 
-- CLI diagrams and exports default to `applied/out/`
-- Trajectory CSVs from programmatic runs (if you call `Trajectory.to_csv`) default to `applied/out/trajectory.csv`
-
----
-
-## 7) Troubleshooting
-
-- **Graphviz render errors**: ensure the Graphviz system binaries are installed and on your PATH (in addition to the `graphviz` runroot python package).
-- **SymPy simplify mismatches in custom scripts**: avoid mixing the same‐named symbols with different assumptions (e.g., `sp.symbols("m", positive=True)` vs `sp.symbols("m")`).
-
-Happy tinkering! 🛠️
+Most commands write to `applied/out/`. Adjust paths as needed.
