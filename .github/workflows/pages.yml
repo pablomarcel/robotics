@@ -1,0 +1,117 @@
+name: Build & Publish Docs
+
+on:
+  push:
+    branches: [ main ]   # change if you use 'develop'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Sphinx + theme
+        run: |
+          python -m pip install --upgrade pip
+          pip install sphinx furo || pip install sphinx alabaster
+
+      - name: Build Sphinx for each package
+        run: |
+          set -e
+          build_if_present () {
+            PKG="$1"
+            if [ -d "$PKG/docs" ]; then
+              echo "==> Building $PKG"
+              make -C "$PKG/docs" html || sphinx-build -b html "$PKG/docs" "$PKG/docs/_build/html"
+            else
+              echo "==> Skipping $PKG (no docs)"
+            fi
+          }
+          build_if_present acceleration
+          build_if_present angular
+          build_if_present applied
+          build_if_present control
+          build_if_present forward
+          build_if_present inverse
+          build_if_present motion
+          build_if_present orientation
+          build_if_present path
+          build_if_present robot
+          build_if_present rotation
+          build_if_present timeopt
+          build_if_present velocity
+
+      - name: Assemble site folder
+        run: |
+          mkdir -p _site
+          copy_if_present () {
+            PKG="$1"
+            if [ -d "$PKG/docs/_build/html" ]; then
+              mkdir -p "_site/$PKG"
+              cp -R "$PKG/docs/_build/html/"* "_site/$PKG/"
+            fi
+          }
+          copy_if_present acceleration
+          copy_if_present angular
+          copy_if_present applied
+          copy_if_present control
+          copy_if_present forward
+          copy_if_present inverse
+          copy_if_present motion
+          copy_if_present orientation
+          copy_if_present path
+          copy_if_present robot
+          copy_if_present rotation
+          copy_if_present timeopt
+          copy_if_present velocity
+
+          cat > _site/index.html <<'HTML'
+          <!doctype html><meta charset="utf-8">
+          <title>Robotics Docs</title>
+          <h1>Robotics Docs</h1>
+          <ul>
+            <li><a href="acceleration/">acceleration</a></li>
+            <li><a href="angular/">angular</a></li>
+            <li><a href="applied/">applied</a></li>
+            <li><a href="control/">control</a></li>
+            <li><a href="forward/">forward</a></li>
+            <li><a href="inverse/">inverse</a></li>
+            <li><a href="motion/">motion</a></li>
+            <li><a href="orientation/">orientation</a></li>
+            <li><a href="path/">path</a></li>
+            <li><a href="robot/">robot</a></li>
+            <li><a href="rotation/">rotation</a></li>
+            <li><a href="timeopt/">timeopt</a></li>
+            <li><a href="velocity/">velocity</a></li>
+          </ul>
+          HTML
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
