@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="updated requirements.txt" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="committed docs files">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -130,15 +133,7 @@
       <workItem from="1760233288201" duration="2003000" />
       <workItem from="1760294501674" duration="27414000" />
       <workItem from="1760334284929" duration="31000" />
-      <workItem from="1760370402125" duration="2868000" />
-    </task>
-    <task id="LOCAL-00011" summary="implemented the orientation module">
-      <option name="closed" value="true" />
-      <created>1758237359254</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1758237359254</updated>
+      <workItem from="1760370402125" duration="4022000" />
     </task>
     <task id="LOCAL-00012" summary="implemented the orientation module">
       <option name="closed" value="true" />
@@ -524,7 +519,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760374333813</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="committed docs files">
+      <option name="closed" value="true" />
+      <created>1760375050831</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1760375050831</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -545,7 +548,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented the applied dynamics module. all tests pass" />
     <MESSAGE value="implemented the robot module. 3 out of 3 tests passed" />
     <MESSAGE value="first take of the path module" />
     <MESSAGE value="all tests pass in the path module" />
@@ -570,6 +572,7 @@
     <MESSAGE value="ci: publish multi-package Sphinx docs to GitHub Pages" />
     <MESSAGE value="updated pages.yml" />
     <MESSAGE value="updated requirements.txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated requirements.txt" />
+    <MESSAGE value="committed docs files" />
+    <option name="LAST_COMMIT_MESSAGE" value="committed docs files" />
   </component>
 </project>
