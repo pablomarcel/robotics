@@ -4,10 +4,52 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="fixed a bunch of RUNS.md files">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="committed acceleration/docs">
+      <change afterPath="$PROJECT_DIR$/forward/docs/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/.buildinfo" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/.doctrees/api.doctree" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/.doctrees/environment.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/.doctrees/index.doctree" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/app.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/core.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/design.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/io.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/utils.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_sources/api.rst.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_sources/index.rst.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/basic.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/debug.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/doctools.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/documentation_options.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/file.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/language_data.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/minus.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/plus.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/pygments.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/scripts/furo-extensions.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/scripts/furo.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/scripts/furo.js.LICENSE.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/scripts/furo.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/searchtools.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/skeleton.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/sphinx_highlight.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/styles/furo-extensions.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/styles/furo-extensions.css.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/styles/furo.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/styles/furo.css.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/api.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/genindex.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/objects.inv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/py-modindex.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/search.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/searchindex.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/api.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/conf.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward/docs/index.rst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -132,23 +174,7 @@
       <workItem from="1759095089082" duration="737000" />
       <workItem from="1760230034687" duration="1238000" />
       <workItem from="1760233288201" duration="2003000" />
-      <workItem from="1760294501674" duration="20820000" />
-    </task>
-    <task id="LOCAL-00003" summary="implemented mobius.py">
-      <option name="closed" value="true" />
-      <created>1758067073543</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1758067073543</updated>
-    </task>
-    <task id="LOCAL-00004" summary="implemented mobius.py and manipulators.py">
-      <option name="closed" value="true" />
-      <created>1758069426045</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1758069426045</updated>
+      <workItem from="1760294501674" duration="21780000" />
     </task>
     <task id="LOCAL-00005" summary="implemented kinematics.py">
       <option name="closed" value="true" />
@@ -526,7 +552,23 @@
       <option name="project" value="LOCAL" />
       <updated>1760325319228</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="updated requirements.txt">
+      <option name="closed" value="true" />
+      <created>1760327194718</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1760327194718</updated>
+    </task>
+    <task id="LOCAL-00053" summary="committed acceleration/docs">
+      <option name="closed" value="true" />
+      <created>1760327348188</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1760327348188</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -547,8 +589,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented testing in the acceleration module. 16 tests failed" />
-    <MESSAGE value="implemented testing in the acceleration module. 7 tests failed" />
     <MESSAGE value="unable to fix the testing in the acceleration module" />
     <MESSAGE value="fixed all but 1 tests in the acceleration module" />
     <MESSAGE value="fixed all tests in the acceleration module, cheated by reducing precision in atol" />
@@ -572,6 +612,8 @@
     <MESSAGE value="fixed forward/RUNS.md." />
     <MESSAGE value="fixed control/RUNS.md. updated control/apis.py" />
     <MESSAGE value="fixed a bunch of RUNS.md files" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed a bunch of RUNS.md files" />
+    <MESSAGE value="updated requirements.txt" />
+    <MESSAGE value="committed acceleration/docs" />
+    <option name="LAST_COMMIT_MESSAGE" value="committed acceleration/docs" />
   </component>
 </project>
