@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="fixed control/RUNS.md. updated control/apis.py">
-      <change afterPath="$PROJECT_DIR$/timeopt/in/dummy.json" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="fixed a bunch of RUNS.md files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acceleration/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration/RUNS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/angular/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/angular/RUNS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applied/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/applied/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/documentation/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,6 +70,8 @@
       <recent name="$PROJECT_DIR$/forward" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/inverse" />
+      <recent name="$PROJECT_DIR$/forward" />
       <recent name="$PROJECT_DIR$/documentation" />
       <recent name="$PROJECT_DIR$/acceleration/commands" />
       <recent name="$PROJECT_DIR$/intro/prompts" />
@@ -132,15 +132,7 @@
       <workItem from="1759095089082" duration="737000" />
       <workItem from="1760230034687" duration="1238000" />
       <workItem from="1760233288201" duration="2003000" />
-      <workItem from="1760294501674" duration="19597000" />
-    </task>
-    <task id="LOCAL-00002" summary="implemented mobius.py">
-      <option name="closed" value="true" />
-      <created>1758066399399</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1758066399399</updated>
+      <workItem from="1760294501674" duration="20820000" />
     </task>
     <task id="LOCAL-00003" summary="implemented mobius.py">
       <option name="closed" value="true" />
@@ -526,7 +518,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760323873615</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="fixed a bunch of RUNS.md files">
+      <option name="closed" value="true" />
+      <created>1760325319228</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1760325319228</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -547,7 +547,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented first cut in the acceleration module" />
     <MESSAGE value="implemented testing in the acceleration module. 16 tests failed" />
     <MESSAGE value="implemented testing in the acceleration module. 7 tests failed" />
     <MESSAGE value="unable to fix the testing in the acceleration module" />
@@ -572,6 +571,7 @@
     <MESSAGE value="fixed inverse/RUNS.md." />
     <MESSAGE value="fixed forward/RUNS.md." />
     <MESSAGE value="fixed control/RUNS.md. updated control/apis.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed control/RUNS.md. updated control/apis.py" />
+    <MESSAGE value="fixed a bunch of RUNS.md files" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed a bunch of RUNS.md files" />
   </component>
 </project>
