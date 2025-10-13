@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="fixed inverse/RUNS.md.">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="fixed forward/RUNS.md.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forward/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/forward/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/control/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/apis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +51,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "develop",
-    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/forward",
+    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/control",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -62,11 +63,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/control" />
       <recent name="$PROJECT_DIR$/forward" />
       <recent name="$PROJECT_DIR$/inverse" />
       <recent name="$PROJECT_DIR$/motion/in" />
       <recent name="$PROJECT_DIR$/motion" />
-      <recent name="$PROJECT_DIR$/acceleration" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/documentation" />
@@ -129,7 +130,7 @@
       <workItem from="1759095089082" duration="737000" />
       <workItem from="1760230034687" duration="1238000" />
       <workItem from="1760233288201" duration="2003000" />
-      <workItem from="1760294501674" duration="17019000" />
+      <workItem from="1760294501674" duration="18316000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -515,7 +516,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760320948388</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="fixed forward/RUNS.md.">
+      <option name="closed" value="true" />
+      <created>1760322227244</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1760322227244</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -536,7 +545,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented class diagrams in the velocity module" />
     <MESSAGE value="implemented urdf in the velocity module" />
     <MESSAGE value="implemented first cut in the acceleration module" />
     <MESSAGE value="implemented testing in the acceleration module. 16 tests failed" />
@@ -561,6 +569,7 @@
     <MESSAGE value="kind of fixed run commands" />
     <MESSAGE value="fixed motion/RUNS.md. updated motion/cli.py" />
     <MESSAGE value="fixed inverse/RUNS.md." />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed inverse/RUNS.md." />
+    <MESSAGE value="fixed forward/RUNS.md." />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed forward/RUNS.md." />
   </component>
 </project>
