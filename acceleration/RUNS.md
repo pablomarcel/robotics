@@ -1,8 +1,13 @@
-# Robotics Project — Run Commands (Full & Exhaustive)
+# RUNS.md — App Run Commands (clean & focused)
 
-This README lists **ready-to-copy** commands for the most common developer tasks: environment setup, test runs, coverage, formatting, linting, type checking, packaging, and CLI usage. Commands are grouped and include variants (quiet/verbose, single-test, parallel, etc.).
+This document lists **only** the commands you need to **run the app** from repository root.
+We intentionally exclude all test/pytest commands (those live elsewhere).
 
-> Target runroot python: **3.11** (per test logs). Replace `runroot python` with `runroot python3` if your system needs it.
+Target interpreter: **Python 3.11**.
+
+> Tip: The helper `runroot` lets you run a command from the project root without changing your shell’s cwd.
+
+---
 
 ## -1) One-time session bootstrap (copy/paste once per new shell)
 ```bash
@@ -34,252 +39,143 @@ runroot mkdir -p acceleration/out
 
 ---
 
-## 1) Create & activate a virtual environment
+## 0) Verify environment & install the package
 
-### macOS / Linux (bash / zsh)
-
+**Show Python version**
 ```bash
-runroot python -m venv .venv
-source .venv/bin/activate
+runroot python --version
+```
+
+**Upgrade base tooling**
+```bash
 runroot python -m pip install --upgrade pip setuptools wheel
 ```
 
-### Windows (PowerShell)
+**Editable install of the package**
+```bash
+runroot python -m pip install -e .
+```
 
-```powershell
-runroot python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-runroot python -m pip install --upgrade pip setuptools wheel
+**(Optional) Install from requirements file (if present)**
+```bash
+runroot python -m pip install -r requirements.txt
+```
+
+**Ensure the output directory exists (Python one-liner)**
+```bash
+runroot python -c "import pathlib; pathlib.Path('acceleration/out').mkdir(parents=True, exist_ok=True)"
+```
+
+> Note: If you use a virtual environment, activate it in your shell as usual
+> (e.g., `source .venv/bin/activate` on Unix/macOS) before running the commands above.
+
+---
+
+## 1) CLI usage via module runner (works regardless of console-script name)
+
+**Show CLI help**
+```bash
+runroot python -m acceleration.cli --help
+```
+
+**Show help for a subcommand (example: `diagram`)**
+```bash
+runroot python -m acceleration.cli diagram --help
+```
+
+**Generate a Mermaid diagram (example path)**
+```bash
+runroot python -m acceleration.cli diagram --output acceleration/out/diagram.mmd
 ```
 
 ---
 
-## 2) Install dependencies
+## 2) Discover installed console scripts (if any)
 
-> Use one of the following patterns depending on what the repo provides.
-
-### a) Editable install with dev extras (preferred if available)
-
+**List console scripts exposed by the installed package**
 ```bash
-pip install -e ".[dev]"
-```
-
-### b) Requirements files
-
-```bash
-pip install -r requirements.txt
-# Optional dev/test tools (if provided)
-pip install -r requirements-dev.txt
-```
-
-### c) Minimal install (if no extras/requirements are present)
-
-```bash
-pip install pytest pytest-sugar pytest-xdist anyio pytest-cov
+runroot python -c "import importlib.metadata as m; print('\n'.join(ep.name for ep in m.entry_points().select(group='console_scripts')))"
 ```
 
 ---
 
-## 3) Run the test suite
+## 3) Quick library sanity checks
 
-### Full test run (matching your logs)
-
+**Compute a rotation matrix from ZYX Euler angles**
 ```bash
-pytest acceleration/tests
+runroot python - <<'PY'
+from acceleration.tools.euler import euler_matrix
+R = euler_matrix('ZYX', [0.1, 0.2, 0.3])
+print(R)
+PY
 ```
 
-### Quiet output (just dots / minimal)
-
+**Map ZYX Euler rates to angular velocity**
 ```bash
-pytest acceleration/tests -q
+runroot python - <<'PY'
+import numpy as np
+from acceleration.tools.euler import euler_rates_matrix
+E = euler_rates_matrix('ZYX', [0.1, 0.2, 0.3])
+qd = np.array([0.01, 0.02, -0.03])
+print('omega =', E @ qd)
+PY
 ```
 
-### Verbose output
-
+**Compute classic rigid-body acceleration for a point offset**
 ```bash
-pytest acceleration/tests -vv
-```
-
-### Filter by keyword (only tests with "euler_quat")
-
-```bash
-pytest acceleration/tests -k euler_quat -vv
-```
-
-### Run a single test file
-
-```bash
-pytest acceleration/tests/test_classic_accel.py -vv
-```
-
-### Run a single test (node id)
-
-```bash
-pytest acceleration/tests/test_classic_accel.py::test_accel_from_euler_derivatives_in_inertial_frame -vv
-```
-
-### Stop after first failure
-
-```bash
-pytest acceleration/tests -x
-```
-
-### Re-run last failures only
-
-```bash
-pytest acceleration/tests --last-failed -vv
-```
-
-### Show durations (slowest tests)
-
-```bash
-pytest acceleration/tests --durations=10 -vv
-```
-
-### Run in parallel (auto detect cores)
-
-```bash
-pytest acceleration/tests -n auto
+runroot python - <<'PY'
+import numpy as np
+from acceleration.utils import classic_accel
+alpha = np.array([0.1, -0.2, 0.3])
+omega = np.array([1.0, 0.5, -0.4])
+r     = np.array([0.2, -0.1, 0.05])
+print('a =', classic_accel(alpha, omega, r))
+PY
 ```
 
 ---
 
-## 4) Coverage
+## 4) Packaging (optional)
 
-### Quick coverage over the whole suite
-
+**Install build backend**
 ```bash
-pytest acceleration/tests --cov=acceleration --cov-report=term-missing -vv
+runroot python -m pip install build
 ```
 
-### Generate HTML coverage report
-
+**Build wheel and sdist**
 ```bash
-pytest acceleration/tests --cov=acceleration --cov-report=html -vv
-# Then open:
-runroot python -c "import webbrowser, pathlib; webbrowser.open_new_tab(pathlib.Path('htmlcov/index.html').resolve().as_uri())"
-```
-
----
-
-## 5) Code formatting & linting
-
-> Use whichever tools your repo includes. The commands below are standard.
-
-### Black (format)
-
-```bash
-black .
-```
-
-### Black (check only, no changes)
-
-```bash
-black --check .
-```
-
-### Ruff (lint + fixes)
-
-```bash
-ruff check .
-ruff check . --fix
-```
-
-### Flake8 (lint)
-
-```bash
-flake8 .
-```
-
-### isort (imports)
-
-```bash
-isort .
-```
-
----
-
-## 6) Type checking
-
-```bash
-mypy .
-```
-
-> If your repo ships a `pyproject.toml` or `mypy.ini`, mypy will pick up configuration automatically.
-
----
-
-## 7) Packaging (build wheels / source dists)
-
-```bash
-pip install build
 runroot python -m build
 ```
 
-Artifacts will appear under `dist/` as `*.whl` (wheel) and `*.tar.gz` (sdist).
-
----
-
-## 8) CLI usage
-
-The tests indicate there is a CLI that responds to `--help` and can render a Mermaid diagram. Depending on how the package is installed, one of these should work:
-
-### a) Installed entry point (replace `accel` with your actual console name if different)
-
+**Print absolute path to the `dist/` folder**
 ```bash
-accel --help
-accel diagram --help        # if a diagram subcommand exists
-```
-
-### b) runroot python module runner (fallback when unsure of entry point name)
-
-```bash
-runroot python -m acceleration.cli --help
-runroot python -m acceleration.cli diagram --help   # if applicable
-```
-
-> If neither form is recognized, list installed console scripts to discover the exact name:
->
-> ```bash
-> runroot python -c "import sys,importlib.metadata as m; print('\n'.join(ep.name for ep in m.entry_points().select(group='console_scripts')))"
-> ```
-
----
-
-## 9) Style & quality in one go (if pre-commit is configured)
-
-```bash
-pip install pre-commit
-pre-commit install
-pre-commit run --all-files
+runroot python - <<'PY'
+from pathlib import Path; print(Path('dist').resolve())
+PY
 ```
 
 ---
 
-## 10) Misc. developer conveniences
+## 5) Troubleshooting quick checks
 
-### Run a specific subset repeatedly while editing
-
+**Show where the package is imported from**
 ```bash
-ptw acceleration/tests -k euler_quat  # requires pytest-watch
+runroot python - <<'PY'
+import acceleration, inspect, os
+print(os.path.dirname(inspect.getfile(acceleration)))
+PY
 ```
 
-### Pin exact tool versions used locally
-
+**Print environment details (Python, NumPy, platform)**
 ```bash
-pip freeze > requirements-lock.txt
+runroot python - <<'PY'
+import platform, sys
+print('Python:', sys.version)
+print('Platform:', platform.platform())
+try:
+    import numpy as np
+    print('NumPy:', np.__version__)
+except Exception as e:
+    print('NumPy: not installed', e)
+PY
 ```
-
----
-
-## 11) Common troubleshooting
-
-- **Wrong runroot python**: Ensure `runroot python --version` shows 3.11.x.
-- **vENV not active**: If installing packages fails or tests import the wrong modules, re-activate the venv.
-- **Entry point not found**: Try `runroot python -m acceleration.cli --help`.
-- **macOS Gatekeeper / permissions**: If scripts aren’t executable, try `chmod +x .venv/bin/*` (Unix) or re-create the venv.
-- **NumPy/BLAS mismatch**: If you hit segfaults on Apple Silicon, try `pip install --no-binary=:all: numpy` or use a compatible wheel.
-
----
-
-Happy hacking! 🚀
