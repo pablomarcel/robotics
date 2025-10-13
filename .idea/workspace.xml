@@ -4,13 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="kind of &quot;batch&quot; fixed run commands">
-      <change afterPath="$PROJECT_DIR$/rotation/in/R.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation/in/basis.csv" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="kind of fixed run commands">
+      <change afterPath="$PROJECT_DIR$/motion/in/dh_table.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/in/job.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/in/my_dh.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/motion/in/points.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/orientation/in/matrix_I.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/orientation/in/matrix_example.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/robot/RUNS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rotation/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/rotation/RUNS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/timeopt/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/motion/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/motion/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/motion/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/motion/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orientation/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/orientation/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/path/RUNS.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +59,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "develop",
-    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/acceleration",
+    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/motion/in",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -66,11 +71,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/motion/in" />
+      <recent name="$PROJECT_DIR$/motion" />
       <recent name="$PROJECT_DIR$/acceleration" />
       <recent name="$PROJECT_DIR$/angular" />
       <recent name="$PROJECT_DIR$/applied" />
-      <recent name="$PROJECT_DIR$/forward" />
-      <recent name="$PROJECT_DIR$/orientation" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/acceleration/commands" />
@@ -132,7 +137,7 @@
       <workItem from="1759095089082" duration="737000" />
       <workItem from="1760230034687" duration="1238000" />
       <workItem from="1760233288201" duration="2003000" />
-      <workItem from="1760294501674" duration="10298000" />
+      <workItem from="1760294501674" duration="13996000" />
     </task>
     <task id="LOCAL-00001" summary="implemented manipulator.py">
       <option name="closed" value="true" />
@@ -494,7 +499,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760310123420</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="kind of fixed run commands">
+      <option name="closed" value="true" />
+      <created>1760312136505</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1760312136505</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -515,7 +528,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented the velocity kinematics module. 9 tests failed" />
     <MESSAGE value="fixed all tests but 1 in the velocity module" />
     <MESSAGE value="fixed all tests in the velocity module" />
     <MESSAGE value="implemented class diagrams in the velocity module" />
@@ -540,6 +552,7 @@
     <MESSAGE value="started all RUNS.md commands" />
     <MESSAGE value="finish velocity/RUNS.md" />
     <MESSAGE value="kind of &quot;batch&quot; fixed run commands" />
-    <option name="LAST_COMMIT_MESSAGE" value="kind of &quot;batch&quot; fixed run commands" />
+    <MESSAGE value="kind of fixed run commands" />
+    <option name="LAST_COMMIT_MESSAGE" value="kind of fixed run commands" />
   </component>
 </project>

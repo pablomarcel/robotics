@@ -1,37 +1,19 @@
-# Robotics Motion Toolkit — Run Commands Cheat Sheet
+# Robotics Motion Toolkit — **Run Commands (Fixed & Minimal)**
 
-This README collects **all practical run commands** for this project, grouped by task.
-It favors copy‑pasteable snippets and notes optional tools (Graphviz/pyreverse)
-that may be unavailable locally.
+This doc lists commands that match the current CLI exactly.  
+Every Python command is prefixed with `runroot` and **each command is in its own bash block**.
 
-> Project layout (key files):
->
-> ```
-> motion/
->   app.py
->   apis.py
->   cli.py
->   core.py
->   design.py
->   io.py
->   utils.py
->   tools/
->     diagram.py
->   in/        # inputs
->   out/       # outputs
->   tests/     # pytest suite
-> ```
+---
 
-## -1) One-time session bootstrap (copy/paste once per new shell)
+## -1) One-time session bootstrap
+
 ```bash
 # --- run-from-root helpers ----------------------------------------------------
-# Find project root: prefer Git; otherwise, walk up until we see a marker file.
 _mc_root() {
   if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     git rev-parse --show-toplevel
     return
   fi
-  # Fallback: ascend until we find a recognizable root marker.
   local d="$PWD"
   while [ "$d" != "/" ]; do
     if [ -d "$d/.git" ] || [ -f "$d/pytest.ini" ] || [ -f "$d/pyproject.toml" ]; then
@@ -41,261 +23,206 @@ _mc_root() {
   done
   echo "$PWD"
 }
-
-# Run a command from the project root (without changing your current shell dir)
 runroot() { ( cd "$(_mc_root)" && "$@" ); }
-
-# Ensure out/ exists where the app expects to write
-runroot mkdir -p motion/out
+runroot mkdir -p motion/out motion/in
 # -----------------------------------------------------------------------------
 ```
 
 ---
 
-## 0) Setup
+## 0) Environment
 
-### Create & activate a virtual environment
 ```bash
 runroot python3 -m venv .venv
-source .venv/bin/activate     # Windows: .venv\Scripts\activate
+```
+
+```bash
+source .venv/bin/activate
+```
+
+```bash
 runroot python -m pip install --upgrade pip
 ```
 
-### Install runroot python dependencies
 ```bash
-pip install numpy pytest pytest-sugar pytest-cov
-# Optional backends (only if you want them):
-pip install graphviz           # runroot python bindings (still needs 'dot' executable to render)
-pip install pylint             # Provides 'pyreverse'
+runroot pip install numpy pytest pytest-sugar pytest-cov
 ```
 
-### (Optional) Make the package importable during development
 ```bash
-export runroot pythonPATH="$PWD"
-# Windows PowerShell: $env:runroot pythonPATH="$PWD"
+# Optional backends:
+runroot pip install graphviz
 ```
 
----
-
-## 1) Running the Test Suite (TDD)
-
-### Run all tests
 ```bash
-pytest motion/tests -q
-```
-
-### Run a single test file
-```bash
-pytest motion/tests/test_rotation.py -q
-```
-
-### Run a specific test function
-```bash
-pytest motion/tests/test_se3_inverse.py -k test_apply_point_and_apply_points -q
-```
-
-### Show coverage
-```bash
-pytest motion/tests --cov=motion --cov-report=term-missing
-```
-
-### Typical quick filters
-```bash
-# Only utils:
-pytest motion/tests/test_utils.py -q
-# Only geometry core:
-pytest motion/tests/test_*se3*.py -q
+# Optional backends:
+runroot pip install pylint
 ```
 
 ---
 
-## 2) Command Line Interface (CLI)
+## 1) Tests
 
-All CLI entry points assume the current directory is the project root.
+```bash
+runroot pytest motion/tests -q
+```
 
-### Show CLI help
+```bash
+runroot pytest motion/tests/test_rotation.py -q
+```
+
+```bash
+runroot pytest motion/tests/test_se3_inverse.py -k test_apply_point_and_apply_points -q
+```
+
+```bash
+runroot pytest motion/tests --cov=motion --cov-report=term-missing
+```
+
+---
+
+## 2) CLI (available commands)
+
 ```bash
 runroot python -m motion.cli --help
 ```
 
-> Each subcommand also provides help, e.g.:
+> Subcommands: `rotation | screw | plucker | lines | plane-dist | fk | run`
+
+### rotation
+
 ```bash
-runroot python -m motion.cli se3 --help
-runroot python -m motion.cli rotation --help
-runroot python -m motion.cli screw --help
-runroot python -m motion.cli plucker --help
-runroot python -m motion.cli plane --help
-runroot python -m motion.cli dh --help
+runroot python -m motion.cli rotation --axis 0,0,1 --angle 1.57079632679
 ```
 
-### Rotation examples
 ```bash
-# Build R from axis-angle (axis=0,0,1; phi=1.5708 rad) and print the 3x3:
-runroot python -m motion.cli rotation axis-angle --axis 0 0 1 --phi 1.57079632679
-
-# Canonical rotations:
-runroot python -m motion.cli rotation rz --theta 1.2
-runroot python -m motion.cli rotation rx --theta 0.5
-runroot python -m motion.cli rotation ry --theta -0.7
+runroot python -m motion.cli rotation --axis 0,0,1 --angle 90 --degrees
 ```
 
-### SE(3) examples
-```bash
-# Build SE3 from Rz(90deg) and t=[1,2,3], print 4x4 and apply to a point
-runroot python -m motion.cli se3 from-rz --theta 1.57079632679 --t 1 2 3
-runroot python -m motion.cli se3 apply --T "[[0,-1,0,1],[1,0,0,2],[0,0,1,3],[0,0,0,1]]" --p 1 0 0
+### screw
 
-# Inverse and compose
-runroot python -m motion.cli se3 inverse --T "[[0,-1,0,1],[1,0,0,2],[0,0,1,3],[0,0,0,1]]"
-runroot python -m motion.cli se3 compose --A "<4x4 json>" --B "<4x4 json>"
+```bash
+runroot python -m motion.cli screw --axis 0,0,1 --s 0,0,0 --pitch 0.5 --phi 1.57079632679
 ```
 
-### Screw motion examples
 ```bash
-# Screw with axis u=(0,0,1), point s=(0,0,0), pitch h=0.5, angle phi=pi/2
-runroot python -m motion.cli screw to-matrix --u 0 0 1 --s 0 0 0 --h 0.5 --phi 1.57079632679
+runroot python -m motion.cli screw --axis 0,0,1 --s 0,0,0 --pitch 0.5 --phi 90 --degrees
 ```
 
-### Plücker line examples
+### plucker
+
 ```bash
-# Build two lines from points, compute angle & distance
-runroot python -m motion.cli plucker angle-distance --p1 0 0 0 --p2 1 0 0 --q1 0 1 1 --q2 0 2 3
-# Transform a line by SE(3)
-runroot python -m motion.cli plucker transform --p1 0 0 0 --p2 1 0 0 --T "[[1,0,0,0.5],[0,1,0,-0.2],[0,0,1,0.3],[0,0,0,1]]"
+runroot python -m motion.cli plucker --p1 0,0,0 --p2 1,0,0
 ```
 
-### Plane examples
+### lines
+
 ```bash
-# Plane through point (0,0,1) with normal (0,0,1), distance of p=(0,0,2)
-runroot python -m motion.cli plane distance --point 0 0 1 --normal 0 0 1 --p 0 0 2
+runroot python -m motion.cli lines --a1 0,0,0 --a2 1,0,0 --b1 0,1,1 --b2 0,2,3
 ```
 
-### DH forward kinematics
+### plane-dist
+
 ```bash
-# Provide a small DH table (rows of a alpha d theta); prints final SE(3)
-runroot python -m motion.cli dh fk --csv motion/in/my_dh.csv
-# Or inline JSON:
-runroot python -m motion.cli dh fk --json "[[0.1, 0.0, 0.2, 0.0],[0.3, 1.5707963, 0.0, 0.5]]"
+runroot python -m motion.cli plane-dist --point 0,0,1 --normal 0,0,1 --s 0
 ```
 
-> All CLI commands accept `--out` flags when applicable to save artifacts under `motion/out`.
+```bash
+runroot python -m motion.cli plane-dist --point 0,0,1 --normal 0,0,1 --s 0 --unsigned
+```
 
----
+### fk
 
-## 3) I/O Helpers
+```bash
+runroot python -m motion.cli fk --dh 0.1,0.0,0.2,0.0 --dh 0.3,1.5707963,0.0,0.5
+```
 
-The `IO` service centralizes atomic read/write under `motion/in` and `motion/out`.
+### run (file-driven)
 
-### Quick usage (runroot python REPL or script)
-```runroot python
-from motion.io import IO
-import numpy as np
-
-io = IO()
-T = np.eye(4)
-io.save_transform(T, "pose_A")         # writes motion/out/pose_A.npy and .json
-P = np.array([[0,0,0],[1,0,0],[0,1,0]])
-io.save_points_csv(P, "cloud.csv")     # writes motion/out/cloud.csv
-loaded = io.load_points_csv("cloud.csv")  # reads from motion/in by default
+```bash
+runroot python -m motion.cli run --file motion/in/job.json
 ```
 
 ---
 
-## 4) Diagram Generation (no system Graphviz required)
+## 3) IO service (example)
 
-### Discover & JSON model
-```bash
-runroot python -m motion.tools.diagram discover --package motion
-runroot python -m motion.tools.diagram json --out motion/out/classes.json
-```
-
-### PlantUML & Mermaid sources
-```bash
-runroot python -m motion.tools.diagram plantuml --out motion/out/classes.puml
-runroot python -m motion.tools.diagram mermaid  --out motion/out/classes.mmd
-```
-
-### Render-all convenience (skips where unavailable)
-```bash
-runroot python -m motion.tools.diagram all
-# Produces: JSON, PlantUML, Mermaid; attempts Graphviz/pyreverse if available.
-```
-
-> **Note:** If `dot` (Graphviz CLI) is not installed, Graphviz PNG/SVG rendering will be skipped.
-> If `pyreverse` is not available or fails, it will be skipped as well.
-
-#### Optional: Render Mermaid to PNG (no Graphviz)
-- Using Dockerized Mermaid CLI:
-```bash
-docker run --rm -v "$PWD":/work -w /work minlag/mermaid-cli   mmdc -i motion/out/classes.mmd -o motion/out/classes.png
-```
-
-- Using Node (if available):
-```bash
-npm -g install @mermaid-js/mermaid-cli
-mmdc -i motion/out/classes.mmd -o motion/out/classes.png
-```
-
-#### Optional: Render PlantUML
-- Via a PlantUML server (upload `motion/out/classes.puml`).
-- Or Docker:
-```bash
-docker run --rm -v "$PWD":/work -w /work plantuml/plantuml   -tpng motion/out/classes.puml
-```
-
----
-
-## 5) Examples: End-to-End CLI runs
-
-### Compute angle & distance between skew lines and save to JSON
-```bash
-runroot python -m motion.cli plucker angle-distance   --p1 0 0 0 --p2 1 0 0   --q1 0 1 1 --q2 0 2 3   --out motion/out/plucker_result.json
-```
-
-### Build a screw transform and apply it to points loaded from CSV
-```bash
-# points in: motion/in/points.csv  (Nx3, no header)
-runroot python -m motion.cli screw to-matrix --u 0 0 1 --s 0 0 0 --h 0.2 --phi 1.0 --out motion/out/screw_T.json
-runroot python -m motion.cli se3 apply-points   --T motion/out/screw_T.json   --points motion/in/points.csv   --out motion/out/points_transformed.csv
-```
-
-### DH forward kinematics from CSV
-```bash
-runroot python -m motion.cli dh fk --csv motion/in/dh_table.csv --out motion/out/fk_T.json
-```
-
----
-
-## 6) Troubleshooting & Tips
-
-- **Import errors**: ensure `export runroot pythonPATH="$PWD"` (or install as a package).
-- **Graphviz errors**: runroot python `graphviz` package alone is not enough; `dot` must be on PATH to render. If not available, prefer Mermaid/PlantUML commands above.
-- **pyreverse issues**: Provided by `pylint`. If present but failing, use the `diagram all` command; it will continue with other outputs.
-
----
-
-## 7) Useful One-Liners
-
-```bash
-# List input/output files
-ls -1 motion/in
-ls -1 motion/out
-
-# Clean outputs
-rm -rf motion/out/*
-
-# Run only geometry tests, verbose
-pytest motion/tests -k "plucker or se3 or rotation" -vv
-```
-
----
-
-## 8) Version
-
-This toolkit follows semantic-ish versioning reported by:
 ```bash
 runroot python - <<'PY'
-from motion.utils import version_string
-print(version_string())
+from motion.io import IO
+import numpy as np
+io = IO()
+T = np.eye(4)
+io.save_transform(T, "pose_A")
+print("Wrote motion/out/pose_A.json")
 PY
+```
+
+---
+
+## 4) Diagrams (skip backends if unavailable)
+
+```bash
+runroot python -m motion.tools.diagram discover --package motion
+```
+
+```bash
+runroot python -m motion.tools.diagram json --out classes.json
+```
+
+```bash
+runroot python -m motion.tools.diagram plantuml --out classes.puml
+```
+
+```bash
+runroot python -m motion.tools.diagram mermaid --out classes.mmd
+```
+
+```bash
+runroot python -m motion.tools.diagram all
+```
+
+### Optional rendering (no system Graphviz required)
+
+```bash
+docker run --rm -v "$PWD":/work -w /work minlag/mermaid-cli mmdc -i motion/out/classes.mmd -o motion/out/classes.png
+```
+
+```bash
+docker run --rm -v "$PWD":/work -w /work plantuml/plantuml -tpng motion/out/classes.puml
+```
+
+---
+
+## 5) End-to-end (sample inputs assumed under motion/in)
+
+```bash
+runroot python -m motion.cli screw --axis 0,0,1 --s 0,0,0 --pitch 0.2 --phi 1.0 --out motion/out/screw_T.json
+```
+
+```bash
+runroot python -m motion.cli lines --a1 0,0,0 --a2 1,0,0 --b1 0,1,1 --b2 0,2,3 --out motion/out/plucker_result.json
+```
+
+```bash
+runroot python -m motion.cli fk --dh 0.1,0.0,0.2,0.0 --dh 0.3,1.5707963,0.0,0.5 --out motion/out/fk_T.json
+```
+
+```bash
+runroot python -m motion.cli run --file motion/in/job.json --out motion/out/job_result.json
+```
+
+---
+
+## 6) Cleanups
+
+```bash
+runroot rm -rf motion/out/*
+```
+
+```bash
+runroot ls -1 motion/in
+```
+
+```bash
+runroot ls -1 motion/out
 ```

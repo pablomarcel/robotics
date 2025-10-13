@@ -40,6 +40,9 @@ runroot mkdir -p orientation/out
 ```bash
 # help
 runroot python -m orientation.cli -h
+```
+
+```bash
 runroot python -m orientation.cli matrix-from-axis -h
 ```
 
@@ -50,6 +53,9 @@ runroot python -m orientation.cli matrix-from-axis -h
 ### 1) Axis–angle → matrix
 ```bash
 runroot python -m orientation.cli matrix-from-axis --axis 0 0 1 --phi 1.57079632679
+```
+
+```bash
 runroot python -m orientation.cli matrix-from-axis --axis 1 0 0 --phi 0.3 --save R_x.csv
 ```
 
@@ -81,12 +87,18 @@ runroot python -m orientation.cli matrix-to-rodrigues --matrix 1 0 0  0 1 0  0 0
 ### 7) Euler angles → matrix (order configurable)
 ```bash
 runroot python -m orientation.cli euler-to-matrix --angles 0.3 0.2 0.1 --order ZYX
+```
+
+```bash
 runroot python -m orientation.cli euler-to-matrix --angles 10 5 2 --order XYZ --deg --save R_eul.csv
 ```
 
 ### 8) Matrix → Euler angles
 ```bash
 runroot python -m orientation.cli matrix-to-euler --matrix 0.936293 0.289629 -0.198669 -0.275096 0.957826 0.077458 0.218351 0.0 0.975870 --order ZYX
+```
+
+```bash
 runroot python -m orientation.cli matrix-to-euler --matrix 1 0 0  0 0 -1  0 1 0 --order ZXZ --deg
 ```
 
@@ -98,6 +110,9 @@ runroot python -m orientation.cli expmap --omega 0.2 0.0 0.0 --save R_exp.csv
 ### 10) Random SO(3) sampling
 ```bash
 runroot python -m orientation.cli random-so3 --n 5
+```
+
+```bash
 runroot python -m orientation.cli random-so3 --n 100 --out random_100.json
 ```
 
@@ -115,6 +130,9 @@ These variants read matrices from files:
 ### 11) Matrix → quaternion (file)
 ```bash
 runroot python -m orientation.cli to-quat-file --in samples/matrix_example.csv
+```
+
+```bash
 runroot python -m orientation.cli to-quat-file --in samples/matrix_I.csv
 ```
 
@@ -132,6 +150,9 @@ runroot python -m orientation.cli matrix-to-rodrigues-file --in samples/matrix_I
 Put a JSON list of jobs under `orientation/in/` and run:
 ```bash
 cp samples/jobs.json orientation/in/jobs.json
+```
+
+```bash
 runroot python -m orientation.cli batch --in jobs.json --out results.json
 ```
 
