@@ -1,8 +1,8 @@
-# Robotics (Python) — CLI‑First Study & Design Suite
+# Robotics — Python CLI‑First Study & Design Suite
 
 > **Mission:** learn, reproduce, and *do* robot kinematics, dynamics, path planning, and control **without MATLAB®/Simulink®** — using Python, a modern CLI workflow, and open libraries.
 
-This repo is a collection of focused, test‑driven Python packages (“tools”) that replicate and extend core workflows from **Reza N. Jazar, _Theory of Applied Robotics_ (3rd ed.)**. Each package ships with a friendly **CLI**, example inputs, and a **RUNS.md** full of copy‑paste commands. No notebooks required, no proprietary stack needed.
+This repo is a collection of focused, test‑driven Python packages that replicate and extend core workflows from **Reza N. Jazar, _Theory of Applied Robotics_ (3rd ed.)**. Each package ships with a friendly **CLI**, example inputs, and a **RUNS.md** full of copy‑paste commands. No notebooks required, no proprietary stack needed.
 
 <p align="center">
   <em>“MATLAB® is not a skill.”</em>
@@ -13,15 +13,39 @@ This repo is a collection of focused, test‑driven Python packages (“tools”
 ## Why this exists
 
 - I did not have a MATLAB® license - and I do not need one (and don't want one).
+- Jazar drowns you in matrices, so I had to create a computational tool to provide some relief. 
 - Python’s ecosystem (NumPy, SciPy, SymPy, python‑control, etc.) does everything the textbooks require — but it’s code‑heavy.
 - So I wrapped the hard parts into clean **command‑line tools** with consistent I/O, file conventions, and tests.
 - The result is a **drop‑in study companion** and **reproducible design lab** for robotics.
 
 ---
 
-## What’s inside — ordered like Jazar’s book
+## What’s inside — numerical companion to Jazar’s book
 
 Each subfolder is a cohesive package with its own CLI, tests, and a RUNS.md. Short blurbs are shown where the package is already implemented; placeholders are noted where work is pending.
+
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-3D74F7.svg)](https://pablomarcel.github.io/robotics/)
+[![Build & Publish Docs](https://github.com/pablomarcel/robotics/actions/workflows/pages.yml/badge.svg)](https://github.com/pablomarcel/robotics/actions/workflows/pages.yml)
+
+## Documentation
+
+Live docs: **https://pablomarcel.github.io/robotics/**
+
+Per-package quick links:
+- [acceleration](https://pablomarcel.github.io/robotics/acceleration/)
+- [angular](https://pablomarcel.github.io/robotics/angular/)
+- [applied](https://pablomarcel.github.io/robotics/applied/)
+- [control](https://pablomarcel.github.io/robotics/control/)
+- [forward](https://pablomarcel.github.io/robotics/forward/)
+- [inverse](https://pablomarcel.github.io/robotics/inverse/)
+- [motion](https://pablomarcel.github.io/robotics/motion/)
+- [orientation](https://pablomarcel.github.io/robotics/orientation/)
+- [path](https://pablomarcel.github.io/robotics/path/)
+- [robot](https://pablomarcel.github.io/robotics/robot/)
+- [rotation](https://pablomarcel.github.io/robotics/rotation/)
+- [timeopt](https://pablomarcel.github.io/robotics/timeopt/)
+- [velocity](https://pablomarcel.github.io/robotics/velocity/)
+
 
 > Folder names are short and pragmatic (what you type at the CLI), but the order below mirrors the book’s table of contents.
 
