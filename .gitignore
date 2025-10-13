@@ -82,6 +82,12 @@ Thumbs.db
 *.env
 
 # ----------------------------
+# Sphinx _build folders
+# ----------------------------
+
+**/docs/_build/
+
+# ----------------------------
 # Project-specific artifacts
 # ----------------------------
 # Rotation app outputs (keep inputs under rotation/in tracked)
