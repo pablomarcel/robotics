@@ -1,0 +1,5 @@
+{
+  "model":  {"kind": "planar2r", "l1": 1.0, "l2": 1.0},
+  "method": {"method": "iterative", "tol": 1e-9, "itmax": 250, "lambda": 1e-3},
+  "pose":   {"T": [[1,0,0,1.2],[0,1,0,0.3],[0,0,1,0.0],[0,0,0,1.0]]}
+}
