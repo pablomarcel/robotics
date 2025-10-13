@@ -4,52 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="committed acceleration/docs">
-      <change afterPath="$PROJECT_DIR$/forward/docs/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/.buildinfo" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/.doctrees/api.doctree" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/.doctrees/environment.pickle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/.doctrees/index.doctree" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/app.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/core.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/design.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/io.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/forward/utils.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_modules/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_sources/api.rst.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_sources/index.rst.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/basic.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/debug.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/doctools.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/documentation_options.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/file.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/language_data.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/minus.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/plus.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/pygments.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/scripts/furo-extensions.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/scripts/furo.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/scripts/furo.js.LICENSE.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/scripts/furo.js.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/searchtools.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/skeleton.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/sphinx_highlight.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/styles/furo-extensions.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/styles/furo-extensions.css.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/styles/furo.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/_static/styles/furo.css.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/api.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/genindex.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/objects.inv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/py-modindex.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/search.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/_build/html/searchindex.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/api.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/conf.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward/docs/index.rst" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="committed inverse/docs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/angular/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applied/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/applied/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/motion/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/motion/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orientation/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/orientation/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/robot/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation/rot_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/rotation/rot_cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timeopt/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/timeopt/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/velocity/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/velocity/cli.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,7 +59,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "develop",
-    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/acceleration",
+    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/velocity",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -105,11 +71,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/acceleration" />
-      <recent name="$PROJECT_DIR$/angular" />
-      <recent name="$PROJECT_DIR$/applied" />
-      <recent name="$PROJECT_DIR$/control" />
-      <recent name="$PROJECT_DIR$/forward" />
+      <recent name="$PROJECT_DIR$/velocity" />
+      <recent name="$PROJECT_DIR$/timeopt" />
+      <recent name="$PROJECT_DIR$/rotation" />
+      <recent name="$PROJECT_DIR$/robot" />
+      <recent name="$PROJECT_DIR$/path" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/inverse" />
@@ -174,23 +140,7 @@
       <workItem from="1759095089082" duration="737000" />
       <workItem from="1760230034687" duration="1238000" />
       <workItem from="1760233288201" duration="2003000" />
-      <workItem from="1760294501674" duration="21780000" />
-    </task>
-    <task id="LOCAL-00005" summary="implemented kinematics.py">
-      <option name="closed" value="true" />
-      <created>1758080168512</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1758080168512</updated>
-    </task>
-    <task id="LOCAL-00006" summary="updated kinematics.py&#10;added vector functions">
-      <option name="closed" value="true" />
-      <created>1758081934791</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1758081934791</updated>
+      <workItem from="1760294501674" duration="27291000" />
     </task>
     <task id="LOCAL-00007" summary="implemented the rotation kinematics app">
       <option name="closed" value="true" />
@@ -568,7 +518,23 @@
       <option name="project" value="LOCAL" />
       <updated>1760327348188</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <task id="LOCAL-00054" summary="committed forward/docs">
+      <option name="closed" value="true" />
+      <created>1760327962638</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1760327962638</updated>
+    </task>
+    <task id="LOCAL-00055" summary="committed inverse/docs">
+      <option name="closed" value="true" />
+      <created>1760328060225</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1760328060225</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -589,8 +555,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="unable to fix the testing in the acceleration module" />
-    <MESSAGE value="fixed all but 1 tests in the acceleration module" />
     <MESSAGE value="fixed all tests in the acceleration module, cheated by reducing precision in atol" />
     <MESSAGE value="implemented the applied dynamics module. 6 tests fail" />
     <MESSAGE value="implemented the applied dynamics module. 1 tests fail" />
@@ -614,6 +578,8 @@
     <MESSAGE value="fixed a bunch of RUNS.md files" />
     <MESSAGE value="updated requirements.txt" />
     <MESSAGE value="committed acceleration/docs" />
-    <option name="LAST_COMMIT_MESSAGE" value="committed acceleration/docs" />
+    <MESSAGE value="committed forward/docs" />
+    <MESSAGE value="committed inverse/docs" />
+    <option name="LAST_COMMIT_MESSAGE" value="committed inverse/docs" />
   </component>
 </project>
