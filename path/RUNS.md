@@ -154,7 +154,7 @@ The HTTP layer delegates validation to the programmatic API for maximum compatib
 ### 3.1 Start the server (dev reload)
 
 ```bash
-uvicorn path.apis:get_http_app --reload --port 8000
+runroot uvicorn path.apis:get_http_app --reload --port 8000
 ```
 
 ### 3.2 Curl the endpoints

@@ -2,60 +2,30 @@
 """
 Command-line interface for Motion Kinematics.
 
-Design goals
-------------
-- No external CLI deps (uses argparse from stdlib).
-- Every command maps 1:1 to an `APIs` method (pure, testable).
-- Flexible I/O:
-    • Inline numeric flags (e.g., --axis 0,0,1) for quick runs.
-    • File-driven `run --file motion/in/job.json` for batch/CI.
-- Output is JSON in motion/out/ unless --out is given explicitly.
-- Numpy arrays are converted to (nested) lists for portability.
-
-Example
--------
-$ python -m motion.cli rotation --axis 0,0,1 --angle 1.57079632679
-$ python -m motion.cli screw --axis 1,0,0 --s 0,0,0 --pitch 0.1 --phi 1.0
-$ python -m motion.cli plucker --p1 0,0,0 --p2 1,0,0
-$ python -m motion.cli lines --a1 0,0,0 --a2 1,0,0 --b1 0,1,0 --b2 1,1,0
-$ python -m motion.cli plane-dist --point 1,2,3 --normal 0,0,1 --s 1
-$ python -m motion.cli fk --dh 0.5,0.0,0.2,0.0 --dh 0.3,1.57079632679,0.0,0.0
-
-File-driven:
-------------
-# motion/in/job.json
-{
-  "op": "screw",
-  "params": {
-    "u": [1, 0, 0],
-    "s": [0, 0, 0],
-    "h": 0.05,
-    "phi": 0.78539816339,
-    "degrees": false
-  }
-}
-
-$ python -m motion.cli run --file motion/in/job.json --out motion/out/result.json
+- Pure argparse, no external CLI deps.
+- Subcommands map 1:1 to APIs.
+- File-driven `run --file` supports key aliases and auto-infers op when needed.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import os
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple
 
 import numpy as np
 
 from .apis import APIs
 
 
-# ------------------------------ utilities ------------------------------------
+# ------------------------------ constants -------------------------------------
 DEFAULT_IN = Path("motion/in")
 DEFAULT_OUT = Path("motion/out")
+VALID_OPS = ("rotation", "screw", "plucker", "lines", "plane-dist", "fk")
 
 
+# ------------------------------ tiny utils ------------------------------------
 def _ensure_dir(p: Path) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
 
@@ -75,7 +45,6 @@ def _parse_dh(csv: str) -> Tuple[float, float, float, float]:
 
 
 def _np_to_lists(obj: Any) -> Any:
-    """Recursively convert numpy arrays to (nested) lists for JSON."""
     if isinstance(obj, np.ndarray):
         return obj.tolist()
     if isinstance(obj, (list, tuple)):
@@ -87,7 +56,6 @@ def _np_to_lists(obj: Any) -> Any:
 
 def _dump_json(payload: Dict[str, Any], out_path: Path | None) -> None:
     if out_path is None:
-        # default filename by op
         name = payload.get("meta", {}).get("op", "result")
         out_path = DEFAULT_OUT / f"{name}.json"
     _ensure_dir(out_path)
@@ -96,7 +64,7 @@ def _dump_json(payload: Dict[str, Any], out_path: Path | None) -> None:
     print(str(out_path))
 
 
-# ------------------------------ command impls --------------------------------
+# ------------------------------ API dispatchers -------------------------------
 def cmd_rotation(args: argparse.Namespace) -> Dict[str, Any]:
     api = APIs()
     result = api.rotation_axis_angle(args.axis, args.angle, degrees=args.degrees)
@@ -139,58 +107,28 @@ def cmd_fk(args: argparse.Namespace) -> Dict[str, Any]:
     return result
 
 
-def cmd_run(args: argparse.Namespace) -> Dict[str, Any]:
-    """
-    File-driven run. The JSON should contain:
-      { "op": "<rotation|screw|plucker|lines|plane-dist|fk>", "params": {...} }
-    """
-    with Path(args.file).open("r", encoding="utf-8") as f:
-        job = json.load(f)
-
-    op = job.get("op")
-    params = job.get("params", {})
-
-    parser = build_parser()  # for uniform parsing/validation
-
-    # Map to subcommand parsers to reuse validation
-    argv_map = {
-        "rotation": ("rotation", ["--axis", _csv3(params, "axis"),
-                                  "--angle", str(params.get("angle", 0.0))] + _deg_flag(params)),
-        "screw": ("screw", ["--axis", _csv3(params, "u"),
-                            "--s", _csv3(params, "s"),
-                            "--pitch", str(params.get("h", 0.0)),
-                            "--phi", str(params.get("phi", 0.0))] + _deg_flag(params)),
-        "plucker": ("plucker", ["--p1", _csv3(params, "p1"),
-                                "--p2", _csv3(params, "p2")]),
-        "lines": ("lines", ["--a1", _csv3(params, "a1"),
-                            "--a2", _csv3(params, "a2"),
-                            "--b1", _csv3(params, "b1"),
-                            "--b2", _csv3(params, "b2")]),
-        "plane-dist": ("plane-dist", ["--point", _csv3(params, "point"),
-                                      "--normal", _csv3(params, "normal"),
-                                      "--s", str(params.get("s", 0.0))] + (["--unsigned"] if params.get("unsigned") else [])),
-        "fk": ("fk", _fk_args(params)),
-    }
-
-    if op not in argv_map:
-        raise SystemExit(f"Unknown op in {args.file!s}: {op!r}")
-
-    sub, sub_argv = argv_map[op]
-    parsed = parser.parse_args([sub] + sub_argv)
-    # Dispatch
-    cmd = parsed.func
-    result = cmd(parsed)
-    result["meta"] = {**result.get("meta", {}), "op": op, "source": str(args.file)}
-    return result
-
-
+# ------------------------------ run helpers -----------------------------------
 def _csv3(params: Dict[str, Any], key: str) -> str:
     v = params.get(key)
     if isinstance(v, (list, tuple)) and len(v) == 3:
         return ",".join(str(x) for x in v)
     if isinstance(v, str):
-        return v
-    raise SystemExit(f"Missing/invalid '{key}' in params")
+        parts = [p.strip() for p in v.split(",")]
+        if len(parts) == 3:
+            return v
+    raise SystemExit(f"Missing/invalid '{key}' in params (got keys={sorted(params.keys())})")
+
+
+def _csv3_any(params: Dict[str, Any], keys: List[str]) -> str:
+    for k in keys:
+        v = params.get(k)
+        if isinstance(v, (list, tuple)) and len(v) == 3:
+            return ",".join(str(x) for x in v)
+        if isinstance(v, str):
+            parts = [p.strip() for p in v.split(",")]
+            if len(parts) == 3:
+                return v
+    raise SystemExit(f"Missing/invalid one of {keys!r} in params (got keys={sorted(params.keys())})")
 
 
 def _deg_flag(params: Dict[str, Any]) -> List[str]:
@@ -209,7 +147,125 @@ def _fk_args(params: Dict[str, Any]) -> List[str]:
     return out
 
 
-# ------------------------------ parser ---------------------------------------
+def _infer_op(params: Dict[str, Any]) -> str:
+    keys = set(params.keys())
+    if {"p1", "p2"} & keys:
+        return "plucker"
+    if {"a1", "a2", "b1", "b2"} <= keys:
+        return "lines"
+    if {"point", "normal"} <= keys:
+        return "plane-dist"
+    if "dh" in keys:
+        return "fk"
+    # screw vs rotation
+    if (("s" in keys or "point" in keys) and (("u" in keys) or ("axis" in keys)) and (("phi" in keys) or ("angle" in keys))):
+        return "screw"
+    if (("u" in keys or "axis" in keys) and ("phi" in keys or "angle" in keys)):
+        return "rotation"
+    # default fail
+    raise SystemExit(
+        f"Could not infer 'op' from params keys={sorted(keys)}. "
+        f"Valid ops: {', '.join(VALID_OPS)}"
+    )
+
+
+def _build_argv_for_op(op: str, params: Dict[str, Any]) -> List[str]:
+    if op == "rotation":
+        return [
+            "rotation",
+            "--axis",
+            _csv3_any(params, ["axis", "u"]),
+            "--angle",
+            str(params.get("angle", params.get("phi", 0.0))),
+        ] + _deg_flag(params)
+
+    if op == "screw":
+        return [
+            "screw",
+            "--axis",
+            _csv3_any(params, ["u", "axis"]),
+            "--s",
+            _csv3_any(params, ["s", "point"]),
+            "--pitch",
+            str(params.get("h", params.get("pitch", 0.0))),
+            "--phi",
+            str(params.get("phi", params.get("angle", 0.0))),
+        ] + _deg_flag(params)
+
+    if op == "plucker":
+        return ["plucker", "--p1", _csv3(params, "p1"), "--p2", _csv3(params, "p2")]
+
+    if op == "lines":
+        return [
+            "lines",
+            "--a1",
+            _csv3(params, "a1"),
+            "--a2",
+            _csv3(params, "a2"),
+            "--b1",
+            _csv3(params, "b1"),
+            "--b2",
+            _csv3(params, "b2"),
+        ]
+
+    if op == "plane-dist":
+        argv = [
+            "plane-dist",
+            "--point",
+            _csv3_any(params, ["point"]),
+            "--normal",
+            _csv3_any(params, ["normal"]),
+            "--s",
+            str(params.get("s", 0.0)),
+        ]
+        if params.get("unsigned"):
+            argv.append("--unsigned")
+        return argv
+
+    if op == "fk":
+        return ["fk", *_fk_args(params)]
+
+    raise SystemExit(f"Unknown op {op!r}. Valid ops: {', '.join(VALID_OPS)}")
+
+
+# ------------------------------ 'run' subcommand -------------------------------
+def cmd_run(args: argparse.Namespace) -> Dict[str, Any]:
+    with Path(args.file).open("r", encoding="utf-8") as f:
+        job = json.load(f)
+
+    op_in = job.get("op")
+    params = job.get("params", {})
+
+    parser = build_parser()
+
+    def _try(op_label: str) -> Dict[str, Any]:
+        """Build argv for a given op label, parse, dispatch."""
+        argv = _build_argv_for_op(op_label, params)
+        parsed = parser.parse_args(argv)
+        result = parsed.func(parsed)
+        result["meta"] = {**result.get("meta", {}), "op": op_label, "source": str(args.file)}
+        return result
+
+    # 1) If op is provided, try it first (with good error messages)
+    if isinstance(op_in, str):
+        op_in = op_in.strip()
+        if op_in in VALID_OPS:
+            try:
+                return _try(op_in)
+            except SystemExit as e:
+                # Fall back to inference with a clearer hint
+                inferred = _infer_op(params)
+                if inferred != op_in:
+                    return _try(inferred)
+                # If inference equals provided op, re-raise with context
+                raise SystemExit(f"[run] Provided op '{op_in}' failed to validate: {e}") from None
+        # If provided but invalid, we’ll infer.
+    # 2) No/invalid op: infer from params.
+    inferred = _infer_op(params)
+    return _try(inferred)
+
+
+# ------------------------------ parser ----------------------------------------
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="motion.cli", description="Motion Kinematics CLI")
     sub = p.add_subparsers(dest="command", required=True)
