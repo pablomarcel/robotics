@@ -1,10 +1,10 @@
 # =============================
-# File: rotation/rot_cli.py
+# File: rotation/rot_cli.py  (upgraded)
 # =============================
 from __future__ import annotations
 import argparse
 import os
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Tuple
 
 import numpy as np
 from scipy.spatial.transform import Rotation as R
@@ -15,10 +15,47 @@ from . import rot_core as core
 from . import rot_io as rio
 from . import rot_closedform as cf
 
+# ---------------------------------------------------------
+# Defaults and I/O conveniences ("dirty trick" upgrade)
+# ---------------------------------------------------------
 OUT_DIR = os.path.join("rotation", "out")
 IN_DIR  = os.path.join("rotation", "in")
 ensure_dir(OUT_DIR); ensure_dir(IN_DIR)
 
+def _resolve_in(path_like: str) -> str:
+    """
+    Resolve an input file by searching rotation/in, then rotation/out,
+    then using the provided path as-is.
+    """
+    cands = [
+        os.path.join(IN_DIR, path_like),
+        os.path.join(OUT_DIR, path_like),
+        path_like,
+    ]
+    for p in cands:
+        if os.path.exists(p):
+            return p
+    return cands[-1]
+
+def _resolve_out(path_like: str | None, default_name: str) -> str:
+    """
+    Resolve an output path. If 'path_like' is None or a bare filename,
+    write under rotation/out. Parents are created as needed.
+    """
+    if not path_like:
+        out = os.path.join(OUT_DIR, default_name)
+    else:
+        # If just a bare name (no dir components), drop it into OUT_DIR
+        if os.path.dirname(path_like) == "":
+            out = os.path.join(OUT_DIR, path_like)
+        else:
+            out = path_like
+    ensure_dir(os.path.dirname(out))
+    return out
+
+# ---------------------------------------------------------
+# Small parse/print helpers
+# ---------------------------------------------------------
 def _angles_arg(s: str, degrees: bool) -> List[float]:
     vals = parse_floats(s)
     if len(vals) != 3:
@@ -51,6 +88,9 @@ def _print_sympy_matrix(M, names: List[str], title: str):
     print("variables:", ", ".join(names))
     print("[\n" + "\n".join(rows) + "\n]")
 
+# ---------------------------------------------------------
+# Batch task exec
+# ---------------------------------------------------------
 def _run_one_task(t: Dict[str, Any]) -> None:
     """Execute a single batch task dict."""
     cmd = t.get("cmd")
@@ -58,18 +98,21 @@ def _run_one_task(t: Dict[str, Any]) -> None:
         Robj = core.build_matrix(t["mode"], t["seq"], t["angles"], degrees=bool(t.get("degrees", False)))
         print(_fmt_ndarray(Robj.as_matrix()))
         if "save" in t:
-            path = os.path.join(OUT_DIR, t["save"]); core.save_R(path, Robj); print(f"saved -> {path}")
+            out = _resolve_out(t["save"], "R.csv")
+            core.save_R(out, Robj); print(f"saved -> {out}")
     elif cmd == "transform":
         Robj = core.build_matrix(t["mode"], t["seq"], t["angles"], degrees=bool(t.get("degrees", False)))
         if "points_file" in t:
-            P = rio.read_points_csv(os.path.join(IN_DIR, t["points_file"]))
+            pf = _resolve_in(t["points_file"])
+            P = rio.read_points_csv(pf)
         else:
             P = np.array(t.get("points", []), dtype=float)
             if P.size == 0: P = np.eye(3)
         Pg = core.transform_points(Robj, P)
         print(_fmt_ndarray(Pg))
         if "save" in t:
-            path = os.path.join(OUT_DIR, t["save"]); rio.write_points_csv(path, Pg); print(f"saved -> {path}")
+            out = _resolve_out(t["save"], "points_out.csv")
+            rio.write_points_csv(out, Pg); print(f"saved -> {out}")
     elif cmd == "passive":
         Robj = core.build_matrix(t["mode"], t["seq"], t["angles"], degrees=bool(t.get("degrees", False)))
         P = np.array(t.get("points", []), dtype=float)
@@ -97,8 +140,17 @@ def _run_one_task(t: Dict[str, Any]) -> None:
     else:
         raise ValueError(f"Unknown batch cmd: {cmd}")
 
+# ---------------------------------------------------------
+# CLI
+# ---------------------------------------------------------
 def cli(argv: List[str] | None = None) -> int:
-    p = argparse.ArgumentParser(prog="rot-cli", description="Rotation Kinematics CLI (Eq. 2.1–2.363 + extras)")
+    p = argparse.ArgumentParser(
+        prog="rot-cli",
+        description=(
+            "Rotation Kinematics CLI (Eq. 2.1–2.363 + extras) — "
+            "now with friendlier in/out handling and a Sphinx skeleton generator"
+        ),
+    )
     sp = p.add_subparsers(dest="cmd", required=True)
 
     # compose
@@ -107,7 +159,7 @@ def cli(argv: List[str] | None = None) -> int:
     pc.add_argument("seq", help=HELP_SEQ)
     pc.add_argument("angles", type=str, help="comma list of three angles")
     pc.add_argument("--degrees", action="store_true", help="Angles are degrees (default radians)")
-    pc.add_argument("--save", type=str, default=None, help="CSV path under rotation/out to save matrix")
+    pc.add_argument("--save", type=str, default=None, help="CSV filename or path to save matrix (defaults to rotation/out)")
 
     # decompose
     pd = sp.add_parser("decompose", help="Extract angles from a rotation matrix for a given sequence")
@@ -115,7 +167,7 @@ def cli(argv: List[str] | None = None) -> int:
     pd.add_argument("seq", help=HELP_SEQ)
     g = pd.add_mutually_exclusive_group(required=True)
     g.add_argument("--from-angles", type=str, help="If provided, first compose from these angles (same seq/mode)")
-    g.add_argument("--from-csv", type=str, help="Path to 3x3 CSV matrix")
+    g.add_argument("--from-csv", type=str, help="Matrix CSV filename (resolved via rotation/in → rotation/out → literal)")
     pd.add_argument("--degrees", action="store_true")
 
     # transform
@@ -124,8 +176,8 @@ def cli(argv: List[str] | None = None) -> int:
     pt.add_argument("seq", help=HELP_SEQ)
     pt.add_argument("angles", type=str)
     pt.add_argument("--degrees", action="store_true")
-    pt.add_argument("--points", type=str, help="CSV of Nx3 points in rotation/in, else a csv list 'x;y;z|...'", default=None)
-    pt.add_argument("--save", type=str, default=None, help="CSV path under rotation/out to save transformed points")
+    pt.add_argument("--points", type=str, help="CSV of Nx3 points (resolved via in/out) or rows 'x;y;z|...'", default=None)
+    pt.add_argument("--save", type=str, default=None, help="CSV filename/path to save transformed points (defaults to rotation/out)")
 
     # passive
     ppv = sp.add_parser("passive", help="Passive coordinate change: rB = R^T rG")
@@ -133,7 +185,7 @@ def cli(argv: List[str] | None = None) -> int:
     ppv.add_argument("seq", help=HELP_SEQ)
     ppv.add_argument("angles", type=str)
     ppv.add_argument("--degrees", action="store_true")
-    ppv.add_argument("--points", type=str, default=None)
+    ppv.add_argument("--points", type=str, default=None, help="CSV filename (resolved via in/out) or inline rows")
 
     # repeat
     pr = sp.add_parser("repeat", help="Repeat/Exponentiate a rotation (R^m)")
@@ -153,7 +205,7 @@ def cli(argv: List[str] | None = None) -> int:
     pk.add_argument("--mode", choices=["global","local"], default="global")
     pk.add_argument("--seq", default="zyx")
     pk.add_argument("--degrees", action="store_true")
-    pk.add_argument("--from-csv", type=str, help="matrix CSV path")
+    pk.add_argument("--from-csv", type=str, help="matrix CSV filename (resolved via in/out/literal)")
 
     # Closed-form E matrices
     pe = sp.add_parser("E", help="Closed-form E(q) such that ω = E(q) q̇")
@@ -165,7 +217,7 @@ def cli(argv: List[str] | None = None) -> int:
 
     # Batch jobs
     pb = sp.add_parser("batch", help="Run a JSON/YAML job file with multiple tasks")
-    pb.add_argument("file", type=str, help="Path under rotation/in to a .json/.yaml/.yml file")
+    pb.add_argument("file", type=str, help="Filename under rotation/in (resolver also checks rotation/out and literal)")
 
     # angvel from rates
     pv = sp.add_parser("angvel", help="Compute ω from angle rates for any sequence")
@@ -187,6 +239,11 @@ def cli(argv: List[str] | None = None) -> int:
     pvr.add_argument("--degrees", action="store_true",
                      help="Interpret BOTH angles and ω in degrees/deg·s⁻¹ (default radians/rad·s⁻¹)")
 
+    # Sphinx skeleton
+    ps = sp.add_parser("sphinx-skel", help="Create a minimal Sphinx docs skeleton (rotation/docs)")
+    ps.add_argument("dest", nargs="?", default="docs", help="Destination directory (default: docs)")
+    ps.add_argument("--force", action="store_true", help="Overwrite existing files if present")
+
     args = p.parse_args(argv)
 
     if args.cmd == 'compose':
@@ -194,7 +251,8 @@ def cli(argv: List[str] | None = None) -> int:
         Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
         print("R =\n", _fmt_ndarray(Robj.as_matrix()))
         if args.save:
-            out = os.path.join(OUT_DIR, args.save); core.save_R(out, Robj); print(f"saved to {out}")
+            out = _resolve_out(args.save, "R.csv")
+            core.save_R(out, Robj); print(f"saved to {out}")
         return 0
 
     if args.cmd == 'decompose':
@@ -202,7 +260,8 @@ def cli(argv: List[str] | None = None) -> int:
             ang = _angles_arg(args.from_angles, args.degrees)
             Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
         else:
-            M = np.loadtxt(args.from_csv, delimiter=",")
+            csv_path = _resolve_in(args.from_csv)
+            M = np.loadtxt(csv_path, delimiter=",")
             Robj = R.from_matrix(M)
         a = core.decompose(Robj, args.seq, args.mode, degrees=args.degrees)
         unit = "deg" if args.degrees else "rad"
@@ -212,8 +271,8 @@ def cli(argv: List[str] | None = None) -> int:
     if args.cmd == 'transform':
         ang = _angles_arg(args.angles, args.degrees)
         Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
-        if args.points and os.path.exists(os.path.join(IN_DIR, args.points)):
-            P = rio.read_points_csv(os.path.join(IN_DIR, args.points))
+        if args.points and os.path.exists(_resolve_in(args.points)):
+            P = rio.read_points_csv(_resolve_in(args.points))
         elif args.points:
             rows = [r for r in args.points.split('|') if r]
             P = np.vstack([parse_floats(r) for r in rows])
@@ -222,14 +281,15 @@ def cli(argv: List[str] | None = None) -> int:
         Pg = core.transform_points(Robj, P)
         print("P' =\n", _fmt_ndarray(Pg))
         if args.save:
-            out = os.path.join(OUT_DIR, args.save); rio.write_points_csv(out, Pg); print(f"saved to {out}")
+            out = _resolve_out(args.save, "points_out.csv")
+            rio.write_points_csv(out, Pg); print(f"saved to {out}")
         return 0
 
     if args.cmd == 'passive':
         ang = _angles_arg(args.angles, args.degrees)
         Robj = core.build_matrix(args.mode, args.seq, ang, degrees=args.degrees)
-        if args.points and os.path.exists(os.path.join(IN_DIR, args.points)):
-            P = rio.read_points_csv(os.path.join(IN_DIR, args.points))
+        if args.points and os.path.exists(_resolve_in(args.points)):
+            P = rio.read_points_csv(_resolve_in(args.points))
         elif args.points:
             rows = [r for r in args.points.split('|') if r]
             P = np.vstack([parse_floats(r) for r in rows])
@@ -254,7 +314,8 @@ def cli(argv: List[str] | None = None) -> int:
 
     if args.cmd == 'check':
         if args.from_csv:
-            M = np.loadtxt(args.from_csv, delimiter=",")
+            csv_path = _resolve_in(args.from_csv)
+            M = np.loadtxt(csv_path, delimiter=",")
             Robj = R.from_matrix(M)
         else:
             if not args.from_angles:
@@ -283,7 +344,7 @@ def cli(argv: List[str] | None = None) -> int:
         return 0
 
     if args.cmd == 'batch':
-        job_path = os.path.join(IN_DIR, args.file)
+        job_path = _resolve_in(args.file)
         job = rio.read_job(job_path)
         tasks = job.get("tasks", [])
         if not isinstance(tasks, list) or not tasks:
@@ -305,6 +366,58 @@ def cli(argv: List[str] | None = None) -> int:
         omg = _vec_arg(args.omega)  # units follow --degrees
         qd = core.rates_from_angvel(args.seq, ang, omg, convention=args.mode, degrees=args.degrees, frame=args.frame)
         print("qdot = ", _fmt_ndarray(qd))
+        return 0
+
+    if args.cmd == 'sphinx-skel':
+        dest = args.dest
+        out_dir = os.path.abspath(dest)
+        os.makedirs(out_dir, exist_ok=True)
+
+        conf = (
+            '# Generated by rotation.rot_cli\n'
+            'project = "rotation"\n'
+            'extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon", "sphinx.ext.viewcode"]\n'
+            'templates_path = ["_templates"]\n'
+            'exclude_patterns = []\n'
+            'html_theme = "furo"\n'
+        )
+        index = (
+            ".. rotation documentation master file\n\n"
+            "Welcome to rotation's docs!\n"
+            "===========================\n\n"
+            ".. toctree::\n"
+            "   :maxdepth: 2\n"
+            "   :caption: Contents:\n\n"
+            "   api\n"
+        )
+        api = (
+            "API Reference\n"
+            "=============\n\n"
+            ".. automodule:: rotation.rot_core\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: rotation.rot_io\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: rotation.rot_design\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: rotation.rot_closedform\n   :members:\n   :undoc-members:\n\n"
+        )
+        makefile = (
+            "# Minimal Sphinx Makefile\n"
+            ".PHONY: html clean\n"
+            "html:\n\t+sphinx-build -b html . _build/html\n"
+            "clean:\n\t+rm -rf _build\n"
+        )
+
+        def _write(p: str, text: str) -> None:
+            if os.path.exists(p) and not args.force:
+                return
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(text)
+
+        os.makedirs(os.path.join(out_dir, "_templates"), exist_ok=True)
+        os.makedirs(os.path.join(out_dir, "_static"), exist_ok=True)
+        _write(os.path.join(out_dir, "conf.py"), conf)
+        _write(os.path.join(out_dir, "index.rst"), index)
+        _write(os.path.join(out_dir, "api.rst"), api)
+        _write(os.path.join(out_dir, "Makefile"), makefile)
+        print(out_dir)
         return 0
 
     return 0
