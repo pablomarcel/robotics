@@ -4,18 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="committed inverse/docs">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="upgraded cli files to allow for sphinx documentation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/angular/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/angular/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applied/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/applied/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/motion/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/motion/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orientation/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/orientation/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/path/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/path/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/robot/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rotation/rot_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/rotation/rot_cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/timeopt/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/velocity/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/velocity/cli.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,23 +42,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
-    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/velocity",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/pablomontijo/Control/robotics/velocity&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/velocity" />
@@ -140,15 +130,9 @@
       <workItem from="1759095089082" duration="737000" />
       <workItem from="1760230034687" duration="1238000" />
       <workItem from="1760233288201" duration="2003000" />
-      <workItem from="1760294501674" duration="27291000" />
-    </task>
-    <task id="LOCAL-00007" summary="implemented the rotation kinematics app">
-      <option name="closed" value="true" />
-      <created>1758133959620</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1758133959620</updated>
+      <workItem from="1760294501674" duration="27414000" />
+      <workItem from="1760334284929" duration="31000" />
+      <workItem from="1760370402125" duration="665000" />
     </task>
     <task id="LOCAL-00008" summary="implemented pytests in the rotation module">
       <option name="closed" value="true" />
@@ -534,7 +518,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760328060225</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="upgraded cli files to allow for sphinx documentation">
+      <option name="closed" value="true" />
+      <created>1760334133547</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1760334133548</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -555,7 +547,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="fixed all tests in the acceleration module, cheated by reducing precision in atol" />
     <MESSAGE value="implemented the applied dynamics module. 6 tests fail" />
     <MESSAGE value="implemented the applied dynamics module. 1 tests fail" />
     <MESSAGE value="implemented the applied dynamics module. all tests pass" />
@@ -580,6 +571,7 @@
     <MESSAGE value="committed acceleration/docs" />
     <MESSAGE value="committed forward/docs" />
     <MESSAGE value="committed inverse/docs" />
-    <option name="LAST_COMMIT_MESSAGE" value="committed inverse/docs" />
+    <MESSAGE value="upgraded cli files to allow for sphinx documentation" />
+    <option name="LAST_COMMIT_MESSAGE" value="upgraded cli files to allow for sphinx documentation" />
   </component>
 </project>
