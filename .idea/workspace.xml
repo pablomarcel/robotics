@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="committed docs files">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="Updated README.md to include section about documentation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
@@ -133,15 +133,10 @@
       <workItem from="1760233288201" duration="2003000" />
       <workItem from="1760294501674" duration="27414000" />
       <workItem from="1760334284929" duration="31000" />
-      <workItem from="1760370402125" duration="4022000" />
-    </task>
-    <task id="LOCAL-00012" summary="implemented the orientation module">
-      <option name="closed" value="true" />
-      <created>1758237375097</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1758237375097</updated>
+      <workItem from="1760370402125" duration="4802000" />
+      <workItem from="1760381892699" duration="6481000" />
+      <workItem from="1760408135498" duration="555000" />
+      <workItem from="1760463359328" duration="557000" />
     </task>
     <task id="LOCAL-00013" summary="implemented diagramming">
       <option name="closed" value="true" />
@@ -527,7 +522,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760375050831</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="Updated README.md to include section about documentation">
+      <option name="closed" value="true" />
+      <created>1760376123879</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1760376123879</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -548,7 +551,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented the robot module. 3 out of 3 tests passed" />
     <MESSAGE value="first take of the path module" />
     <MESSAGE value="all tests pass in the path module" />
     <MESSAGE value="implemente the time optimal control module. all 3 tests passed" />
@@ -573,6 +575,7 @@
     <MESSAGE value="updated pages.yml" />
     <MESSAGE value="updated requirements.txt" />
     <MESSAGE value="committed docs files" />
-    <option name="LAST_COMMIT_MESSAGE" value="committed docs files" />
+    <MESSAGE value="Updated README.md to include section about documentation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated README.md to include section about documentation" />
   </component>
 </project>
