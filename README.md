@@ -12,7 +12,7 @@ This repo is a collection of focused, test‑driven Python packages that replica
 
 ## Why this exists
 
-- I did not have a MATLAB® license - and I do not need one (and don't want one).
+- I do not have a MATLAB® license - and I do not need one.
 - Jazar drowns you in matrices, so I had to create a computational tool to provide some relief. 
 - Python’s ecosystem (NumPy, SciPy, SymPy, python‑control, etc.) does everything the textbooks require — but it’s code‑heavy.
 - So I wrapped the hard parts into clean **command‑line tools** with consistent I/O, file conventions, and tests.
@@ -32,20 +32,19 @@ Each subfolder is a cohesive package with its own CLI, tests, and a RUNS.md. Sho
 Live docs: **https://pablomarcel.github.io/robotics/**
 
 Per-package quick links:
-- [acceleration](https://pablomarcel.github.io/robotics/acceleration/)
-- [angular](https://pablomarcel.github.io/robotics/angular/)
-- [applied](https://pablomarcel.github.io/robotics/applied/)
-- [control](https://pablomarcel.github.io/robotics/control/)
+- [rotation](https://pablomarcel.github.io/robotics/rotation/)
+- [orientation](https://pablomarcel.github.io/robotics/orientation/)
+- [motion](https://pablomarcel.github.io/robotics/motion/)
 - [forward](https://pablomarcel.github.io/robotics/forward/)
 - [inverse](https://pablomarcel.github.io/robotics/inverse/)
-- [motion](https://pablomarcel.github.io/robotics/motion/)
-- [orientation](https://pablomarcel.github.io/robotics/orientation/)
-- [path](https://pablomarcel.github.io/robotics/path/)
-- [robot](https://pablomarcel.github.io/robotics/robot/)
-- [rotation](https://pablomarcel.github.io/robotics/rotation/)
-- [timeopt](https://pablomarcel.github.io/robotics/timeopt/)
+- [angular](https://pablomarcel.github.io/robotics/angular/)
 - [velocity](https://pablomarcel.github.io/robotics/velocity/)
-
+- [acceleration](https://pablomarcel.github.io/robotics/acceleration/)
+- [applied](https://pablomarcel.github.io/robotics/applied/)
+- [robot](https://pablomarcel.github.io/robotics/robot/)
+- [path](https://pablomarcel.github.io/robotics/path/)
+- [timeopt](https://pablomarcel.github.io/robotics/timeopt/)
+- [control](https://pablomarcel.github.io/robotics/control/)
 
 > Folder names are short and pragmatic (what you type at the CLI), but the order below mirrors the book’s table of contents.
 
