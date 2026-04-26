@@ -570,7 +570,7 @@ jobs:
               <section class="hero">
                 <div class="hero-copy">
                   <div class="eyebrow"><span class="dot"></span> Python toolkit documentation</div>
-                  <h1><span class="gradient-text">Robotics docs, built for engineering workflows.</span></h1>
+                  <h1><span class="gradient-text">Robotics docs</span></h1>
                   <p class="lead">
                     API references for the Robotics package suite: kinematics, dynamics, planning,
                     control utilities, trajectory timing, and supporting numerical workflows.
