@@ -1,211 +1,255 @@
-# Robotics — Python CLI‑First Study & Design Suite
-
-> **Mission:** learn, reproduce, and *do* robot kinematics, dynamics, path planning, and control **without MATLAB®/Simulink®** — using Python, a modern CLI workflow, and open libraries.
-
-This repo is a collection of focused, test‑driven Python packages that replicate and extend core workflows from **Reza N. Jazar, _Theory of Applied Robotics_ (3rd ed.)**. Each package ships with a friendly **CLI**, example inputs, and a **RUNS.md** full of copy‑paste commands. No notebooks required, no proprietary stack needed.
-
-<p align="center">
-  <em>“MATLAB® is not a skill.”</em>
-</p>
-
----
-
-## Why this exists
-
-- I do not have a MATLAB® license - and I do not need one.
-- Jazar drowns you in matrices, so I had to create a computational tool to provide some relief. 
-- Python’s ecosystem (NumPy, SciPy, SymPy, python‑control, etc.) does everything the textbooks require — but it’s code‑heavy.
-- So I wrapped the hard parts into clean **command‑line tools** with consistent I/O, file conventions, and tests.
-- The result is a **drop‑in study companion** and **reproducible design lab** for robotics.
-
----
-
-## What’s inside — numerical companion to Jazar’s book
-
-Each subfolder is a cohesive package with its own CLI, tests, and a RUNS.md. Short blurbs are shown where the package is already implemented; placeholders are noted where work is pending.
+# Robotics
 
 [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-3D74F7.svg)](https://pablomarcel.github.io/robotics/)
 [![Build & Publish Docs](https://github.com/pablomarcel/robotics/actions/workflows/pages.yml/badge.svg)](https://github.com/pablomarcel/robotics/actions/workflows/pages.yml)
 
+Robotics is a Python-based collection of command-line engineering tools for studying, reproducing, and extending core robotics workflows in kinematics, dynamics, trajectory generation, path planning, and control.
+
+The project is organized as a set of focused packages. Each package targets a specific robotics topic and provides a reproducible workflow through command-line interfaces, package-level examples, structured inputs, file-based outputs, and tests. The implementation is informed by standard robotics coursework and by topics from Reza N. Jazar's *Theory of Applied Robotics*, with an emphasis on transparent numerical and symbolic computation in Python.
+
 ## Documentation
 
-Live docs: **https://pablomarcel.github.io/robotics/**
+Live documentation is available here:
 
-Per-package quick links:
-- [rotation](https://pablomarcel.github.io/robotics/rotation/)
-- [orientation](https://pablomarcel.github.io/robotics/orientation/)
-- [motion](https://pablomarcel.github.io/robotics/motion/)
-- [forward](https://pablomarcel.github.io/robotics/forward/)
-- [inverse](https://pablomarcel.github.io/robotics/inverse/)
-- [angular](https://pablomarcel.github.io/robotics/angular/)
-- [velocity](https://pablomarcel.github.io/robotics/velocity/)
-- [acceleration](https://pablomarcel.github.io/robotics/acceleration/)
-- [applied](https://pablomarcel.github.io/robotics/applied/)
-- [robot](https://pablomarcel.github.io/robotics/robot/)
-- [path](https://pablomarcel.github.io/robotics/path/)
-- [timeopt](https://pablomarcel.github.io/robotics/timeopt/)
-- [control](https://pablomarcel.github.io/robotics/control/)
+**https://pablomarcel.github.io/robotics/**
 
-> Folder names are short and pragmatic (what you type at the CLI), but the order below mirrors the book’s table of contents.
+Per-package documentation:
 
-### 1) Introduction (`intro/`)  — _WIP_
-- CLI scaffolds and helper tools for basic signals/blocks used throughout (e.g., triads, vectors, frames).
+| Package | Documentation | Focus |
+|---|---:|---|
+| `acceleration_kinematics` | [docs](https://pablomarcel.github.io/robotics/acceleration_kinematics/) | Angular acceleration, rigid-body acceleration, acceleration mappings, and higher-order kinematic derivatives. |
+| `angular_velocity` | [docs](https://pablomarcel.github.io/robotics/angular_velocity/) | Angular velocity vectors, frame derivatives, angular-rate mappings, and body/space representations. |
+| `applied_dynamics` | [docs](https://pablomarcel.github.io/robotics/applied_dynamics/) | Applied dynamics calculations involving forces, moments, momentum, work, energy, and equations of motion. |
+| `control_techniques` | [docs](https://pablomarcel.github.io/robotics/control_techniques/) | Robotics control workflows, including open-loop, closed-loop, computed-torque, and PID-style studies. |
+| `forward_kinematics` | [docs](https://pablomarcel.github.io/robotics/forward_kinematics/) | Forward kinematics, frame transformations, manipulator pose calculations, and Denavit-Hartenberg workflows. |
+| `inverse_kinematics` | [docs](https://pablomarcel.github.io/robotics/inverse_kinematics/) | Inverse kinematics, iterative methods, decoupling strategies, singularity checks, and pose-solving workflows. |
+| `motion_planning` | [docs](https://pablomarcel.github.io/robotics/motion_planning/) | Motion-planning examples and supporting utilities for robot motion studies. |
+| `orientation_kinematics` | [docs](https://pablomarcel.github.io/robotics/orientation_kinematics/) | Orientation representations, rotation matrices, Euler parameters, quaternions, and transformation utilities. |
+| `path_planning` | [docs](https://pablomarcel.github.io/robotics/path_planning/) | Path planning, polynomial and non-polynomial path generation, spatial paths, and rotational paths. |
+| `robot_modeling` | [docs](https://pablomarcel.github.io/robotics/robot_modeling/) | Robot structure, geometry, modeling utilities, and supporting representations. |
+| `rotation_kinematics` | [docs](https://pablomarcel.github.io/robotics/rotation_kinematics/) | Rotation matrices, Euler sequences, active/passive transformations, angular-rate maps, and closed-form relations. |
+| `time_optimization` | [docs](https://pablomarcel.github.io/robotics/time_optimization/) | Trajectory timing, time optimization, minimum-time motion, and bang-bang-style workflows. |
+| `velocity_kinematics` | [docs](https://pablomarcel.github.io/robotics/velocity_kinematics/) | Velocity kinematics, Jacobian-based calculations, forward and inverse velocity studies. |
 
----
+## Project Goals
 
-### Part I — Kinematics
+Robotics is intended to serve as a practical computational environment for robotics study, verification, and early-stage design exploration. The main goals are:
 
-#### 2) Rotation Kinematics (`rotation/`)
-- Global/local axis rotations, successive rotations, Euler angles, local vs global, general transformations, active vs passive maps.
+- provide focused, testable tools for individual robotics topics;
+- keep analyses reproducible through command-line execution and structured inputs;
+- generate useful engineering artifacts such as JSON, CSV, HTML, and PNG outputs;
+- make textbook-style calculations easier to inspect, validate, and extend;
+- support both numerical and symbolic workflows where appropriate;
+- maintain a modular package structure that can grow without turning into a monolithic application.
 
-#### 3) Orientation Kinematics (`orientation/`)
-- Axis–angle, rotation matrices, Euler parameters/quaternions, spinors/rotators, representation caveats, composition/decomposition of rotations.
+## Repository Structure
 
-#### 4) Motion Kinematics (`motion/`)
-- Rigid body motion, homogeneous transforms, order‑free & screw transformations, Plücker coordinates, lines/planes, combined screw operations.
+```text
+acceleration_kinematics/   # Acceleration kinematics and higher-order derivatives
+angular_velocity/          # Angular velocity and angular-rate mapping tools
+applied_dynamics/          # Applied dynamics workflows
+control_techniques/        # Robotics control methods
+forward_kinematics/        # Forward pose and frame-transformation solvers
+inverse_kinematics/        # Inverse kinematics workflows
+motion_planning/           # Motion-planning utilities and examples
+orientation_kinematics/    # Orientation representations and transformations
+path_planning/             # Path design and path-planning tools
+robot_modeling/            # Robot model and geometry utilities
+rotation_kinematics/       # Rotation matrices, Euler sequences, and rate maps
+time_optimization/         # Trajectory timing and time-optimal workflows
+velocity_kinematics/       # Velocity kinematics and Jacobian calculations
+```
 
-#### 5) Forward Kinematics (`forward/`)
-- Denavit–Hartenberg, adjacent frame transforms, forward pose of manipulators, spherical wrist, assembly strategies, screw‑based transforms, non‑DH methods.
+Most packages follow a common structure:
 
-#### 6) Inverse Kinematics (`inverse/`)
-- Decoupling, inverse transforms, iterative methods, existence/uniqueness, singularities, technique comparison.
+```text
+cli.py        command-line entry point
+core.py       numerical or symbolic solver logic
+apis.py       request/response models or public interfaces
+io.py         file I/O utilities
+utils.py      shared package helpers
+in/           example input files
+out/          generated output files
+RUNS.md       reproducible command examples
+docs/         package-level Sphinx documentation
+tests/        package-level validation tests
+```
 
----
+The exact module set varies by package, but the design intent is consistent: keep the command-line interface clear, keep solver logic separate from I/O, and keep examples reproducible.
 
-### Part II — Derivative Kinematics
+## Design Principles
 
-#### 7) Angular Velocity (`angular/`)
-- Angular velocity vectors/matrices, time‑derivatives across frames, rigid‑body ω, velocity transform matrices, ∂/∂t of T.
+### CLI-first engineering workflows
 
-#### 8) Velocity Kinematics (`velocity/`)
-- Rigid link and forward velocity, Jacobian generating vectors, inverse velocity kinematics, linear/nonlinear algebraic formulations, Jacobian from link transforms.
+The tools are designed to run from the terminal. Important options are exposed through command-line flags, and package-specific workflows are documented in `RUNS.md` files. This keeps calculations repeatable and easy to archive.
 
-#### 9) Acceleration Kinematics (`acceleration/`)
-- Angular & rigid‑body acceleration, acceleration transform matrices, forward/inverse acceleration, recursive acceleration, higher‑order frame derivatives.
+### Reproducible inputs and outputs
 
----
+Package-level `in/` folders contain example inputs. Package-level `out/` folders receive generated results. This convention makes it easier to rerun examples, compare outputs, and keep solver behavior stable across refactors.
 
-### Part III — Dynamics
+### Focused packages
 
-#### 10) Applied Dynamics (`applied/`)
-- Forces/moments, momentum, equations of motion, work/energy, translational/rotational kinetics, mass moment matrices, Lagrange/Newton forms.
+Each package targets a narrow robotics topic. This makes the code easier to test, document, and extend while allowing each tool to evolve independently.
 
-#### 11) Robot Dynamics (`robot/`)
-- Rigid‑link Newton–Euler and recursive Newton–Euler, Lagrange dynamics, statics, Lagrange equations with link transform matrices.
+### Transparent numerical and symbolic computation
 
----
+The project uses the Python scientific-computing ecosystem for matrix operations, symbolic derivations, optimization, plotting, and control-oriented calculations. The emphasis is on readable solver logic and inspectable intermediate results.
 
-### Part IV — Control
+### Testable calculations
 
-#### 12) Path Planning (`path/`)
-- Cubic/polynomial/non‑polynomial paths, spatial design, forward/inverse path robot motion, rotational paths.
+The repository emphasizes validation through package-level tests, known examples, and repeatable command workflows. Tests are used to protect existing behavior as solver paths and documentation support are added.
 
-#### 13) Time‑Optimal Control (`timeopt/`)
-- Minimum‑time & bang‑bang, floating time, time‑optimal control for robots.
-
-#### 14) Control Techniques (`control/`)
-- Open/closed‑loop control, computed torque, linear control (P, I, D), sensing & control (position/speed/acceleration sensors).
-
----
-
-## Design philosophy
-
-- **CLI‑first**: everything important is a flag, not hidden in a notebook cell.
-- **Reproducible**: inputs in `in/`, outputs in `out/`, commands in `RUNS.md`.
-- **Test‑driven**: `pytest` suites for each tool; coverage reports during refactors.
-- **Pragmatic math**: uses python‑control and explicit numerics/symbolics where appropriate for clarity and robustness.
-- **Teacher‑friendly**: plots (Matplotlib and Plotly), CSV/JSON exports, and clean logs that drop into lectures/reports.
-
----
-
-## Quick start
+## Quick Start
 
 ```bash
-# 1) Clone and create a virtual env (example)
+# Clone the repository
 git clone https://github.com/pablomarcel/robotics.git
 cd robotics
-python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
-# 2) Install dependencies
-pip install -U pip
+# Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+
+# Install dependencies
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 
-# 3) Run a demo from *inside* a package
-cd rotation_kinematics
-python cli.py --help
-# See RUNS.md in each package for copy‑paste commands
-
-# 4) Run tests (per tool)
-cd ../
-pytest rotation_kinematics/tests --cov --cov-config=rotation_kinematics/.coveragerc --cov-report=term-missing
+# Optional: install the repository in editable mode
+pip install -e .
 ```
 
-> Each folder includes an import shim so that **`python cli.py ...` works when you `cd` into that folder**.
-
----
-
-## I/O conventions
-
-- **Inputs**: `in/` (JSON/CSV/YAML)
-- **Outputs**: `out/` (CSV/JSON/HTML/PNG)
-- Many CLIs support `--pretty`, `--save_json`, `--save_csv`, and `--save` with placeholders like `out/{{name}}_{{kind}}.png` or `.html`.
-
-Common capabilities:
-- print numeric results to console
-- export matrices, Jacobians, and trajectories to **CSV/JSON**
-- write **Plotly** interactive HTML and **Matplotlib** PNGs
-
----
-
-## Example: rotation composition (rotation/)
+Run a package-level command:
 
 ```bash
 cd rotation_kinematics
-python cli.py compose --about global --angles "30, -20, 45" --order "z,y,x" --plot --save "out/compose_{{kind}}.png"
+python cli.py --help
 ```
 
----
+Many packages also support module execution from the repository root:
 
-## Tested setup
+```bash
+python -m rotation_kinematics.rot_cli --help
+```
 
-- Python 3.13 (also works with 3.11/3.12 in most tools)
-- NumPy 2.x, SciPy 1.15.x, SymPy 1.13.x, matplotlib 3.10.x, plotly 5.x
-- macOS 13.7, Windows 10/11 (CLI + plots)
-- Continuous refactors with `pytest` suites per tool
+See the package-level `RUNS.md` files for tested examples.
 
-See `requirements.txt` for exact pins.
+## Example Workflow
 
----
+A typical workflow is:
 
-## Trademark & affiliation notice
+```bash
+cd rotation_kinematics
+python cli.py compose global zyx "30,-20,45" --degrees --save r_zyx.csv
+python cli.py check --from-csv r_zyx.csv
+```
 
-**MATLAB®** and **Simulink®** are registered trademarks of **The MathWorks, Inc.** I am **not affiliated** with The MathWorks, Reza N. Jazar, or the publisher. Book references are for citation and interoperability only.
+Generated outputs are written to the package-level `out/` directory when the CLI supports file export. Other packages follow the same general pattern: choose a solver path or command, provide structured inputs or flags, run the command, and inspect generated artifacts.
 
----
+## Input and Output Conventions
+
+Common conventions across the repository:
+
+```text
+in/      example inputs such as JSON, CSV, YAML, or VCD-style data where applicable
+out/     generated outputs such as JSON, CSV, PNG, or HTML files
+RUNS.md  reproducible command examples for the package
+```
+
+Common output types include:
+
+- JSON result packs for structured numerical output;
+- CSV exports for matrices, trajectories, Jacobians, roots, or time histories;
+- PNG figures for static plots and reports;
+- interactive HTML visualizations where supported;
+- text summaries suitable for terminal inspection and documentation.
+
+## Documentation Build
+
+The repository publishes package-level Sphinx documentation through GitHub Pages. Each package that includes a `docs/` folder can be built independently.
+
+Example local build:
+
+```bash
+cd rotation_kinematics/docs
+make html
+```
+
+or:
+
+```bash
+sphinx-build -b html rotation_kinematics/docs rotation_kinematics/docs/_build/html
+```
+
+The GitHub Pages workflow builds all available package documentation, copies each package site into the final `_site/` folder, and generates the root documentation landing page.
+
+## Testing
+
+Run tests for an individual package from the repository root. For example:
+
+```bash
+pytest rotation_kinematics/tests \
+  --cov \
+  --cov-config=rotation_kinematics/.coveragerc \
+  --cov-report=term-missing
+```
+
+To run all available tests:
+
+```bash
+pytest
+```
+
+## Requirements
+
+The project is developed against modern Python versions and the scientific Python ecosystem. See `requirements.txt` for pinned dependencies.
+
+Typical dependencies include:
+
+- NumPy
+- SciPy
+- SymPy
+- Matplotlib
+- Plotly
+- python-control
+- pytest
+- Sphinx and Furo for documentation
+
+Dependency usage varies by package. Some tools are primarily numerical, while others include symbolic derivations, plotting, or documentation helpers.
+
+## Development Notes
+
+When adding or modifying a package:
+
+- keep command-line behavior clear and documented;
+- keep reusable solver logic outside the CLI when possible;
+- keep example inputs under `in/`;
+- write generated files under `out/`;
+- update `RUNS.md` with reproducible commands;
+- add or update tests for new solver paths;
+- keep Sphinx documentation conservative and deploy-safe;
+- verify that package links in the root documentation workflow match the current folder names.
 
 ## Contributing
 
-Issues and PRs are welcome:
-- Respect the folder structure and the **CLI‑first** approach.
-- Keep inputs in `in/`, outputs in `out/`, and runnable **RUNS.md** examples.
-- Add or update **tests** with any new feature or refactor.
-- Prefer small, focused modules and clean dataclasses for I/O (`apis.py`).
+Contributions are welcome when they are focused, reproducible, and tested.
 
-A simple PR checklist:
-- [ ] `pytest` passes locally for the changed tool(s)
-- [ ] `RUNS.md` updated with new/changed commands
-- [ ] New flags documented in `cli.py --help`
-- [ ] Outputs reproducible under `out/`
+Before opening a pull request:
 
----
+- run tests for the affected package;
+- update `RUNS.md` if command behavior changed;
+- document new CLI flags in `--help` text;
+- include or update example input files when adding solver paths;
+- verify generated outputs are written to the expected package-level `out/` folder;
+- confirm package documentation builds locally when documentation files are modified.
+
+## References and Acknowledgments
+
+This project is informed by standard robotics coursework and references, including Reza N. Jazar's *Theory of Applied Robotics*. It also depends on the broader Python open-source scientific-computing ecosystem, including NumPy, SciPy, SymPy, Matplotlib, Plotly, python-control, pytest, Sphinx, and related tools.
+
+## Trademark and Affiliation Notice
+
+MATLAB® and Simulink® are registered trademarks of The MathWorks, Inc. This project is independent and is not affiliated with The MathWorks, Reza N. Jazar, or any publisher. References to textbooks or software products are for context, citation, and interoperability only.
 
 ## License
 
-This project is released under the **MIT License** (see `LICENSE`).
-
----
-
-## Acknowledgments
-
-- Reza N. Jazar, _Theory of Applied Robotics_ (3rd ed.)
-- The Python open‑source ecosystem: NumPy, SciPy, SymPy, matplotlib, plotly, python‑control, and many others.
+This project is released under the MIT License. See `LICENSE` for details.

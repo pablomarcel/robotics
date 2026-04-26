@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="updated pages.yml to avoid hardcoding stuff">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/pages.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/pages.yml" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="updated pages.yml to improve the styling of the documentation landing page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -144,23 +143,7 @@
       <workItem from="1761358714403" duration="2098000" />
       <workItem from="1761366916714" duration="8000" />
       <workItem from="1777054208682" duration="657000" />
-      <workItem from="1777160072152" duration="8850000" />
-    </task>
-    <task id="LOCAL-00025" summary="implemented urdf in the velocity module">
-      <option name="closed" value="true" />
-      <created>1758432011142</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1758432011142</updated>
-    </task>
-    <task id="LOCAL-00026" summary="implemented first cut in the acceleration module">
-      <option name="closed" value="true" />
-      <created>1758476319461</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1758476319461</updated>
+      <workItem from="1777160072152" duration="9447000" />
     </task>
     <task id="LOCAL-00027" summary="implemented testing in the acceleration module. 16 tests failed">
       <option name="closed" value="true" />
@@ -538,7 +521,23 @@
       <option name="project" value="LOCAL" />
       <updated>1777171596223</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <task id="LOCAL-00074" summary="updated pages.yml to improve the styling of the documentation landing page">
+      <option name="closed" value="true" />
+      <created>1777172385497</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1777172385497</updated>
+    </task>
+    <task id="LOCAL-00075" summary="updated pages.yml to improve the styling of the documentation landing page">
+      <option name="closed" value="true" />
+      <created>1777172886006</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1777172886006</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -559,7 +558,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemented the control techniques module. all tests pass" />
     <MESSAGE value="Created README.md and LICENSE" />
     <MESSAGE value="updated coverage files" />
     <MESSAGE value="started all RUNS.md commands" />
@@ -584,6 +582,7 @@
     <MESSAGE value="refactored packages names." />
     <MESSAGE value="added docs" />
     <MESSAGE value="updated pages.yml to avoid hardcoding stuff" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated pages.yml to avoid hardcoding stuff" />
+    <MESSAGE value="updated pages.yml to improve the styling of the documentation landing page" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated pages.yml to improve the styling of the documentation landing page" />
   </component>
 </project>
