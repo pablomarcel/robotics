@@ -28,7 +28,7 @@ These produce the intended effective rotation_kinematics sequences while keeping
 convention that each joint actuates around its local z-axis.
 
 If you need a different convention (MDH or PoE), you can add parallel presets
-or feed equivalent screws into the PoE path elsewhere in the codebase.
+or feed equivalent screws into the PoE path_planning elsewhere in the codebase.
 """
 
 from __future__ import annotations

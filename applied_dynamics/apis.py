@@ -118,7 +118,7 @@ class AppliedService:
     def save_result_json(self, name: str, payload: Dict[str, Any], out_dir: Optional[Path] = None) -> str:
         """
         Save a dict payload as JSON under applied_dynamics/out (or a custom out_dir).
-        Returns the full path as a string.
+        Returns the full path_planning as a string.
         """
         out = (out_dir or OUT_DIR) / f"{name}.json"
         out.parent.mkdir(parents=True, exist_ok=True)

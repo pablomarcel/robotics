@@ -204,7 +204,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--nu", type=int, help="Samples along u (angle).")
     p.add_argument("--nv", type=int, help="Samples along v (width).")
 
-    p.add_argument("--out", type=str, help="Output file path (defaults into introduction/out/).")
+    p.add_argument("--out", type=str, help="Output file path_planning (defaults into introduction/out/).")
     p.add_argument("--show", action="store_true", help="Show interactive window (mpl/pyvista).")
 
     p.add_argument("--from-yaml", type=str, help="Load defaults from YAML (e.g., introduction/in/mobius.yaml).")
@@ -246,7 +246,7 @@ def main(argv: Optional[list] = None):
     backend = params["backend"]
     R, w, nu, nv = float(params["R"]), float(params["w"]), int(params["nu"]), int(params["nv"])
 
-    # Output path
+    # Output path_planning
     out_path = args.out if args.out else default_out_path(backend)
     if backend == "plotly" and os.path.splitext(out_path)[1] == "":
         out_path = out_path + ".html"

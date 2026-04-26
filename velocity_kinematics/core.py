@@ -175,8 +175,8 @@ def _urdfpy_load(path: str):
     """
     Load a URDF file via urdfpy across versions.
 
-    urdfpy >= 0.0.18  : URDF.load(path)
-    older urdfpy      : URDF.from_xml_file(path)
+    urdfpy >= 0.0.18  : URDF.load(path_planning)
+    older urdfpy      : URDF.from_xml_file(path_planning)
     """
     try:
         from urdfpy import URDF  # type: ignore
@@ -221,7 +221,7 @@ def _hom(R: np.ndarray, p: np.ndarray) -> np.ndarray:
 
 class URDFRobot(_BaseRobot):
     """
-    URDF-backed robot using `urdfpy`.
+    URDF-backed robot_dynamics using `urdfpy`.
 
     - FK computed along the base→EE chain using joint origins and motion_kinematics
     - Geometric Jacobian computed analytically from world joint axes/origins
@@ -229,12 +229,12 @@ class URDFRobot(_BaseRobot):
 
     Construction (preferred): URDFRobot.from_spec(spec)
     spec can be:
-      - path string/Path to .urdf
+      - path_planning string/Path to .urdf
       - dict with keys:
-          urdf: path to .urdf
-          base_link: optional base link name (defaults to robot.base_link)
+          urdf: path_planning to .urdf
+          base_link: optional base link name (defaults to robot_dynamics.base_link)
           ee_link:   optional end-effector link (defaults to a leaf)
-          name:      optional robot name
+          name:      optional robot_dynamics name
     """
 
     def __init__(
@@ -287,9 +287,9 @@ class URDFRobot(_BaseRobot):
             rob = _urdfpy_load(path)
             return URDFRobot(rob)
         elif isinstance(data, dict):
-            path = data.get("urdf") or data.get("path") or data.get("file")
+            path = data.get("urdf") or data.get("path_planning") or data.get("file")
             if not path:
-                raise ValueError("URDF spec dict must include key 'urdf' with a path to the .urdf file.")
+                raise ValueError("URDF spec dict must include key 'urdf' with a path_planning to the .urdf file.")
             rob = _urdfpy_load(str(path))
             return URDFRobot(
                 rob,
@@ -320,7 +320,7 @@ class URDFRobot(_BaseRobot):
         cur = tip_link
         while cur != base_link:
             if cur not in self._parent_of:
-                raise ValueError(f"No path from base link '{base_link}' to tip link '{tip_link}'")
+                raise ValueError(f"No path_planning from base link '{base_link}' to tip link '{tip_link}'")
             parent, joint = self._parent_of[cur]
             chain_rev.append((parent, joint, cur))
             cur = parent

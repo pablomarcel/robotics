@@ -19,8 +19,8 @@ _SVC = InverseService()
 
 def _ensure_out_path(path: Optional[Path], default_name: str) -> Path:
     """
-    If `path` is None or a directory, return DEFAULT_OUT_DIR/default_name.json.
-    If `path` has a suffix, ensure parent exists and return it verbatim.
+    If `path_planning` is None or a directory, return DEFAULT_OUT_DIR/default_name.json.
+    If `path_planning` has a suffix, ensure parent exists and return it verbatim.
     """
     if path is None:
         DEFAULT_OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -63,10 +63,10 @@ def _pose_from_cli(x: Optional[float], y: Optional[float], t_path: Optional[Path
             and all(isinstance(row, list) and len(row) == 4 for row in data)
         )
         if not ok_shape:
-            raise click.ClickException("--T-path must point to a 4x4 JSON matrix")
+            raise click.ClickException("--T-path_planning must point to a 4x4 JSON matrix")
         return {"T": data}
     if x is None or y is None:
-        raise click.ClickException("Provide either --x/--y or --T-path")
+        raise click.ClickException("Provide either --x/--y or --T-path_planning")
     return {"x": float(x), "y": float(y)}
 
 
@@ -125,8 +125,8 @@ def cmd_problem_solve(problem_path: Path, out: Optional[Path]):
               show_default=True, help="IK method.")
 @click.option("--x", type=float, help="Target x (if using x/y pose).")
 @click.option("--y", type=float, help="Target y (if using x/y pose).")
-@click.option("--T-path", "t_path", type=click.Path(exists=True, path_type=Path),
-              help="JSON path to a 4x4 homogeneous matrix for the target pose.")
+@click.option("--T-path_planning", "t_path", type=click.Path(exists=True, path_type=Path),
+              help="JSON path_planning to a 4x4 homogeneous matrix for the target pose.")
 @click.option("--q0", "q0_vals", type=float, multiple=True,
               help="Initial guess (iterative methods). Repeat per joint.")
 @click.option("--tol", type=float, default=1e-6, show_default=True, help="Tolerance (iterative).")

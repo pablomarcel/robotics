@@ -35,7 +35,7 @@ class Pendulum:
     def h(self, x: np.ndarray, u: np.ndarray) -> np.ndarray:
         return x  # measure [θ, θdot]
 
-# Minimal robot abstraction for computed-torque
+# Minimal robot_dynamics abstraction for computed-torque
 class RobotDynamics(Protocol):
     def inertia(self, q: np.ndarray) -> np.ndarray: ...
     def bias(self, q: np.ndarray, qd: np.ndarray) -> np.ndarray:

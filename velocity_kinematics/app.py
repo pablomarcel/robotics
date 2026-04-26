@@ -4,9 +4,9 @@ Velocity Kinematics Toolkit – App bootstrap.
 
 Typical usage
 -------------
-python -m velocity_kinematics.app fk --robot velocity_kinematics/in/planar2r.json --q 0.3,0.2
-python -m velocity_kinematics.app jacobian --robot velocity_kinematics/in/planar2r.json --q 0.3,0.2
-python -m velocity_kinematics.app newton-ik --robot velocity_kinematics/in/planar2r.json --q0 0.1,0.1 --p 1.0,0.5,0.0
+python -m velocity_kinematics.app fk --robot_dynamics velocity_kinematics/in/planar2r.json --q 0.3,0.2
+python -m velocity_kinematics.app jacobian --robot_dynamics velocity_kinematics/in/planar2r.json --q 0.3,0.2
+python -m velocity_kinematics.app newton-ik --robot_dynamics velocity_kinematics/in/planar2r.json --q0 0.1,0.1 --p 1.0,0.5,0.0
 python -m velocity_kinematics.app lu-solve --A '[[2,1],[1,3]]' --b '[1,2]'
 python -m velocity_kinematics.app diagram --out velocity_kinematics/out
 

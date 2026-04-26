@@ -232,7 +232,7 @@ def run_pyreverse(package_dir: str | Path, outdir: str | Path) -> dict:
     Contract used by tests:
       - If `pylint.pyreverse.main` is importable on this system:
            * Return success (exit 0 via CLI) and emit a diagram artifact.
-           * We generate a Mermaid diagram with our own stable code path.
+           * We generate a Mermaid diagram with our own stable code path_planning.
       - If it is NOT importable:
            * Raise RuntimeError so the CLI maps to exit code 2.
 
@@ -257,7 +257,7 @@ def run_pyreverse(package_dir: str | Path, outdir: str | Path) -> dict:
         classes=[_core.JointDH, _core.DHRobot, _core.solvers],
         relations=[("DHRobot", "JointDH", "contains *")],
         outfile=md_path,
-        title="Velocity – Core Classes (Mermaid, pylint-present fast path)",
+        title="Velocity – Core Classes (Mermaid, pylint-present fast path_planning)",
     )
 
     # Optional: also emit a quick PNG via graphviz if available; ignore errors.

@@ -10,7 +10,7 @@ Features
 - ODESolver facade:
     * Uses scipy.integrate.solve_ivp when available
     * Falls back to pure-Python RK4 (fixed step) if SciPy is absent
-- Events / early termination (solve_ivp path), minimal event emulation in RK4
+- Events / early termination (solve_ivp path_planning), minimal event emulation in RK4
 - Trajectory container + CSV export
 
 Usage

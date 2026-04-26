@@ -17,13 +17,13 @@ from inverse_kinematics.core import SerialChain, Transform
 try:
     # Preferred: class-based solver
     from inverse_kinematics.core import AnalyticPlanar2R  # type: ignore
-except Exception:  # pragma: no cover - fallback path
+except Exception:  # pragma: no cover - fallback path_planning
     AnalyticPlanar2R = None  # type: ignore
 
 try:
     # Fallback: functional API
     from inverse_kinematics.core import analytic_planar2r  # type: ignore
-except Exception:  # pragma: no cover - fallback path
+except Exception:  # pragma: no cover - fallback path_planning
     analytic_planar2r = None  # type: ignore
 
 
@@ -52,7 +52,7 @@ def _near(a: float, b: float, tol: float = 1e-8) -> bool:
     return abs(a - b) <= tol
 
 
-# ------------------------------ happy path ------------------------------
+# ------------------------------ happy path_planning ------------------------------
 
 def test_two_solutions_for_reachable_target():
     """

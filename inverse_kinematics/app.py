@@ -49,7 +49,7 @@ class InverseApp:
 
     Responsibilities
     ----------------
-    * Load/validate robot specs and build :class:`SerialChain`.
+    * Load/validate robot_dynamics specs and build :class:`SerialChain`.
     * Closed-form IK helpers for supported models (e.g. planar 2R).
     * Iterative IK (Newton–Raphson / DLS) for general chains.
     * Preset builders mirroring those in :mod:`inverse_kinematics.design`.
@@ -67,7 +67,7 @@ class InverseApp:
 
     def load_robot(self, path: PathLike, *, validate: bool = True) -> SerialChain:
         """
-        Load a robot specification (JSON or YAML) and build a :class:`SerialChain`.
+        Load a robot_dynamics specification (JSON or YAML) and build a :class:`SerialChain`.
         """
         p = Path(path)
         spec = io_mod.load_spec(p)  # JSON/YAML auto-detected
@@ -77,7 +77,7 @@ class InverseApp:
 
     def validate_file(self, path: PathLike) -> Tuple[bool, Optional[str]]:
         """
-        Validate a robot specification file against the JSON Schema.
+        Validate a robot_dynamics specification file against the JSON Schema.
         """
         try:
             spec = io_mod.load_spec(path)
@@ -175,7 +175,7 @@ class InverseApp:
         Supports:
           - {"kind": "planar2r", "l1": ..., "l2": ...}
           - {"kind": "wrist", "wrist_type": 1|2|3, "d_tool": float=0.0}
-          - {"kind": "spec", "spec": <dict or path>}
+          - {"kind": "spec", "spec": <dict or path_planning>}
         """
         kind = str(model.get("kind", "")).lower()
         if kind == "planar2r":
@@ -193,7 +193,7 @@ class InverseApp:
             if isinstance(spec, Mapping):
                 io_mod.validate_spec(spec, io_mod.robot_schema())
                 return io_mod.build_chain_from_spec(spec)
-            raise ValueError("model.kind='spec' requires 'spec' as dict or path string.")
+            raise ValueError("model.kind='spec' requires 'spec' as dict or path_planning string.")
         raise ValueError(f"Unsupported model.kind: {kind}")
 
     def _parse_pose_to_T(self, pose: Mapping[str, Any]) -> np.ndarray:

@@ -146,7 +146,7 @@ class AbstractDynamicsBackend:
         return False
 
     # ---- builders ----
-    def build_simple_pendulum(self, *a, **k):  # pragma: no cover - default path
+    def build_simple_pendulum(self, *a, **k):  # pragma: no cover - default path_planning
         raise BackendNotAvailable(f"{self.name}: simple pendulum builder is unavailable (backend not installed).")
 
     def build_planar_2r(self, *a, **k):  # pragma: no cover

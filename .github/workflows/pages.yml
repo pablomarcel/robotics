@@ -37,7 +37,7 @@ jobs:
 
       - name: Build Sphinx for each package
         env:
-          # also expose source root on sys.path (helps if editable install is skipped)
+          # also expose source root on sys.path_planning (helps if editable install is skipped)
           PYTHONPATH: ${{ github.workspace }}
         run: |
           set -e

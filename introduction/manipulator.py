@@ -349,7 +349,7 @@ def build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--from-yaml", type=str, help="Read one manipulator spec from YAML.")
 
     # Output
-    p.add_argument("--out", type=str, help="Write a text listing to this path.")
+    p.add_argument("--out", type=str, help="Write a text listing to this path_planning.")
     p.add_argument("--export-json", type=str, help="Also write a JSON file with results.")
     p.add_argument("--export-csv", type=str, help="Also write a CSV file with results.")
 

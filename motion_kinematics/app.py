@@ -232,7 +232,7 @@ class App:
         output_path: Optional[Union[str, Path]],
     ) -> Dict[str, Any]:
         """
-        Optionally write a JSON payload to `motion_kinematics/out` (or custom path).
+        Optionally write a JSON payload to `motion_kinematics/out` (or custom path_planning).
         """
         if output_path is None:
             return payload

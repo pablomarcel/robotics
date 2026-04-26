@@ -78,7 +78,7 @@ class RobotFormat(str, Enum):
 @dataclass(frozen=True)
 class RobotSpec:
     """
-    Format-agnostic robot specification passed around the API.
+    Format-agnostic robot_dynamics specification passed around the API.
 
     Attributes
     ----------
@@ -89,7 +89,7 @@ class RobotSpec:
     path : Optional[Path]
         Where it was loaded from (if applicable).
     name : Optional[str]
-        Human-friendly robot name.
+        Human-friendly robot_dynamics name.
     """
     fmt: RobotFormat
     data: Mapping[str, Any]
@@ -123,7 +123,7 @@ class VelocityAPI:
     @_timeit
     def load_robot(self, source: Union[str, Path]) -> RobotSpec:
         """
-        Load a robot description from YAML/JSON (DH) or URDF file.
+        Load a robot_dynamics description from YAML/JSON (DH) or URDF file.
 
         Parameters
         ----------
@@ -152,7 +152,7 @@ class VelocityAPI:
             name = data.get("name") or p.stem
             return RobotSpec(fmt=RobotFormat.URDF, data=data, path=p, name=name)
         else:
-            raise APIError(f"Unsupported robot file type: {p.suffix}")
+            raise APIError(f"Unsupported robot_dynamics file type: {p.suffix}")
 
     # --------------------------------- Kinematics --------------------------------
 

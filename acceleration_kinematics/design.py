@@ -89,7 +89,7 @@ def planar_2r(l1: float, l2: float, *, name: str = "planar_2R") -> ChainKinemati
 
 def from_pinocchio(model_or_path: object, *, frame: str = "ee") -> ChainKinematics:  # pragma: no cover
     """
-    Create a ChainKinematics façade from a Pinocchio model/URDF/path.
+    Create a ChainKinematics façade from a Pinocchio model/URDF/path_planning.
 
     Requires:
         acceleration_kinematics.backends.pinocchio_backend.PinocchioBackend

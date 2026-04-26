@@ -71,8 +71,8 @@ def test_app_diagram_subcommand_handles_optional_pylint(tmp_path: Path, capsys: 
     if has_pylint:
         assert code == 0
         out = capsys.readouterr().out.strip()
-        # Expect a JSON dict with the diagram path
+        # Expect a JSON dict with the diagram path_planning
         assert out.startswith("{") and out.endswith("}")
     else:
-        # API error path uses exit code 2 in cli layer
+        # API error path_planning uses exit code 2 in cli layer
         assert code == 2

@@ -331,7 +331,7 @@ def build_parser() -> argparse.ArgumentParser:
     pr.add_argument("--axis", type=_parse_vec3, required=True, help="ax,ay,az")
     pr.add_argument("--angle", type=float, required=True, help="angle (radians by default)")
     pr.add_argument("--degrees", action="store_true", help="interpret angle in degrees")
-    pr.add_argument("--out", type=Path, help="output JSON path (default motion_kinematics/out/rotation_kinematics.json)")
+    pr.add_argument("--out", type=Path, help="output JSON path_planning (default motion_kinematics/out/rotation_kinematics.json)")
     pr.set_defaults(func=cmd_rotation)
 
     # screw
@@ -341,14 +341,14 @@ def build_parser() -> argparse.ArgumentParser:
     ps.add_argument("--pitch", type=float, required=True, help="pitch h")
     ps.add_argument("--phi", type=float, required=True, help="rotation_kinematics angle φ (rad by default)")
     ps.add_argument("--degrees", action="store_true", help="interpret φ in degrees")
-    ps.add_argument("--out", type=Path, help="output JSON path (default motion_kinematics/out/screw.json)")
+    ps.add_argument("--out", type=Path, help="output JSON path_planning (default motion_kinematics/out/screw.json)")
     ps.set_defaults(func=cmd_screw)
 
     # plucker from two points
     pp = sub.add_parser("plucker", help="Plücker line from two points")
     pp.add_argument("--p1", type=_parse_vec3, required=True)
     pp.add_argument("--p2", type=_parse_vec3, required=True)
-    pp.add_argument("--out", type=Path, help="output JSON path (default motion_kinematics/out/plucker.json)")
+    pp.add_argument("--out", type=Path, help="output JSON path_planning (default motion_kinematics/out/plucker.json)")
     pp.set_defaults(func=cmd_plucker)
 
     # angle & distance between lines
@@ -357,7 +357,7 @@ def build_parser() -> argparse.ArgumentParser:
     pl.add_argument("--a2", type=_parse_vec3, required=True)
     pl.add_argument("--b1", type=_parse_vec3, required=True)
     pl.add_argument("--b2", type=_parse_vec3, required=True)
-    pl.add_argument("--out", type=Path, help="output JSON path (default motion_kinematics/out/lines.json)")
+    pl.add_argument("--out", type=Path, help="output JSON path_planning (default motion_kinematics/out/lines.json)")
     pl.set_defaults(func=cmd_lines)
 
     # plane distance
@@ -366,20 +366,20 @@ def build_parser() -> argparse.ArgumentParser:
     ppd.add_argument("--normal", type=_parse_vec3, required=True, help="plane normal (need not be unit)")
     ppd.add_argument("--s", type=float, default=0.0, help="plane offset: n̂·x = s (default 0)")
     ppd.add_argument("--unsigned", action="store_true", help="report absolute distance")
-    ppd.add_argument("--out", type=Path, help="output JSON path (default motion_kinematics/out/plane-dist.json)")
+    ppd.add_argument("--out", type=Path, help="output JSON path_planning (default motion_kinematics/out/plane-dist.json)")
     ppd.set_defaults(func=cmd_plane_dist)
 
     # forward_kinematics kinematics (DH)
     pfk = sub.add_parser("fk", help="Forward kinematics with DH rows: a,alpha,d,theta")
     pfk.add_argument("--dh", type=_parse_dh, required=True, action="append",
                      help="DH row (repeatable). Example: --dh 0.1,0.0,0.2,1.57")
-    pfk.add_argument("--out", type=Path, help="output JSON path (default motion_kinematics/out/fk.json)")
+    pfk.add_argument("--out", type=Path, help="output JSON path_planning (default motion_kinematics/out/fk.json)")
     pfk.set_defaults(func=cmd_fk)
 
     # file-driven
     prun = sub.add_parser("run", help="Run from a JSON job file")
-    prun.add_argument("--file", type=Path, required=True, help="path to motion_kinematics/in/job.json")
-    prun.add_argument("--out", type=Path, help="output JSON path (default based on op)")
+    prun.add_argument("--file", type=Path, required=True, help="path_planning to motion_kinematics/in/job.json")
+    prun.add_argument("--out", type=Path, help="output JSON path_planning (default based on op)")
     prun.set_defaults(func=cmd_run)
 
     # docs skeleton

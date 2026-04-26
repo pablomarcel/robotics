@@ -322,7 +322,7 @@ class SerialChain:
       should be the home pose of the end-effector.
     """
 
-    def __init__(self, links: Sequence[Link], M: Optional[np.ndarray] = None, name: str = "robot"):
+    def __init__(self, links: Sequence[Link], M: Optional[np.ndarray] = None, name: str = "robot_dynamics"):
         self._links: List[Link] = list(links)
         self.M = np.eye(4) if M is None else np.array(M, dtype=float)
         self.name = name
@@ -367,7 +367,7 @@ class SerialChain:
         if qv.size != self.n():
             raise ValueError(f"q has length {qv.size}, expected {self.n()}")
 
-        # PoE path: we have screws in the space frame.
+        # PoE path_planning: we have screws in the space frame.
         if all(isinstance(L, PoELink) for L in self._links):
             n = self.n()
             J = np.zeros((6, n))
@@ -382,7 +382,7 @@ class SerialChain:
                 T_prev = T_prev @ L.fk(qi).as_matrix()
             return J
 
-        # DH/MDH path
+        # DH/MDH path_planning
         # Accumulate ^0T_i for all i (including ^0T_0 = I)
         Ts: List[np.ndarray] = [np.eye(4)]
         T = np.eye(4)

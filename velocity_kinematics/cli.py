@@ -52,7 +52,7 @@ from .apis import VelocityAPI, APIError
 from . import design
 from . import core
 
-# Optional YAML (only needed when loading .yaml/.yml robot specs)
+# Optional YAML (only needed when loading .yaml/.yml robot_dynamics specs)
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover
@@ -80,7 +80,7 @@ def _maybe_json_or_csv(arg: Optional[str]) -> Optional[List[float]]:
     # JSON array?
     if (arg.startswith("[") and arg.endswith("]")) or (arg.startswith("(") and arg.endswith(")")):
         return list(np.asarray(json.loads(arg), dtype=float).ravel())
-    # File path?
+    # File path_planning?
     p = Path(arg)
     if p.exists():
         data = json.loads(p.read_text(encoding="utf-8"))
@@ -111,9 +111,9 @@ def _write_or_print(payload: Mapping[str, Any] | Sequence[Any] | Any, out: Optio
 def _load_robot_any(path_or_spec: str):
     """
     Accept:
-      - path to .yaml/.yml (DH or URDF wrapper)
-      - path to .json (DH or URDF wrapper)
-      - path to .urdf/.xml (raw URDF)
+      - path_planning to .yaml/.yml (DH or URDF wrapper)
+      - path_planning to .json (DH or URDF wrapper)
+      - path_planning to .urdf/.xml (raw URDF)
     Returns a core.DHRobot or core.URDFRobot accordingly.
     """
     p = Path(path_or_spec)
@@ -135,7 +135,7 @@ def _load_robot_any(path_or_spec: str):
         # Otherwise treat it as DH spec
         return core.DHRobot.from_spec(data)
 
-    raise APIError(f"Unsupported robot spec extension: {p.suffix} (use .yaml/.yml/.json/.urdf/.xml)")
+    raise APIError(f"Unsupported robot_dynamics spec extension: {p.suffix} (use .yaml/.yml/.json/.urdf/.xml)")
 
 
 # --------------------------------------------------------------------------- #
@@ -240,21 +240,21 @@ class VelocityCLI:
 
         # fk
         fk = sub.add_parser("fk", help="Forward kinematics")
-        fk.add_argument("robot", help="Path to DH (.yml/.yaml/.json) or URDF (.urdf/.xml)")
-        fk.add_argument("--q", required=True, help="Joint vector as CSV/JSON or path to JSON")
-        fk.add_argument("--out", help="Write JSON output to path")
+        fk.add_argument("robot_dynamics", help="Path to DH (.yml/.yaml/.json) or URDF (.urdf/.xml)")
+        fk.add_argument("--q", required=True, help="Joint vector as CSV/JSON or path_planning to JSON")
+        fk.add_argument("--out", help="Write JSON output to path_planning")
         fk.set_defaults(func=self._cmd_fk)
 
         # jacobian
         ja = sub.add_parser("jacobian", help="Geometric Jacobian J")
-        ja.add_argument("robot")
+        ja.add_argument("robot_dynamics")
         ja.add_argument("--q", required=True)
         ja.add_argument("--out")
         ja.set_defaults(func=self._cmd_jacobian)
 
         # analytic jacobian
         jaa = sub.add_parser("jacobian-analytic", help="Analytic Jacobian J_A (Euler-rate mapping)")
-        jaa.add_argument("robot")
+        jaa.add_argument("robot_dynamics")
         jaa.add_argument("--q", required=True)
         jaa.add_argument("--euler", default="ZYX", help="Euler sequence (e.g., ZYX, ZXZ)")
         jaa.add_argument("--out")
@@ -262,7 +262,7 @@ class VelocityCLI:
 
         # resolved rates
         rr = sub.add_parser("resolved-rates", help="Inverse velocity_kinematics qdot from Xdot = J qdot")
-        rr.add_argument("robot")
+        rr.add_argument("robot_dynamics")
         rr.add_argument("--q", required=True)
         rr.add_argument("--xdot", required=True, help="Task-space rates [vx,vy,vz, wx,wy,wz]")
         rr.add_argument("--damping", type=float, default=None, help="Damped least squares lambda")
@@ -272,10 +272,10 @@ class VelocityCLI:
 
         # newton ik
         nik = sub.add_parser("newton-ik", help="Newton–Raphson pose IK")
-        nik.add_argument("robot")
+        nik.add_argument("robot_dynamics")
         nik.add_argument("--q0", required=True, help="Initial guess")
         nik.add_argument("--p", help="Target position (x,y,z)")
-        nik.add_argument("--R", help="Target rotation_kinematics as JSON 3x3 or path")
+        nik.add_argument("--R", help="Target rotation_kinematics as JSON 3x3 or path_planning")
         nik.add_argument("--euler", default=None, help="Euler sequence name (e.g., ZYX) if --angles provided")
         nik.add_argument("--angles", help="Euler angles (deg by default) CSV/JSON")
         nik.add_argument("--deg", action="store_true", help="Interpret --angles in degrees (default)")
@@ -288,14 +288,14 @@ class VelocityCLI:
 
         # LU solve
         lus = sub.add_parser("lu-solve", help="Solve A x = b (chapter 8.5)")
-        lus.add_argument("--A", required=True, help="Matrix as JSON or path")
-        lus.add_argument("--b", required=True, help="Vector as JSON or path")
+        lus.add_argument("--A", required=True, help="Matrix as JSON or path_planning")
+        lus.add_argument("--b", required=True, help="Vector as JSON or path_planning")
         lus.add_argument("--out")
         lus.set_defaults(func=self._cmd_lu_solve)
 
         # LU inverse_kinematics
         lui = sub.add_parser("lu-inv", help="Compute A^{-1} via LU")
-        lui.add_argument("--A", required=True, help="Matrix as JSON or path")
+        lui.add_argument("--A", required=True, help="Matrix as JSON or path_planning")
         lui.add_argument("--out")
         lui.set_defaults(func=self._cmd_lu_inv)
 

@@ -25,7 +25,7 @@ ensure_dir(OUT_DIR); ensure_dir(IN_DIR)
 def _resolve_in(path_like: str) -> str:
     """
     Resolve an input file by searching rotation_kinematics/in, then rotation_kinematics/out,
-    then using the provided path as-is.
+    then using the provided path_planning as-is.
     """
     cands = [
         os.path.join(IN_DIR, path_like),
@@ -39,7 +39,7 @@ def _resolve_in(path_like: str) -> str:
 
 def _resolve_out(path_like: str | None, default_name: str) -> str:
     """
-    Resolve an output path. If 'path_like' is None or a bare filename,
+    Resolve an output path_planning. If 'path_like' is None or a bare filename,
     write under rotation_kinematics/out. Parents are created as needed.
     """
     if not path_like:
@@ -159,7 +159,7 @@ def cli(argv: List[str] | None = None) -> int:
     pc.add_argument("seq", help=HELP_SEQ)
     pc.add_argument("angles", type=str, help="comma list of three angles")
     pc.add_argument("--degrees", action="store_true", help="Angles are degrees (default radians)")
-    pc.add_argument("--save", type=str, default=None, help="CSV filename or path to save matrix (defaults to rotation_kinematics/out)")
+    pc.add_argument("--save", type=str, default=None, help="CSV filename or path_planning to save matrix (defaults to rotation_kinematics/out)")
 
     # decompose
     pd = sp.add_parser("decompose", help="Extract angles from a rotation_kinematics matrix for a given sequence")
@@ -177,7 +177,7 @@ def cli(argv: List[str] | None = None) -> int:
     pt.add_argument("angles", type=str)
     pt.add_argument("--degrees", action="store_true")
     pt.add_argument("--points", type=str, help="CSV of Nx3 points (resolved via in/out) or rows 'x;y;z|...'", default=None)
-    pt.add_argument("--save", type=str, default=None, help="CSV filename/path to save transformed points (defaults to rotation_kinematics/out)")
+    pt.add_argument("--save", type=str, default=None, help="CSV filename/path_planning to save transformed points (defaults to rotation_kinematics/out)")
 
     # passive
     ppv = sp.add_parser("passive", help="Passive coordinate change: rB = R^T rG")

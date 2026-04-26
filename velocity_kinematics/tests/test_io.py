@@ -3,8 +3,8 @@
 I/O tests for the Velocity Kinematics Toolkit.
 
 Covers:
-- load_dh_from_file: happy path (JSON), schema validation errors
-- Optional YAML path (skipped if PyYAML not installed)
+- load_dh_from_file: happy path_planning (JSON), schema validation errors
+- Optional YAML path_planning (skipped if PyYAML not installed)
 - 'tool' field validation for both xyz and 4x4 matrix forms
 - load_urdf_from_file: graceful fallback when urdfpy isn't installed
 - save_report: NumPy-safe JSON write
@@ -37,7 +37,7 @@ def _dh_minimal_dict() -> dict:
     }
 
 
-# ----------------------------- JSON happy path -------------------------------- #
+# ----------------------------- JSON happy path_planning -------------------------------- #
 
 def test_load_dh_from_json_happy_path(tmp_path: Path) -> None:
     p = tmp_path / "arm.json"
@@ -50,7 +50,7 @@ def test_load_dh_from_json_happy_path(tmp_path: Path) -> None:
     assert data["tool"]["xyz"] == [0.0, 0.0, 0.0]
 
 
-# ----------------------------- YAML path (optional) --------------------------- #
+# ----------------------------- YAML path_planning (optional) --------------------------- #
 
 @pytest.mark.skipif(importlib.util.find_spec("yaml") is None, reason="PyYAML not installed")
 def test_load_dh_from_yaml_when_available(tmp_path: Path) -> None:
@@ -126,9 +126,9 @@ def test_tool_field_validation(tmp_path: Path) -> None:
 @pytest.mark.skipif(importlib.util.find_spec("urdfpy") is not None, reason="urdfpy installed; fallback test expects absence")
 def test_load_urdf_returns_raw_when_no_urdfpy(tmp_path: Path) -> None:
     urdf_text = """<?xml version="1.0"?>
-<robot name="toy">
+<robot_dynamics name="toy">
   <link name="base"/>
-</robot>
+</robot_dynamics>
 """
     p = tmp_path / "toy.urdf"
     p.write_text(urdf_text, encoding="utf-8")

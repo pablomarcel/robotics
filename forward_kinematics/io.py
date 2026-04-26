@@ -1,6 +1,6 @@
 # forward_kinematics/io.py
 """
-I/O, schema, and builders for forward_kinematics-kinematics robot specifications.
+I/O, schema, and builders for forward_kinematics-kinematics robot_dynamics specifications.
 
 Features
 --------
@@ -74,7 +74,7 @@ from .core import DHLink, MDHLink, PoELink, SerialChain
 # ---------------------------------------------------------------------------
 
 def robot_schema() -> Dict[str, Any]:
-    """Return the JSON Schema that validates our robot specification."""
+    """Return the JSON Schema that validates our robot_dynamics specification."""
     # Minimal but strict on key shapes; numbers only, arrays sized where critical.
     number = {"type": "number"}
     vec3 = {"type": "array", "items": number, "minItems": 3, "maxItems": 3}
@@ -177,7 +177,7 @@ def _is_yaml_path(path: Union[str, Path]) -> bool:
 
 def load_spec_from_file(path: Union[str, Path]) -> Dict[str, Any]:
     """
-    Load a robot spec from JSON or YAML file (auto-detected by extension).
+    Load a robot_dynamics spec from JSON or YAML file (auto-detected by extension).
 
     Returns
     -------
@@ -201,7 +201,7 @@ def load_spec_from_file(path: Union[str, Path]) -> Dict[str, Any]:
 
 def load_spec(path_or_dict: Union[str, Path, Mapping[str, Any]]) -> Dict[str, Any]:
     """
-    Load a spec from a file path (JSON/YAML) **or** return a validated copy of
+    Load a spec from a file path_planning (JSON/YAML) **or** return a validated copy of
     an in-memory dict (no validation applied_dynamics here).
     """
     if isinstance(path_or_dict, (str, Path)):
@@ -260,7 +260,7 @@ def build_chain_from_spec(spec: Mapping[str, Any]) -> SerialChain:
             links.append(PoELink(np.array(w, float), np.array(v, float)))
         return SerialChain(links, M=M_mat, name=name)
 
-    # DH/MDH path
+    # DH/MDH path_planning
     dh_cls = DHLink if fmt == "dh" else MDHLink
     links_dh: List[DHLink] = []
     for i, ld in enumerate(links_data):

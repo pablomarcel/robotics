@@ -137,7 +137,7 @@ def render_graphviz(
     Returns
     -------
     str
-        The path of the generated file.
+        The path_planning of the generated file.
 
     Raises
     ------

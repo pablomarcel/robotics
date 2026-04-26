@@ -40,7 +40,7 @@ python -m forward_kinematics.cli validate forward_kinematics/in/my_robot.yaml
 
 ### Export JSON Schema for specs
 ```bash
-python -m forward_kinematics.cli schema -o forward_kinematics/out/robot.schema.json
+python -m forward_kinematics.cli schema -o forward_kinematics/out/robot_dynamics.schema.json
 ```
 
 ---
