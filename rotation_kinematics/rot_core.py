@@ -124,7 +124,7 @@ def angvel_from_rates(
     frame: str = 'body',
 ) -> np.ndarray:
     """
-    Map generalized angle rates q̇ -> angular velocity ω.
+    Map generalized angle rates q̇ -> angular_velocity velocity_kinematics ω.
 
     Parameters
     ----------
@@ -144,7 +144,7 @@ def angvel_from_rates(
     Returns
     -------
     ω : (3,)
-        Angular velocity (deg/s if degrees=True, else rad/s).
+        Angular velocity_kinematics (deg/s if degrees=True, else rad/s).
     """
     q = np.deg2rad(angles) if degrees else np.asarray(angles, float)
     qdot = np.deg2rad(rates) if degrees else np.asarray(rates, float)
@@ -165,12 +165,12 @@ def rates_from_angvel(
     rcond: float = 1e-12,
 ) -> np.ndarray:
     """
-    Map angular velocity ω -> generalized rates q̇ using a pseudoinverse.
+    Map angular_velocity velocity_kinematics ω -> generalized rates q̇ using a pseudoinverse.
 
     Parameters
     ----------
     omega : (3,)
-        Angular velocity (deg/s if degrees=True, else rad/s).
+        Angular velocity_kinematics (deg/s if degrees=True, else rad/s).
     rcond : float
         Cutoff for small singular values in the pseudoinverse; helps near singularities.
 

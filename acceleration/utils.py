@@ -178,7 +178,7 @@ def S_from(alpha: Sequence[float] | np.ndarray, omega: Sequence[float] | np.ndar
 
 def omega_from_Rdot(R: np.ndarray, Rdot: np.ndarray) -> np.ndarray:
     """
-    BODY-FRAME angular velocity from the kinematic identity:
+    BODY-FRAME angular_velocity velocity_kinematics from the kinematic identity:
 
         Rᵀ Ṙ = [ω]^   (ω expressed in the body frame)
 
@@ -193,7 +193,7 @@ def omega_from_Rdot(R: np.ndarray, Rdot: np.ndarray) -> np.ndarray:
 
 def alpha_from_Rddot(R: np.ndarray, Rdot: np.ndarray, Rddot: np.ndarray) -> np.ndarray:
     """
-    BODY-FRAME angular acceleration from the kinematic identities:
+    BODY-FRAME angular_velocity acceleration from the kinematic identities:
 
         Rᵀ Ṙ = ω^
         Rᵀ R̈ = α^ + ω^ ω^

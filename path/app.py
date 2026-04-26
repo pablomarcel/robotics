@@ -39,7 +39,7 @@ class PathPlannerApp:
     # ---- 1D polynomials -----------------------------------------------------
 
     def cubic(self, bc: BoundaryConditions) -> CubicPoly:
-        """Cubic with endpoint position/velocity (12.1–12.16)."""
+        """Cubic with endpoint position/velocity_kinematics (12.1–12.16)."""
         return CubicPoly(bc)
 
     def quintic(self, bc: BoundaryConditions) -> QuinticPoly:

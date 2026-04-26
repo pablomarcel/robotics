@@ -160,7 +160,7 @@ def cmd_classic(alpha: Iterable[float], omega: Iterable[float], r: Iterable[floa
 @click.option("-o", "--out", type=click.Path(path_type=Path),
               help="Output file (default acceleration/out/alpha_euler.json).")
 def cmd_euler_alpha(angles: Iterable[float], rates: Iterable[float], accels: Iterable[float], out: Optional[Path]):
-    """Compute angular acceleration α from ZYX Euler angles/ rates/ accelerations."""
+    """Compute angular_velocity acceleration α from ZYX Euler angles/ rates/ accelerations."""
     alpha = _SVC.euler_alpha(_float_list(angles), _float_list(rates), _float_list(accels))
     _write_json({"alpha": np.asarray(alpha).tolist()}, out, "alpha_euler")
 

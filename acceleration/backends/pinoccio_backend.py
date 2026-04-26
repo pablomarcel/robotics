@@ -3,7 +3,7 @@
 Pinocchio backend for **acceleration kinematics**.
 
 This adapter conforms to :class:`acceleration.backends.base.Backend` and provides
-6D frame kinematics (angular on top, linear on bottom) using Pinocchio.
+6D frame kinematics (angular_velocity on top, linear on bottom) using Pinocchio.
 
 Key choices
 -----------
@@ -194,7 +194,7 @@ class PinocchioBackend(Backend):
 
     def spatial_accel(self, frame: str, state: ChainState) -> np.ndarray:
         """
-        Spatial frame acceleration ẍ ∈ R^6 (angular ⊕ linear).
+        Spatial frame acceleration ẍ ∈ R^6 (angular_velocity ⊕ linear).
 
         Computes:
             ẍ = J(q) q̈ + J̇(q, q̇) q̇
@@ -216,7 +216,7 @@ class PinocchioBackend(Backend):
 
         # Get spatial acceleration in desired reference
         a_frame = pin.getFrameAcceleration(self.model, self.data, fid, ref)  # motion_kinematics object (6,)
-        # `a_frame.vector` is 6D: angular (ω̇) then linear (v̇ in frame conv.)
+        # `a_frame.vector` is 6D: angular_velocity (ω̇) then linear (v̇ in frame conv.)
         a_vec = np.asarray(a_frame.vector, float).reshape(6,)
 
         # For consistency with J/Jdot bias, we could equivalently compute J@qdd + Jdot@qd:

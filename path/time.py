@@ -7,7 +7,7 @@ from .utils import solve
 @dataclass
 class LSPB(Trajectory1D):
     """
-    Linear segment with parabolic blends (aka trapezoidal/triangular velocity).
+    Linear segment with parabolic blends (aka trapezoidal/triangular velocity_kinematics).
     Covers 12.26–12.49 and 12.62–12.74 behavior.
     """
     vmax: float | None = None

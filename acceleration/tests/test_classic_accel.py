@@ -102,7 +102,7 @@ def test_accel_from_euler_derivatives_in_inertial_frame(seq):
     """
     Let r be fixed in the rotating body frame. Then p(t) = R(t) r in the inertial frame obeys:
         p̈ = R ( α × r + ω × (ω × r) )
-    where ω, α are **body** angular velocity/acceleration.
+    where ω, α are **body** angular_velocity velocity_kinematics/acceleration.
     """
     rng = np.random.default_rng(4)
     # Euler state at t=0 (moderate angles away from singularities for ZXZ)

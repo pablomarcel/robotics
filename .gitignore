@@ -95,7 +95,7 @@ rotation_kinematics/out/
 introduction/out/
 # If other modules later mirror this pattern, this catches their out dirs at top-level
 acceleration/out/
-angular/out/
+angular_velocity/out/
 applied/out/
 control/out/
 forward_kinematics/out/
@@ -105,4 +105,4 @@ orientation_kinematics/out/
 path/out/
 robot/out/
 time/out/
-velocity/out/
+velocity_kinematics/out/
