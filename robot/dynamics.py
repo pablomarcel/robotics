@@ -36,7 +36,7 @@ class SympyLagrangeEngine:
 
     Assumptions
     -----------
-    - Planar motion in XY with gravity along -Y (i.e., +y upward for potential).
+    - Planar motion_kinematics in XY with gravity along -Y (i.e., +y upward for potential).
     - Link i has mass m_i, length l_i, COM at c_i * l_i from its proximal joint along x_i.
     - Each link is a slender rod in plane: Izz_i = m_i*l_i^2/12.
     - Returns C such that (C @ qd) equals the usual H(q,qd) vector exactly.

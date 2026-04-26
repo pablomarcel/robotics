@@ -61,11 +61,11 @@ def test_resolved_rates_adaptive_damping_is_finite_and_small_residual():
 # --------------------------------------------------------------------------- #
 
 def test_newton_ik_orientation_only_on_wrist_converges():
-    # 3R spherical wrist; TCP at wrist center to isolate orientation
+    # 3R spherical wrist; TCP at wrist center to isolate orientation_kinematics
     wrist = design.spherical_wrist(wrist_type=1, d_tool=0.0)
     q0 = np.array([0.1, -0.2, 0.3])
 
-    # Target orientation: ZXZ Euler (avoid singular beta≈0 or π)
+    # Target orientation_kinematics: ZXZ Euler (avoid singular beta≈0 or π)
     target_angles = np.array([0.7, 1.0, -0.8])  # radians
     x_tgt = {"p": [0.0, 0.0, 0.0], "euler": {"seq": "ZXZ", "angles": target_angles}}
 
@@ -82,7 +82,7 @@ def test_newton_ik_orientation_only_on_wrist_converges():
     # Check convergence
     assert info["converged"] is True
 
-    # Verify achieved orientation matches the target (position irrelevant for wrist-only chain)
+    # Verify achieved orientation_kinematics matches the target (position irrelevant for wrist-only chain)
     R_sol = wrist.fk(q_sol)["T_0e"][:3, :3]
     # Reconstruct target R for ZXZ:
     alpha, beta, gamma = target_angles

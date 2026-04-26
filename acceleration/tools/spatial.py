@@ -3,7 +3,7 @@
 Spatial-operator helpers for **acceleration kinematics**.
 
 Conventions (used throughout):
-- Twists (spatial motion):   v_B = X_AB v_A
+- Twists (spatial motion_kinematics):   v_B = X_AB v_A
 - Wrenches (spatial force):  f_B = X*_AB f_A  with  X*_AB = (X_AB^{-1})^T
 - Spatial inertia mapping:   I_B = X*_AB I_A X_BA   (power-invariant)
 
@@ -12,7 +12,7 @@ This module provides:
     * skew(v) / tilde(v)            → 3×3 skew (hat) of a vector
     * vex(S)                        → vee operator
     * adjoint(T)                    → 6×6 Ad_T from SE(3)
-    * X_from_Rp(R, p)               → 6×6 **motion** transform X_AB (A→B)
+    * X_from_Rp(R, p)               → 6×6 **motion_kinematics** transform X_AB (A→B)
     * Xf_from_Rp(R, p)              → 6×6 **force** transform X*_AB = X_AB^{-T}
     * motion_xform(T)               → X_AB from 4×4 SE(3) (A→B)
     * motion_xform_inv(T)           → X_BA from 4×4 SE(3) (A→B) via T_BA = T_AB^{-1}
@@ -84,7 +84,7 @@ def adjoint(T: np.ndarray) -> np.ndarray:
 def crossm(V: Sequence[float] | np.ndarray) -> np.ndarray:
     """
     Motion cross-product matrix such that:
-        crossm(V) @ W  ==  V × W            (spatial motion cross)
+        crossm(V) @ W  ==  V × W            (spatial motion_kinematics cross)
     where V = [ω; v], W = [ω2; v2].
 
     Returns
@@ -170,7 +170,7 @@ def Xf_from_Rp(R: np.ndarray, p: Sequence[float] | np.ndarray) -> np.ndarray:
 
 def X_inv(X: np.ndarray) -> np.ndarray:
     """
-    Invert a **motion** transform X_AB to obtain X_BA.  Closed form for:
+    Invert a **motion_kinematics** transform X_AB to obtain X_BA.  Closed form for:
 
         X_AB = [[R, 0],
                 [p^ R, R]]
@@ -193,7 +193,7 @@ def X_inv(X: np.ndarray) -> np.ndarray:
 
 
 def apply_X_to_twist(X: np.ndarray, V: Sequence[float] | np.ndarray) -> np.ndarray:
-    """Apply motion transform to a twist: V' = X @ V."""
+    """Apply motion_kinematics transform to a twist: V' = X @ V."""
     X = np.asarray(X, float).reshape(6, 6)
     V = np.asarray(V, float).reshape(6)
     return X @ V
@@ -228,7 +228,7 @@ def motion_xform_inv(T: np.ndarray) -> np.ndarray:
 
 def force_xform(T: np.ndarray) -> np.ndarray:
     """
-    X*_AB from 4×4 SE(3) T_AB (A→B), defined as the **dual** of motion:
+    X*_AB from 4×4 SE(3) T_AB (A→B), defined as the **dual** of motion_kinematics:
 
         X*_AB = (X_AB)^{-T}
 

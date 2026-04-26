@@ -40,7 +40,7 @@ def test_pose_error_small_vs_so3_small_angles():
     T_des[:3, :3] = R
     e_small = U.pose_error(T_curr, T_des, mode="small")
     e_so3 = U.pose_error(T_curr, T_des, mode="so3")
-    # Position components are zero; orientation nearly equal
+    # Position components are zero; orientation_kinematics nearly equal
     assert np.allclose(e_small[:3], 0.0, atol=1e-12)
     assert np.allclose(e_so3[:3], 0.0, atol=1e-12)
     assert np.allclose(e_small[3:], e_so3[3:], atol=1e-9)

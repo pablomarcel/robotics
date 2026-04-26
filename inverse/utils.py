@@ -34,7 +34,7 @@ References to Chapter 6
 -----------------------
 - Geometric Jacobian & conditioning: (6.289–6.296), (singularity discussion 6.324–6.329)
 - Newton/LM IK step: (6.298–6.299)
-- Small-angle SO(3) log used for orientation error in iterative IK.
+- Small-angle SO(3) log used for orientation_kinematics error in iterative IK.
 """
 from __future__ import annotations
 
@@ -300,7 +300,7 @@ def pose_error(
         Current and desired transforms.
     mode : {"small", "so3"}
         - "small": uses small-angle rotation_kinematics vector: 0.5 * vee(Rerr - Rerr^T)
-        - "so3":   uses full SO(3) log for orientation
+        - "so3":   uses full SO(3) log for orientation_kinematics
 
     Returns
     -------

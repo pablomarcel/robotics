@@ -47,7 +47,7 @@ def adjoint(T: Array) -> Array:
     return Ad
 
 def motion_cross(V: Array) -> Array:
-    """Small-adjoint (motion cross product matrix) ad_V, 6x6."""
+    """Small-adjoint (motion_kinematics cross product matrix) ad_V, 6x6."""
     w = V[:3]; v = V[3:]
     ad = np.zeros((6,6))
     ad[:3,:3] = skew(w)

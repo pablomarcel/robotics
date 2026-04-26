@@ -384,7 +384,7 @@ class VelocityCLI:
             euler_seq = ns.euler.upper()
             target["euler"] = {"seq": euler_seq, "angles": angles.tolist()}
 
-        # Only pass euler if an orientation target is present
+        # Only pass euler if an orientation_kinematics target is present
         if ("R" not in target) and ("euler" not in target):
             euler_seq = None
 

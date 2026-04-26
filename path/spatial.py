@@ -129,7 +129,7 @@ class Harmonic1D:
 
 @dataclass
 class Cycloid1D:
-    """Closed-form cycloidal motion between (t0,q0) and (tf,qf)."""
+    """Closed-form cycloidal motion_kinematics between (t0,q0) and (tf,qf)."""
     t0: float
     tf: float
     q0: float

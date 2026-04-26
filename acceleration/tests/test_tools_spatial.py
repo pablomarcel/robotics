@@ -11,7 +11,7 @@ from acceleration.tools.spatial import (
     adjoint,
     motion_xform,     # X(T)
     force_xform,      # X*(T) = (X(T)^{-1})^T
-    cross_motion,     # v×  (6×6)  acting on motion vectors
+    cross_motion,     # v×  (6×6)  acting on motion_kinematics vectors
     cross_force,      # v×* (6×6)  acting on force vectors
     spatial_inertia,  # I = [[Ic + m[c]^[c]^T, m[c]^], [-m[c]^, mI3]]
 )
@@ -126,7 +126,7 @@ def test_motion_force_duality_and_power_invariance():
 
 def test_cross_duality_and_action():
     rng = np.random.default_rng(13)
-    v = rng.normal(size=6)  # spatial motion
+    v = rng.normal(size=6)  # spatial motion_kinematics
     w = rng.normal(size=6)
 
     vx = cross_motion(v)      # 6x6
@@ -179,7 +179,7 @@ def test_spatial_inertia_positive_semidefinite():
     Ic = np.diag([0.03, 0.04, 0.05])   # SPD about CoM
 
     I = spatial_inertia(m=m, com=c, Ic=Ic)
-    # For any spatial motion v, kinetic energy 0.5 vᵀ I v >= 0
+    # For any spatial motion_kinematics v, kinetic energy 0.5 vᵀ I v >= 0
     for _ in range(100):
         v = rng.normal(size=6)
         ke = float(v.T @ (I @ v))
@@ -191,7 +191,7 @@ def test_spatial_inertia_transform_consistency():
     Spatial inertia must transform with the **force** transform when twists map by X.
 
     Conventions used in these tests:
-      - Twists (spatial motion):   v_B = X_AB v_A
+      - Twists (spatial motion_kinematics):   v_B = X_AB v_A
       - Wrenches (spatial force):  f_B = X*_AB f_A  with  X*_AB = (X_AB^{-1})^T
 
     Power/kinetic energy invariance for all v_A implies:
@@ -199,7 +199,7 @@ def test_spatial_inertia_transform_consistency():
       → X_AB^T I_B X_AB = I_A
       → I_B = X_AB^{-T} I_A X_AB^{-1} = X*_AB I_A X_BA
 
-    where X_BA = X_AB^{-1} is the motion transform for T_BA = T_AB^{-1}.
+    where X_BA = X_AB^{-1} is the motion_kinematics transform for T_BA = T_AB^{-1}.
     """
     rng = np.random.default_rng(29)
     m = 1.7

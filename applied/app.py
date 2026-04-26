@@ -64,7 +64,7 @@ class DerivationResult:
     K: sp.Expr          # kinetic
     V: sp.Expr          # potential
     Q: sp.Matrix        # non-potential generalized forces
-    EOM: sp.Matrix      # equations of motion (tau form: d/dt(∂L/∂q̇)-∂L/∂q = Q)
+    EOM: sp.Matrix      # equations of motion_kinematics (tau form: d/dt(∂L/∂q̇)-∂L/∂q = Q)
 
 
 # ---------------------------------------------------------------------------
@@ -78,7 +78,7 @@ class AppliedApp:
     Responsibilities
     ----------------
     * Build :class:`System` presets from :mod:`applied.design`.
-    * Derive symbolic equations of motion using the Lagrange engine.
+    * Derive symbolic equations of motion_kinematics using the Lagrange engine.
     * Optional numerical simulation front-end (wrapping `applied.integrators`).
     * Problem-API helpers used by CLI/tests (derive / simulate / batch).
     * Class diagram helpers (DOT / Mermaid Markdown).

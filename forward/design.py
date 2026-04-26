@@ -8,7 +8,7 @@ applied as the fixed terminal transform ``M`` in :class:`forward.core.SerialChai
 
 Notes on spherical wrists
 -------------------------
-A spherical wrist is a 3-DOF orientation mechanism with three intersecting,
+A spherical wrist is a 3-DOF orientation_kinematics mechanism with three intersecting,
 orthogonal joint axes. Although the *rotation_kinematics orders* are described in terms
 of rotations about global X/Y/Z (e.g., Z–X–Z), DH parameterizations still use
 local **z** joint axes; we achieve the desired rotation_kinematics orders by selecting

@@ -263,14 +263,14 @@ class VelocityAPI:
         euler: str = "ZYX",
     ) -> Tuple[NDArray, Dict[str, Any]]:
         """
-        Newton–Raphson inverse kinematics on pose (position + orientation).
+        Newton–Raphson inverse kinematics on pose (position + orientation_kinematics).
 
         Parameters
         ----------
         x_target : Mapping[str, Any]
             Expected keys: 'p' (3,), and either 'R' (3x3) or 'euler' (sequence).
         weights : optional task weights for least squares step.
-        euler : Euler sequence used when target orientation is given as Euler angles.
+        euler : Euler sequence used when target orientation_kinematics is given as Euler angles.
 
         Returns
         -------

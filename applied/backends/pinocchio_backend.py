@@ -18,7 +18,7 @@ Capabilities
 Gravity convention
 ------------------
 We set gravity along negative world-y: g_vec = [0, -g, 0].
-Pinocchio stores gravity as a spatial motion in `model.gravity`; we set its
+Pinocchio stores gravity as a spatial motion_kinematics in `model.gravity`; we set its
 linear part to that vector (angular part zero).
 """
 

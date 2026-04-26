@@ -6,7 +6,7 @@ These presets construct small, testable OOP models for common scenarios used to
 exercise Eq. 7.1–7.416:
 
 - Pure spin about a fixed axis (Rodrigues, (7.21–7.23))
-- Constant screw motion (twist decomposition, (7.287–7.292), small-twist dT (7.367/7.373))
+- Constant screw motion_kinematics (twist decomposition, (7.287–7.292), small-twist dT (7.367/7.373))
 - Rigid body with moving origin (velocity matrix & transport theorem, (7.264–7.269), (7.351))
 - Spherical wrist (3R) angular-rate mapping (sum of rotating axes, (7.295–7.303), (7.319–7.320))
 - Planar 2R tip velocity (illustrative 7.325–7.347 block; ω_z and v in space)
@@ -98,7 +98,7 @@ class PureSpin:
 @dataclass(frozen=True)
 class ConstantScrewMotion:
     """
-    **Constant screw motion** described by a spatial twist V = [ω; v].
+    **Constant screw motion_kinematics** described by a spatial twist V = [ω; v].
 
     Provides:
     - Screw decomposition (axis `s`, moment `m`, pitch `p`) per (7.287–7.292)
