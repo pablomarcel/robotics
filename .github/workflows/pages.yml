@@ -86,6 +86,7 @@ jobs:
           )
 
           mkdir -p _site
+          touch _site/.nojekyll
 
           for PKG in "${PACKAGES[@]}"; do
             if [ -d "$PKG/docs/_build/html" ]; then
@@ -97,106 +98,574 @@ jobs:
             fi
           done
 
-          # Professional landing page generated from the canonical package names.
+          # Modern landing page generated from the canonical package names.
           cat > _site/index.html <<'HTML'
           <!doctype html>
           <html lang="en">
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta name="color-scheme" content="dark light">
             <title>Robotics Docs</title>
             <style>
               :root {
-                color-scheme: light dark;
-                --bg: #f7f7fb;
-                --card: #ffffff;
-                --text: #171923;
-                --muted: #4a5568;
-                --link: #2454d6;
-                --border: #e2e8f0;
+                --bg-0: #070a12;
+                --bg-1: #0b1020;
+                --bg-2: #111827;
+                --card: rgba(255, 255, 255, 0.075);
+                --card-strong: rgba(255, 255, 255, 0.115);
+                --text: #f8fafc;
+                --muted: #aab6c8;
+                --soft: #dbe7ff;
+                --accent: #7dd3fc;
+                --accent-2: #c084fc;
+                --accent-3: #34d399;
+                --border: rgba(255, 255, 255, 0.14);
+                --shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
               }
-              @media (prefers-color-scheme: dark) {
-                :root {
-                  --bg: #0f1117;
-                  --card: #171923;
-                  --text: #f7fafc;
-                  --muted: #a0aec0;
-                  --link: #8ab4ff;
-                  --border: #2d3748;
-                }
+
+              * {
+                box-sizing: border-box;
               }
+
+              html {
+                min-height: 100%;
+                background: var(--bg-0);
+              }
+
               body {
+                min-height: 100%;
                 margin: 0;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-                background: var(--bg);
                 color: var(--text);
+                font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                background:
+                  radial-gradient(circle at 12% 8%, rgba(125, 211, 252, 0.24), transparent 28rem),
+                  radial-gradient(circle at 82% 12%, rgba(192, 132, 252, 0.22), transparent 30rem),
+                  radial-gradient(circle at 70% 92%, rgba(52, 211, 153, 0.12), transparent 30rem),
+                  linear-gradient(135deg, var(--bg-0), var(--bg-1) 42%, var(--bg-2));
               }
-              main {
-                max-width: 1040px;
+
+              body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                background-image:
+                  linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+                background-size: 72px 72px;
+                mask-image: linear-gradient(to bottom, rgba(0,0,0,0.78), transparent 78%);
+              }
+
+              a {
+                color: inherit;
+              }
+
+              .shell {
+                position: relative;
+                width: min(1180px, calc(100% - 40px));
                 margin: 0 auto;
-                padding: 56px 24px 72px;
+                padding: 34px 0 64px;
               }
-              h1 {
-                margin: 0 0 12px;
-                font-size: clamp(2rem, 4vw, 3.5rem);
-                letter-spacing: -0.04em;
-              }
-              p {
-                margin: 0 0 32px;
-                max-width: 760px;
-                color: var(--muted);
-                font-size: 1.1rem;
-                line-height: 1.6;
-              }
-              .grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+              .nav {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
                 gap: 16px;
+                margin-bottom: 72px;
               }
-              a.card {
-                display: block;
-                padding: 18px 20px;
+
+              .brand {
+                display: inline-flex;
+                align-items: center;
+                gap: 12px;
+                font-weight: 800;
+                letter-spacing: -0.03em;
+              }
+
+              .brand-mark {
+                display: grid;
+                place-items: center;
+                width: 42px;
+                height: 42px;
                 border: 1px solid var(--border);
                 border-radius: 14px;
+                background: linear-gradient(145deg, rgba(125,211,252,0.28), rgba(192,132,252,0.18));
+                box-shadow: 0 16px 48px rgba(125, 211, 252, 0.12);
+              }
+
+              .brand-mark svg {
+                width: 23px;
+                height: 23px;
+              }
+
+              .nav-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 14px;
+                border: 1px solid var(--border);
+                border-radius: 999px;
+                color: var(--soft);
+                background: rgba(255,255,255,0.055);
+                backdrop-filter: blur(14px);
+                text-decoration: none;
+                font-size: 0.93rem;
+              }
+
+              .hero {
+                display: grid;
+                grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
+                gap: 28px;
+                align-items: stretch;
+                margin-bottom: 34px;
+              }
+
+              .hero-copy {
+                padding: 8px 0 0;
+              }
+
+              .eyebrow {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 18px;
+                padding: 8px 12px;
+                border: 1px solid rgba(125, 211, 252, 0.24);
+                border-radius: 999px;
+                color: #d6f3ff;
+                background: rgba(125, 211, 252, 0.08);
+                font-size: 0.92rem;
+                font-weight: 650;
+              }
+
+              .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--accent-3);
+                box-shadow: 0 0 22px var(--accent-3);
+              }
+
+              h1 {
+                max-width: 820px;
+                margin: 0;
+                font-size: clamp(3rem, 8vw, 6.8rem);
+                line-height: 0.92;
+                letter-spacing: -0.085em;
+              }
+
+              .gradient-text {
+                background: linear-gradient(90deg, #ffffff, #d7e8ff 34%, #9edcff 68%, #e9d5ff);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+              }
+
+              .lead {
+                max-width: 680px;
+                margin: 26px 0 0;
+                color: var(--muted);
+                font-size: clamp(1.05rem, 2.1vw, 1.34rem);
+                line-height: 1.65;
+              }
+
+              .actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-top: 30px;
+              }
+
+              .button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                min-height: 46px;
+                padding: 0 18px;
+                border-radius: 999px;
+                border: 1px solid rgba(255,255,255,0.16);
+                background: rgba(255,255,255,0.075);
+                color: var(--text);
+                text-decoration: none;
+                font-weight: 750;
+                backdrop-filter: blur(12px);
+                transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+              }
+
+              .button.primary {
+                border-color: rgba(125, 211, 252, 0.44);
+                background: linear-gradient(135deg, rgba(125, 211, 252, 0.28), rgba(192, 132, 252, 0.18));
+              }
+
+              .button:hover {
+                transform: translateY(-2px);
+                border-color: rgba(255,255,255,0.36);
+                background: rgba(255,255,255,0.12);
+              }
+
+              .panel {
+                position: relative;
+                overflow: hidden;
+                padding: 24px;
+                border: 1px solid var(--border);
+                border-radius: 32px;
+                background:
+                  linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)),
+                  rgba(255,255,255,0.055);
+                box-shadow: var(--shadow);
+                backdrop-filter: blur(18px);
+              }
+
+              .panel::after {
+                content: "";
+                position: absolute;
+                width: 230px;
+                height: 230px;
+                right: -80px;
+                top: -80px;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(125, 211, 252, 0.22), transparent 68%);
+              }
+
+              .panel-content {
+                position: relative;
+                z-index: 1;
+              }
+
+              .panel-title {
+                margin: 0 0 14px;
+                color: var(--soft);
+                font-weight: 800;
+                letter-spacing: -0.03em;
+              }
+
+              .metric-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+                margin: 18px 0 20px;
+              }
+
+              .metric {
+                padding: 16px;
+                border: 1px solid rgba(255,255,255,0.12);
+                border-radius: 20px;
+                background: rgba(0,0,0,0.18);
+              }
+
+              .metric strong {
+                display: block;
+                font-size: 1.75rem;
+                letter-spacing: -0.06em;
+              }
+
+              .metric span {
+                display: block;
+                margin-top: 3px;
+                color: var(--muted);
+                font-size: 0.9rem;
+              }
+
+              .code-card {
+                margin-top: 14px;
+                padding: 16px;
+                border: 1px solid rgba(125, 211, 252, 0.18);
+                border-radius: 18px;
+                color: #d9f6ff;
+                background: rgba(3, 7, 18, 0.58);
+                font: 0.88rem/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+                overflow-x: auto;
+              }
+
+              .section-head {
+                display: flex;
+                align-items: end;
+                justify-content: space-between;
+                gap: 18px;
+                margin: 48px 0 18px;
+              }
+
+              h2 {
+                margin: 0;
+                font-size: clamp(1.7rem, 3vw, 2.4rem);
+                letter-spacing: -0.055em;
+              }
+
+              .section-head p {
+                max-width: 540px;
+                margin: 0;
+                color: var(--muted);
+                line-height: 1.55;
+              }
+
+              .grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 16px;
+              }
+
+              .card {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                min-height: 180px;
+                padding: 20px;
+                overflow: hidden;
+                border: 1px solid var(--border);
+                border-radius: 26px;
                 background: var(--card);
                 color: var(--text);
                 text-decoration: none;
+                box-shadow: 0 18px 55px rgba(0, 0, 0, 0.18);
+                backdrop-filter: blur(14px);
+                transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
               }
-              a.card:hover {
-                border-color: var(--link);
+
+              .card::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                background: radial-gradient(circle at 20% 0%, rgba(125,211,252,0.24), transparent 42%),
+                            linear-gradient(135deg, rgba(255,255,255,0.10), transparent 42%);
+                transition: opacity 180ms ease;
               }
+
+              .card:hover {
+                transform: translateY(-5px);
+                border-color: rgba(125, 211, 252, 0.5);
+                background: var(--card-strong);
+                box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+              }
+
+              .card:hover::before {
+                opacity: 1;
+              }
+
+              .card-top,
+              .card-bottom {
+                position: relative;
+                z-index: 1;
+              }
+
+              .icon {
+                display: grid;
+                place-items: center;
+                width: 42px;
+                height: 42px;
+                margin-bottom: 16px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, rgba(125, 211, 252, 0.22), rgba(192, 132, 252, 0.16));
+                border: 1px solid rgba(255,255,255,0.12);
+                color: #e8f8ff;
+                font-weight: 900;
+              }
+
               .name {
                 display: block;
-                font-weight: 700;
-                margin-bottom: 6px;
+                margin-bottom: 8px;
+                font-size: 1.08rem;
+                font-weight: 850;
+                letter-spacing: -0.035em;
               }
+
               .desc {
                 display: block;
                 color: var(--muted);
-                line-height: 1.45;
+                line-height: 1.48;
+              }
+
+              .card-bottom {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+                margin-top: auto;
+                padding-top: 22px;
+                color: #bdeaff;
+                font-size: 0.92rem;
+                font-weight: 750;
+              }
+
+              .arrow {
+                display: grid;
+                place-items: center;
+                width: 30px;
+                height: 30px;
+                border-radius: 999px;
+                background: rgba(125, 211, 252, 0.12);
+              }
+
+              footer {
+                margin-top: 46px;
+                padding: 22px 0 0;
+                color: rgba(218, 231, 255, 0.64);
+                border-top: 1px solid rgba(255,255,255,0.10);
+                font-size: 0.95rem;
+              }
+
+              @media (max-width: 940px) {
+                .hero {
+                  grid-template-columns: 1fr;
+                  margin-bottom: 22px;
+                }
+
+                .grid {
+                  grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+              }
+
+              @media (max-width: 640px) {
+                .shell {
+                  width: min(100% - 28px, 1180px);
+                  padding-top: 22px;
+                }
+
+                .nav {
+                  margin-bottom: 42px;
+                }
+
+                .nav-pill {
+                  display: none;
+                }
+
+                .panel {
+                  padding: 20px;
+                  border-radius: 26px;
+                }
+
+                .metric-grid,
+                .grid {
+                  grid-template-columns: 1fr;
+                }
+
+                .section-head {
+                  display: block;
+                }
+
+                .section-head p {
+                  margin-top: 10px;
+                }
               }
             </style>
           </head>
           <body>
-            <main>
-              <h1>Robotics Docs</h1>
-              <p>Package-level API documentation for the Robotics Python toolkit.</p>
-              <div class="grid">
-                <a class="card" href="acceleration_kinematics/"><span class="name">acceleration_kinematics</span><span class="desc">Acceleration kinematics utilities and examples.</span></a>
-                <a class="card" href="angular_velocity/"><span class="name">angular_velocity</span><span class="desc">Angular velocity mappings and related workflows.</span></a>
-                <a class="card" href="applied_dynamics/"><span class="name">applied_dynamics</span><span class="desc">Applied robot dynamics calculations.</span></a>
-                <a class="card" href="control_techniques/"><span class="name">control_techniques</span><span class="desc">Control-oriented robotics methods.</span></a>
-                <a class="card" href="forward_kinematics/"><span class="name">forward_kinematics</span><span class="desc">Forward kinematics solvers and transformations.</span></a>
-                <a class="card" href="inverse_kinematics/"><span class="name">inverse_kinematics</span><span class="desc">Inverse kinematics workflows and numerical methods.</span></a>
-                <a class="card" href="motion_planning/"><span class="name">motion_planning</span><span class="desc">Motion planning examples and utilities.</span></a>
-                <a class="card" href="orientation_kinematics/"><span class="name">orientation_kinematics</span><span class="desc">Orientation representations and transformations.</span></a>
-                <a class="card" href="path_planning/"><span class="name">path_planning</span><span class="desc">Path planning algorithms and supporting tools.</span></a>
-                <a class="card" href="robot_modeling/"><span class="name">robot_modeling</span><span class="desc">Robot modeling, structure, and geometry utilities.</span></a>
-                <a class="card" href="rotation_kinematics/"><span class="name">rotation_kinematics</span><span class="desc">Rotation matrices, Euler sequences, and angular-rate maps.</span></a>
-                <a class="card" href="time_optimization/"><span class="name">time_optimization</span><span class="desc">Time optimization and trajectory timing workflows.</span></a>
-                <a class="card" href="velocity_kinematics/"><span class="name">velocity_kinematics</span><span class="desc">Velocity kinematics and Jacobian-based calculations.</span></a>
-              </div>
-            </main>
+            <div class="shell">
+              <nav class="nav" aria-label="Page navigation">
+                <div class="brand">
+                  <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 3.5v17M4.5 12h15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      <path d="M7.2 7.2c2.7-2.7 6.9-2.7 9.6 0 2.7 2.7 2.7 6.9 0 9.6-2.7 2.7-6.9 2.7-9.6 0-2.7-2.7-2.7-6.9 0-9.6Z" stroke="currentColor" stroke-width="1.45"/>
+                    </svg>
+                  </span>
+                  <span>Robotics Docs</span>
+                </div>
+                <a class="nav-pill" href="rotation_kinematics/">Start with rotation kinematics →</a>
+              </nav>
+
+              <section class="hero">
+                <div class="hero-copy">
+                  <div class="eyebrow"><span class="dot"></span> Python toolkit documentation</div>
+                  <h1><span class="gradient-text">Robotics docs, built for engineering workflows.</span></h1>
+                  <p class="lead">
+                    API references for the Robotics package suite: kinematics, dynamics, planning,
+                    control utilities, trajectory timing, and supporting numerical workflows.
+                  </p>
+                  <div class="actions">
+                    <a class="button primary" href="forward_kinematics/">Browse kinematics →</a>
+                    <a class="button" href="applied_dynamics/">Open dynamics docs</a>
+                  </div>
+                </div>
+
+                <aside class="panel" aria-label="Documentation summary">
+                  <div class="panel-content">
+                    <p class="panel-title">Toolkit map</p>
+                    <div class="metric-grid">
+                      <div class="metric"><strong>13</strong><span>documented packages</span></div>
+                      <div class="metric"><strong>API</strong><span>Sphinx references</span></div>
+                      <div class="metric"><strong>CLI</strong><span>repeatable workflows</span></div>
+                      <div class="metric"><strong>Py</strong><span>engineering-first stack</span></div>
+                    </div>
+                    <div class="code-card">
+                      python -m rotation_kinematics.rot_cli sphinx-skel rotation_kinematics/docs<br>
+                      make -C rotation_kinematics/docs html
+                    </div>
+                  </div>
+                </aside>
+              </section>
+
+              <section aria-labelledby="packages-title">
+                <div class="section-head">
+                  <div>
+                    <h2 id="packages-title">Package documentation</h2>
+                  </div>
+                  <p>Choose a module family below. Each card opens the package-level Sphinx site generated during the GitHub Pages build.</p>
+                </div>
+
+                <div class="grid">
+                  <a class="card" href="acceleration_kinematics/">
+                    <div class="card-top"><span class="icon">a</span><span class="name">Acceleration Kinematics</span><span class="desc">Acceleration-level motion utilities, examples, and supporting calculations.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="angular_velocity/">
+                    <div class="card-top"><span class="icon">ω</span><span class="name">Angular Velocity</span><span class="desc">Angular-velocity mappings, rate relationships, and frame-aware workflows.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="applied_dynamics/">
+                    <div class="card-top"><span class="icon">τ</span><span class="name">Applied Dynamics</span><span class="desc">Robot dynamics calculations for force, torque, and motion analysis.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="control_techniques/">
+                    <div class="card-top"><span class="icon">K</span><span class="name">Control Techniques</span><span class="desc">Control-oriented robotics methods and analysis helpers.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="forward_kinematics/">
+                    <div class="card-top"><span class="icon">FK</span><span class="name">Forward Kinematics</span><span class="desc">Forward kinematics solvers, transformations, and model evaluation tools.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="inverse_kinematics/">
+                    <div class="card-top"><span class="icon">IK</span><span class="name">Inverse Kinematics</span><span class="desc">Inverse kinematics workflows, numerical methods, and solver utilities.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="motion_planning/">
+                    <div class="card-top"><span class="icon">M</span><span class="name">Motion Planning</span><span class="desc">Motion planning examples, support functions, and planning utilities.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="orientation_kinematics/">
+                    <div class="card-top"><span class="icon">R</span><span class="name">Orientation Kinematics</span><span class="desc">Orientation representations, conversions, and transformation helpers.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="path_planning/">
+                    <div class="card-top"><span class="icon">P</span><span class="name">Path Planning</span><span class="desc">Path planning algorithms and supporting tools for robotics studies.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="robot_modeling/">
+                    <div class="card-top"><span class="icon">DH</span><span class="name">Robot Modeling</span><span class="desc">Robot structure, geometry, parameterization, and modeling utilities.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="rotation_kinematics/">
+                    <div class="card-top"><span class="icon">SO</span><span class="name">Rotation Kinematics</span><span class="desc">Rotation matrices, Euler sequences, composition, and angular-rate maps.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="time_optimization/">
+                    <div class="card-top"><span class="icon">t</span><span class="name">Time Optimization</span><span class="desc">Trajectory timing, time scaling, and optimization-oriented workflows.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                  <a class="card" href="velocity_kinematics/">
+                    <div class="card-top"><span class="icon">J</span><span class="name">Velocity Kinematics</span><span class="desc">Velocity kinematics, Jacobian-based calculations, and related utilities.</span></div>
+                    <div class="card-bottom"><span>Open docs</span><span class="arrow">→</span></div>
+                  </a>
+                </div>
+              </section>
+
+              <footer>
+                Built with Sphinx and GitHub Pages from canonical Robotics package folders.
+              </footer>
+            </div>
           </body>
           </html>
           HTML

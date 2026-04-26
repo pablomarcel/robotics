@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="added docs">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="updated pages.yml to avoid hardcoding stuff">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/pages.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/pages.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acceleration_kinematics/docs/index.rst" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration_kinematics/docs/index.rst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +52,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "git-widget-placeholder": "develop",
-    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/rotation_kinematics",
+    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/.github/workflows",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -64,11 +64,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/.github/workflows" />
       <recent name="$PROJECT_DIR$/rotation_kinematics" />
       <recent name="$PROJECT_DIR$/introduction" />
       <recent name="$PROJECT_DIR$/velocity" />
       <recent name="$PROJECT_DIR$/timeopt" />
-      <recent name="$PROJECT_DIR$/rotation" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/inverse" />
@@ -144,15 +144,7 @@
       <workItem from="1761358714403" duration="2098000" />
       <workItem from="1761366916714" duration="8000" />
       <workItem from="1777054208682" duration="657000" />
-      <workItem from="1777160072152" duration="8313000" />
-    </task>
-    <task id="LOCAL-00024" summary="implemented class diagrams in the velocity module">
-      <option name="closed" value="true" />
-      <created>1758425431011</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1758425431011</updated>
+      <workItem from="1777160072152" duration="8850000" />
     </task>
     <task id="LOCAL-00025" summary="implemented urdf in the velocity module">
       <option name="closed" value="true" />
@@ -538,7 +530,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777170548411</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="updated pages.yml to avoid hardcoding stuff">
+      <option name="closed" value="true" />
+      <created>1777171596223</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1777171596223</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -559,7 +559,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemente the control techniques module. 1 test fails" />
     <MESSAGE value="implemented the control techniques module. all tests pass" />
     <MESSAGE value="Created README.md and LICENSE" />
     <MESSAGE value="updated coverage files" />
@@ -584,6 +583,7 @@
     <MESSAGE value="Updated README.md to order documentation topics" />
     <MESSAGE value="refactored packages names." />
     <MESSAGE value="added docs" />
-    <option name="LAST_COMMIT_MESSAGE" value="added docs" />
+    <MESSAGE value="updated pages.yml to avoid hardcoding stuff" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated pages.yml to avoid hardcoding stuff" />
   </component>
 </project>
