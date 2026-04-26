@@ -1,5 +1,5 @@
 import numpy as np
-from control.app import ControlApp
+from control_techniques.app import ControlApp
 
 def test_ct_pd_zero_error_zero_feedforward(app):
     r = app.planar2r()

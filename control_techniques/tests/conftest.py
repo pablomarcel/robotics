@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from control.app import ControlApp
+from control_techniques.app import ControlApp
 
 @pytest.fixture
 def app(): return ControlApp()

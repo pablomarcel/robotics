@@ -1,5 +1,5 @@
 import numpy as np
-from control.app import ControlApp
+from control_techniques.app import ControlApp
 
 def test_linearize_matches_signs_and_dims(app):
     pl = app.pendulum()

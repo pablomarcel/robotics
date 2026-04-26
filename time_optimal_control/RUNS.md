@@ -29,7 +29,7 @@ _mc_root() {
 runroot() { ( cd "$(_mc_root)" && "$@" ); }
 
 # Ensure out/ exists where the app expects to write
-runroot mkdir -p timeopt/out
+runroot mkdir -p time_optimal_control/out
 # -----------------------------------------------------------------------------
 ```
 
@@ -83,11 +83,11 @@ pip install graphviz py2puml plantuml sphinx furo
 
 From repo root:
 ```bash
-pytest timeopt/tests -q
+pytest time_optimal_control/tests -q
 # or verbose:
-pytest timeopt/tests -vv
+pytest time_optimal_control/tests -vv
 # with coverage (if pytest-cov installed):
-pytest timeopt/tests -q --cov=timeopt --cov-report=term-missing
+pytest time_optimal_control/tests -q --cov=time_optimal_control --cov-report=term-missing
 ```
 
 Expected passing tests:
@@ -101,30 +101,30 @@ Expected passing tests:
 
 ### 3.1 Discover commands
 ```bash
-runroot python -m timeopt.cli --help
+runroot python -m time_optimal_control.cli --help
 ```
 
 ### 3.2 Generate class diagram via CLI
 ```bash
 # Write a PlantUML (.puml) to time/out and render to PNG
-runroot python -m timeopt.cli diagram --package timeopt --out timeopt/out/timeopt.puml
+runroot python -m time_optimal_control.cli diagram --package time_optimal_control --out time_optimal_control/out/time_optimal_control.puml
 ```
 
 ```bash
-plantuml -tpng time/out/timeopt.puml -o .
-# Result: time/out/timeopt.png
+plantuml -tpng time/out/time_optimal_control.puml -o .
+# Result: time/out/time_optimal_control.png
 ```
 
 ### 3.3 Run the double integrator (print JSON)
 ```bash
-runroot python -m timeopt.cli run double-integrator \
+runroot python -m time_optimal_control.cli run double-integrator \
   --name di_cli --x0 0.0 --xf 1.0 --m 1.0 --F 10.0 \
   --mu 0.0 --drag 0.0 --g 9.81
 ```
 
 ### 3.4 Run the 2R TOPPRA time-scaling along a straight line
 ```bash
-runroot python -m timeopt.cli run 2r-path_planning \
+runroot python -m time_optimal_control.cli run 2r-path_planning \
   --name twoR_cli \
   --y 0.5 --x0 1.9 --x1 0.5 --n 150 \
   --l1 1.0 --l2 1.0 --tau-max 100 100
@@ -169,12 +169,12 @@ We rely on `py2puml` to generate a PlantUML diagram for the `timeopt` package an
 
 ```bash
 # 5.1 Generate .puml
-py2puml timeopt time/out/timeopt.puml
+py2puml time_optimal_control time/out/time_optimal_control.puml
 
 # 5.2 Render to PNG (PlantUML must be available; runroot python package `plantuml` or system jar)
-plantuml -tpng time/out/timeopt.puml -o .
+plantuml -tpng time/out/time_optimal_control.puml -o .
 
-# Output: time/out/timeopt.png
+# Output: time/out/time_optimal_control.png
 ```
 
 **Notes**
@@ -199,7 +199,7 @@ pip install furo
 #   sys.path_planning.insert(0, os.path_planning.abspath(".."))
 
 # Autodoc stubs (example)
-sphinx-apidoc -o docs/api timeopt
+sphinx-apidoc -o docs/api time_optimal_control
 
 # Build HTML
 sphinx-build -b html docs docs/_build/html
@@ -226,7 +226,7 @@ sphinx-autobuild docs docs/_build/html
 source .venv/bin/activate
 
 # Run tests
-pytest timeopt/tests -q
+pytest time_optimal_control/tests -q
 
 # Double integrator quick run
 runroot python - <<'PY'
@@ -244,8 +244,8 @@ print(TwoRPathTimeScaler("twoR", qs, TwoRParams(tau_max=(100,100))).run().data)
 PY
 
 # Class diagram
-py2puml timeopt time/out/timeopt.puml
-plantuml -tpng time/out/timeopt.puml -o .
+py2puml time_optimal_control time/out/time_optimal_control.puml
+plantuml -tpng time/out/time_optimal_control.puml -o .
 
 # Build docs (if docs/ present)
 sphinx-build -b html docs docs/_build/html

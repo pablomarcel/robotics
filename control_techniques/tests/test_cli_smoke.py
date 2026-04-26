@@ -1,5 +1,5 @@
 from click.testing import CliRunner
-from control.cli import app
+from control_techniques.cli import app
 
 def test_cli_smoke_msdpd_and_diagram(tmp_path, monkeypatch):
     runner = CliRunner()
