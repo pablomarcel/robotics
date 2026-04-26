@@ -191,7 +191,7 @@ def _urdfpy_load(path: str):
 
 
 def _rot_from_axis_angle(axis: np.ndarray, angle: float) -> np.ndarray:
-    """Rodrigues rotation for unit axis (3,) and angle (rad) -> (3,3)."""
+    """Rodrigues rotation_kinematics for unit axis (3,) and angle (rad) -> (3,3)."""
     a = np.asarray(axis, dtype=float).reshape(3)
     n = np.linalg.norm(a)
     if n == 0.0:
@@ -404,7 +404,7 @@ class URDFRobot(_BaseRobot):
           - k_i (world) = R_world @ axis_i (joint axis in joint frame)
           - p_i (world) = position of the joint origin (after fixed transforms and
             preceding joints). We use the pose just BEFORE applying this joint's
-            own motion (axis orientation is invariant to its own rotation).
+            own motion (axis orientation is invariant to its own rotation_kinematics).
           - J_i = [ k_i × (p_e - p_i) ; k_i ] for revolute/continuous
                   [ k_i               ; 0   ] for prismatic
         """
@@ -527,7 +527,7 @@ class solvers:
     @staticmethod
     def _rotvec_from_R(R: np.ndarray) -> np.ndarray:
         """
-        Rotation-vector from rotation matrix via log map:
+        Rotation-vector from rotation_kinematics matrix via log map:
             R = exp([r]_x)  =>  r = vee(log R)
         Uses stable small-angle handling.
         """
@@ -614,7 +614,7 @@ class solvers:
             # Residual
             dp = (p_des - p) if pos_active else np.zeros(3, dtype=float)
             if ori_active:
-                # Orientation error as rotation vector of R_des * R^T
+                # Orientation error as rotation_kinematics vector of R_des * R^T
                 Rerr = R_des @ R.T
                 w_err = solvers._rotvec_from_R(Rerr)
             else:

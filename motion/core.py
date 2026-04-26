@@ -6,7 +6,7 @@ Core math primitives for rigid-body motion kinematics (Chapter 4 scope).
 
 Classes
 -------
-Rotation     : SO(3) rotation with axis–angle factories (Rodrigues).
+Rotation     : SO(3) rotation_kinematics with axis–angle factories (Rodrigues).
 SE3          : Homogeneous transform (R, t) with composition/inverse/apply.
 Screw        : Screw motion parameterization {u, s, h, phi} → SE3.
 PluckerLine  : Plücker line [u; rho], angle & distance, 6×6 action via SE3.
@@ -72,7 +72,7 @@ def normalize(v: np.ndarray) -> np.ndarray:
 @dataclass(frozen=True)
 class Rotation:
     """
-    SO(3) rotation.
+    SO(3) rotation_kinematics.
 
     Notes
     -----
@@ -188,7 +188,7 @@ class Screw:
     u   : axis (not necessarily unit; normalized internally)
     s   : location vector (any point on the screw axis expressed in {G})
     h   : pitch (translation per radian)
-    phi : rotation angle (radians)
+    phi : rotation_kinematics angle (radians)
 
     Formulas (cf. 4.206, 4.220–4.224)
     ---------------------------------

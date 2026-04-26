@@ -106,8 +106,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--spec", type=str, required=True, help="JSON in path/in (see docs)")
     sp.add_argument("--out", type=str, default="ik2r.csv")
 
-    # rotation angle-axis
-    sp = sub.add_parser("rot", help="Angle-axis rotation path between two rotation matrices (JSON with key 'R')")
+    # rotation_kinematics angle-axis
+    sp = sub.add_parser("rot", help="Angle-axis rotation_kinematics path between two rotation_kinematics matrices (JSON with key 'R')")
     sp.add_argument("--R0", type=str, required=True, help="JSON filename with 3x3 R0 (under path/in unless absolute)")
     sp.add_argument("--Rf", type=str, required=True, help="JSON filename with 3x3 Rf (under path/in unless absolute)")
     sp.add_argument("--samples", type=int, default=50)

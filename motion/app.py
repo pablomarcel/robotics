@@ -117,14 +117,14 @@ class App:
         output_path: Optional[Union[str, Path]] = None,
     ) -> Dict[str, Any]:
         """
-        Build a 3x3 rotation from axis-angle and (optionally) persist it.
+        Build a 3x3 rotation_kinematics from axis-angle and (optionally) persist it.
 
         Returns
         -------
         dict
-            Payload containing the rotation matrix and metadata.
+            Payload containing the rotation_kinematics matrix and metadata.
         """
-        self.logger.debug("Building rotation: axis=%s, angle=%s, degrees=%s", axis, angle, degrees)
+        self.logger.debug("Building rotation_kinematics: axis=%s, angle=%s, degrees=%s", axis, angle, degrees)
         payload = self.apis.rotation_axis_angle(axis=axis, angle=angle, degrees=degrees)
         return self._maybe_write(payload, output_path)
 

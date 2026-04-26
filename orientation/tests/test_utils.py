@@ -37,7 +37,7 @@ def test_expm_so3_matches_axis_angle():
     assert np.allclose(R1, R2, atol=1e-9)
 
 def test_project_to_so3():
-    # Start with a true rotation and perturb it
+    # Start with a true rotation_kinematics and perturb it
     u = np.array([0,0,1.0]); phi = 0.5
     c, s = np.cos(phi), np.sin(phi)
     R = np.array([[c,-s,0],[s,c,0],[0,0,1]])

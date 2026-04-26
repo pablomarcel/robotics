@@ -9,9 +9,9 @@ applied as the fixed terminal transform ``M`` in :class:`forward.core.SerialChai
 Notes on spherical wrists
 -------------------------
 A spherical wrist is a 3-DOF orientation mechanism with three intersecting,
-orthogonal joint axes. Although the *rotation orders* are described in terms
+orthogonal joint axes. Although the *rotation_kinematics orders* are described in terms
 of rotations about global X/Y/Z (e.g., Z–X–Z), DH parameterizations still use
-local **z** joint axes; we achieve the desired rotation orders by selecting
+local **z** joint axes; we achieve the desired rotation_kinematics orders by selecting
 link twists (α) that realign each successive local z-axis with the intended
 global axis before applying that joint's θ.
 
@@ -24,7 +24,7 @@ The presets below use the following α patterns (all links have a=0, d=0):
 - Type 3 (Pitch–Yaw–Roll ≈ X–Y–Z)
     α = [-π/2, -π/2, 0]
 
-These produce the intended effective rotation sequences while keeping the DH
+These produce the intended effective rotation_kinematics sequences while keeping the DH
 convention that each joint actuates around its local z-axis.
 
 If you need a different convention (MDH or PoE), you can add parallel presets
@@ -123,7 +123,7 @@ def spherical_wrist(*, wrist_type: int, d7: float = 0.0, name: str = "wrist") ->
     """
     Build a 3-DOF spherical wrist preset with tool offset ``Tz(d7)`` at the tip.
 
-    The three types differ by the **effective** rotation order, realized via DH
+    The three types differ by the **effective** rotation_kinematics order, realized via DH
     link twists (α) that reorient each joint's local z-axis:
 
         Type 1 (Roll–Pitch–Roll ≈ Z–X–Z): α = [-π/2, +π/2, 0]
@@ -135,7 +135,7 @@ def spherical_wrist(*, wrist_type: int, d7: float = 0.0, name: str = "wrist") ->
     Parameters
     ----------
     wrist_type : {1, 2, 3}
-        Select rotation order preset (see above).
+        Select rotation_kinematics order preset (see above).
     d7 : float
         Tool offset along final +z.
     name : str

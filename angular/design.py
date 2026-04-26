@@ -61,7 +61,7 @@ def _Ry(a: float) -> np.ndarray:
 @dataclass(frozen=True)
 class PureSpin:
     """
-    **Pure rotation** about a fixed unit axis `u` with scalar rate `phi_dot`.
+    **Pure rotation_kinematics** about a fixed unit axis `u` with scalar rate `phi_dot`.
 
     Provides:
     - SO(3) via Rodrigues (7.115–7.117)
@@ -70,7 +70,7 @@ class PureSpin:
     Parameters
     ----------
     u : Sequence[float]
-        Unit rotation axis (3,).
+        Unit rotation_kinematics axis (3,).
     phi : float
         Rotation angle (rad).
     phi_dot : float
@@ -179,7 +179,7 @@ class SphericalWrist:
     """
     Ideal **3R spherical wrist** with joint axes intersecting at the wrist center.
 
-    We support three effective rotation patterns via local-axis choices:
+    We support three effective rotation_kinematics patterns via local-axis choices:
         type 1: Z–X–Z
         type 2: Z–Y–Z
         type 3: X–Y–Z

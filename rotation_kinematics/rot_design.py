@@ -1,5 +1,5 @@
 # =============================
-# File: rotation/rot_design.py
+# File: rotation_kinematics/rot_design.py
 # =============================
 """Design-time constants and small helpers for the CLI.
 Covers: the 12 global (Tait–Bryan) and 6 proper Euler sequences, local/global mapping,

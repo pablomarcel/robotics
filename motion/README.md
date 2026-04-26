@@ -93,7 +93,7 @@ python -m motion.cli --help
 > Each subcommand also provides help, e.g.:
 ```bash
 python -m motion.cli se3 --help
-python -m motion.cli rotation --help
+python -m motion.cli rotation_kinematics --help
 python -m motion.cli screw --help
 python -m motion.cli plucker --help
 python -m motion.cli plane --help
@@ -103,12 +103,12 @@ python -m motion.cli dh --help
 ### Rotation examples
 ```bash
 # Build R from axis-angle (axis=0,0,1; phi=1.5708 rad) and print the 3x3:
-python -m motion.cli rotation axis-angle --axis 0 0 1 --phi 1.57079632679
+python -m motion.cli rotation_kinematics axis-angle --axis 0 0 1 --phi 1.57079632679
 
 # Canonical rotations:
-python -m motion.cli rotation rz --theta 1.2
-python -m motion.cli rotation rx --theta 0.5
-python -m motion.cli rotation ry --theta -0.7
+python -m motion.cli rotation_kinematics rz --theta 1.2
+python -m motion.cli rotation_kinematics rx --theta 0.5
+python -m motion.cli rotation_kinematics ry --theta -0.7
 ```
 
 ### SE(3) examples

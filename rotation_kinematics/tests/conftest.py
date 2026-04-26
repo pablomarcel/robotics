@@ -1,6 +1,6 @@
-# rotation/tests/conftest.py
+# rotation_kinematics/tests/conftest.py
 import os, sys
-# Add repo root so `import rotation` works no matter where pytest is launched.
+# Add repo root so `import rotation_kinematics` works no matter where pytest is launched.
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)

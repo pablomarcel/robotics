@@ -165,7 +165,7 @@ class ForwardApp:
         Parameters
         ----------
         wrist_type : {1, 2, 3}
-            Selects the rotation order.
+            Selects the rotation_kinematics order.
         d7 : float
             Tool-frame offset along gripper axis.
 

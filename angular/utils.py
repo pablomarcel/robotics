@@ -20,7 +20,7 @@ def is_rotation_matrix(R: Array, atol: float = 1e-8) -> bool:
     return R.shape == (3,3) and np.allclose(R @ R.T, np.eye(3), atol=atol) and np.isclose(np.linalg.det(R), 1.0, atol=atol)
 
 def ensure_rotation(func: Callable) -> Callable:
-    """Decorator: validate rotation matrix args named 'R' or attributes 'self.R'."""
+    """Decorator: validate rotation_kinematics matrix args named 'R' or attributes 'self.R'."""
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         # try to find R from args/kwargs/self
@@ -28,7 +28,7 @@ def ensure_rotation(func: Callable) -> Callable:
         if R is None and len(args) >= 1 and hasattr(args[0], "R"):
             R = getattr(args[0], "R")
         if R is not None and not is_rotation_matrix(np.asarray(R)):
-            raise ValueError("Input is not a proper rotation matrix.")
+            raise ValueError("Input is not a proper rotation_kinematics matrix.")
         return func(*args, **kwargs)
     return wrapper
 

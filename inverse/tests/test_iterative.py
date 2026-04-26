@@ -30,7 +30,7 @@ def _T_xy(x: float, y: float) -> np.ndarray:
 
 def test_pose_error_small_vs_so3_small_angles():
     """Orientation error should agree between 'small' and 'so3' for small angles."""
-    # Tiny rotation about z
+    # Tiny rotation_kinematics about z
     th = 1e-6
     R = np.array([[math.cos(th), -math.sin(th), 0.0],
                   [math.sin(th),  math.cos(th), 0.0],

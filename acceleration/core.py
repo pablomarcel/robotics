@@ -120,7 +120,7 @@ def _skew(v: np.ndarray) -> np.ndarray:
 @dataclass(frozen=True)
 class AccelTransforms:
     """
-    Small helpers for rotation derivatives and the acceleration transform:
+    Small helpers for rotation_kinematics derivatives and the acceleration transform:
 
       S = α̃ + ω̃²     (appears throughout §9)
     """

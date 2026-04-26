@@ -28,7 +28,7 @@ def _read_json(p: Path):
 
 
 def _T_from_xy(x: float, y: float) -> list[list[float]]:
-    """Planar pose with identity rotation and translation (x,y,0)."""
+    """Planar pose with identity rotation_kinematics and translation (x,y,0)."""
     T = np.eye(4)
     T[0, 3] = float(x)
     T[1, 3] = float(y)

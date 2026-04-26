@@ -90,9 +90,9 @@ Thumbs.db
 # ----------------------------
 # Project-specific artifacts
 # ----------------------------
-# Rotation app outputs (keep inputs under rotation/in tracked)
-rotation/out/
-intro/out/
+# Rotation app outputs (keep inputs under rotation_kinematics/in tracked)
+rotation_kinematics/out/
+introduction/out/
 # If other modules later mirror this pattern, this catches their out dirs at top-level
 acceleration/out/
 angular/out/

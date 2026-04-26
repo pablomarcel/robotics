@@ -22,7 +22,7 @@ from .apis import APIs
 # ------------------------------ constants -------------------------------------
 DEFAULT_IN = Path("motion/in")
 DEFAULT_OUT = Path("motion/out")
-VALID_OPS = ("rotation", "screw", "plucker", "lines", "plane-dist", "fk")  # ops usable via 'run'
+VALID_OPS = ("rotation_kinematics", "screw", "plucker", "lines", "plane-dist", "fk")  # ops usable via 'run'
 
 
 # ------------------------------ tiny utils ------------------------------------
@@ -73,7 +73,7 @@ def _dump_json(payload: Dict[str, Any], out_path: Path | None) -> None:
 def cmd_rotation(args: argparse.Namespace) -> Dict[str, Any]:
     api = APIs()
     result = api.rotation_axis_angle(args.axis, args.angle, degrees=args.degrees)
-    result["meta"] = {**result.get("meta", {}), "op": "rotation"}
+    result["meta"] = {**result.get("meta", {}), "op": "rotation_kinematics"}
     return result
 
 
@@ -162,11 +162,11 @@ def _infer_op(params: Dict[str, Any]) -> str:
         return "plane-dist"
     if "dh" in keys:
         return "fk"
-    # screw vs rotation
+    # screw vs rotation_kinematics
     if (("s" in keys or "point" in keys) and (("u" in keys) or ("axis" in keys)) and (("phi" in keys) or ("angle" in keys))):
         return "screw"
     if (("u" in keys or "axis" in keys) and ("phi" in keys or "angle" in keys)):
-        return "rotation"
+        return "rotation_kinematics"
     # default fail
     raise SystemExit(
         f"Could not infer 'op' from params keys={sorted(keys)}. "
@@ -175,9 +175,9 @@ def _infer_op(params: Dict[str, Any]) -> str:
 
 
 def _build_argv_for_op(op: str, params: Dict[str, Any]) -> List[str]:
-    if op == "rotation":
+    if op == "rotation_kinematics":
         return [
-            "rotation",
+            "rotation_kinematics",
             "--axis",
             _csv3_any(params, ["axis", "u"]),
             "--angle",
@@ -326,12 +326,12 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="motion.cli", description="Motion Kinematics CLI")
     sub = p.add_subparsers(dest="command", required=True)
 
-    # rotation
-    pr = sub.add_parser("rotation", help="Axis–angle rotation (Rodrigues)")
+    # rotation_kinematics
+    pr = sub.add_parser("rotation_kinematics", help="Axis–angle rotation_kinematics (Rodrigues)")
     pr.add_argument("--axis", type=_parse_vec3, required=True, help="ax,ay,az")
     pr.add_argument("--angle", type=float, required=True, help="angle (radians by default)")
     pr.add_argument("--degrees", action="store_true", help="interpret angle in degrees")
-    pr.add_argument("--out", type=Path, help="output JSON path (default motion/out/rotation.json)")
+    pr.add_argument("--out", type=Path, help="output JSON path (default motion/out/rotation_kinematics.json)")
     pr.set_defaults(func=cmd_rotation)
 
     # screw
@@ -339,7 +339,7 @@ def build_parser() -> argparse.ArgumentParser:
     ps.add_argument("--axis", type=_parse_vec3, required=True, help="ux,uy,uz (unit or not)")
     ps.add_argument("--s", type=_parse_vec3, required=True, help="location vector s (any point on axis)")
     ps.add_argument("--pitch", type=float, required=True, help="pitch h")
-    ps.add_argument("--phi", type=float, required=True, help="rotation angle φ (rad by default)")
+    ps.add_argument("--phi", type=float, required=True, help="rotation_kinematics angle φ (rad by default)")
     ps.add_argument("--degrees", action="store_true", help="interpret φ in degrees")
     ps.add_argument("--out", type=Path, help="output JSON path (default motion/out/screw.json)")
     ps.set_defaults(func=cmd_screw)

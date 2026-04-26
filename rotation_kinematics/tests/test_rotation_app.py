@@ -1,11 +1,11 @@
 # =============================
-# File: rotation/tests/test_rotation_app.py
+# File: rotation_kinematics/tests/test_rotation_app.py
 # =============================
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation as R
 
-from rotation import rot_core as core
+from rotation_kinematics import rot_core as core
 
 def _close(a, b, atol=1e-6):
     return np.allclose(a, b, atol=atol)
@@ -57,7 +57,7 @@ def test_align_x_axis_right_handed_unit_det():
 @pytest.mark.cf
 def test_closed_form_E_matches_numeric_zyx_body_local():
     sympy = pytest.importorskip("sympy")
-    from rotation import rot_closedform as cf
+    from rotation_kinematics import rot_closedform as cf
 
     # Use radians everywhere for this check
     q = np.array([0.3, -0.5, 0.2], dtype=float)         # [a1, a2, a3]
@@ -75,7 +75,7 @@ def test_closed_form_E_matches_numeric_zyx_body_local():
 @pytest.mark.cf
 def test_closed_form_E_matches_numeric_zyz_body_local():
     sympy = pytest.importorskip("sympy")
-    from rotation import rot_closedform as cf
+    from rotation_kinematics import rot_closedform as cf
 
     q = np.array([0.1, 0.4, -0.2], dtype=float)         # radians
     qdot = np.array([0.05, -0.1, 0.02], dtype=float)    # rad/s
@@ -94,7 +94,7 @@ def test_angvel_local_zyz_body_matches_closed_form_in_degrees():
     Replace brittle numeric snapshot with a closed-form consistency check in degrees.
     """
     sympy = pytest.importorskip("sympy")
-    from rotation import rot_closedform as cf
+    from rotation_kinematics import rot_closedform as cf
 
     # Angles and rates in degrees/deg·s⁻¹
     q_deg   = np.array([10.0, 20.0, 30.0], dtype=float)

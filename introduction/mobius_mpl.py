@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     ax.set_xlabel("x"); ax.set_ylabel("y"); ax.set_zlabel("z")
     ax.set_title("Möbius strip (Matplotlib)")
-    out = "intro/out/mobius_mpl.png"
-    import os; os.makedirs("intro/out", exist_ok=True)
+    out = "introduction/out/mobius_mpl.png"
+    import os; os.makedirs("introduction/out", exist_ok=True)
     plt.tight_layout(); plt.savefig(out, dpi=200)
     print(f"Saved {out}")

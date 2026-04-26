@@ -22,7 +22,7 @@ from acceleration.utils import homogeneous
 
 def rand_so3(rng: np.random.Generator) -> np.ndarray:
     """
-    Random rotation via axis-angle.
+    Random rotation_kinematics via axis-angle.
     """
     u = rng.normal(size=3)
     theta = np.linalg.norm(u)

@@ -39,7 +39,7 @@ def test_so3_log_matches_small_rotations_on_axes(axis: np.ndarray):
 
 def test_so3_log_matches_random_small_rotations():
     """
-    For random tiny rotations, the log map should recover the rotation vector.
+    For random tiny rotations, the log map should recover the rotation_kinematics vector.
     """
     rng = np.random.default_rng(0)
     for _ in range(20):

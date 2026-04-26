@@ -71,7 +71,7 @@ def to_mermaid(edges: set[tuple[str, str]]):
 
 def main():
     if len(sys.argv) < 3:
-        print("usage: python -m rotation.tools.ast_callgraph <glob or paths...> <out.mmd>")
+        print("usage: python -m rotation_kinematics.tools.ast_callgraph <glob or paths...> <out.mmd>")
         sys.exit(2)
 
     *paths, out = sys.argv[1:]

@@ -91,11 +91,11 @@ runroot python -m motion.cli --help
 ### rotation
 
 ```bash
-runroot python -m motion.cli rotation --axis 0,0,1 --angle 1.57079632679
+runroot python -m motion.cli rotation_kinematics --axis 0,0,1 --angle 1.57079632679
 ```
 
 ```bash
-runroot python -m motion.cli rotation --axis 0,0,1 --angle 90 --degrees
+runroot python -m motion.cli rotation_kinematics --axis 0,0,1 --angle 90 --degrees
 ```
 
 ### screw

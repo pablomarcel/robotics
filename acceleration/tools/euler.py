@@ -53,7 +53,7 @@ def _R_zyx_closed_form(φ: float | complex,
                        θ: float | complex,
                        ψ: float | complex) -> np.ndarray:
     """
-    Direct (intrinsic) ZYX rotation:
+    Direct (intrinsic) ZYX rotation_kinematics:
         R = Rz(ψ) Ry(θ) Rx(φ)
     Built entrywise to reduce rounding vs. 3 matrix multiplies.
     """
@@ -118,7 +118,7 @@ def _Edot_times_rates_directional_fd(seq: str,
 @ensure_shape(3, 3)
 def euler_matrix(seq: str, angles: Sequence[float] | np.ndarray) -> np.ndarray:
     """
-    Build a rotation matrix from Euler angles for selected **intrinsic** sequences.
+    Build a rotation_kinematics matrix from Euler angles for selected **intrinsic** sequences.
 
     Supported sequences:
       - "ZYX": R = Rz(ψ) Ry(θ) Rx(φ)      (yaw, pitch, roll)
@@ -353,7 +353,7 @@ class EulerZYX:
 # ---------------------------------------------------------------------------
 
 __all__ = [
-    # rotation
+    # rotation_kinematics
     "euler_matrix",
     # general rate/accel maps (used by tests)
     "euler_rates_matrix",

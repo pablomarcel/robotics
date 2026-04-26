@@ -1,8 +1,8 @@
-# rotation/tools/deps_to_mermaid.py
+# rotation_kinematics/tools/deps_to_mermaid.py
 from __future__ import annotations
 import json, sys, pathlib
 
-def to_mermaid(d, prefix="rotation"):
+def to_mermaid(d, prefix="rotation_kinematics"):
     lines = ["flowchart LR"]
     # pydeps --show-deps outputs a dict: {module: [deps...]}
     # pydeps --show-raw-deps may output {"imports": {module: [deps...]}, ...}
@@ -30,11 +30,11 @@ def to_mermaid(d, prefix="rotation"):
 
 def main():
     if len(sys.argv) < 3:
-        print("usage: python -m rotation.tools.deps_to_mermaid <in.json> <out.mmd>")
+        print("usage: python -m rotation_kinematics.tools.deps_to_mermaid <in.json> <out.mmd>")
         sys.exit(2)
     inp, out = sys.argv[1], sys.argv[2]
     data = json.loads(pathlib.Path(inp).read_text())
-    mm = to_mermaid(data, prefix="rotation")
+    mm = to_mermaid(data, prefix="rotation_kinematics")
     pathlib.Path(out).write_text(mm)
     print(f"wrote {out}")
 

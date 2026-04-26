@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="Updated README.md to include section about documentation">
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="Updated README.md to order documentation topics">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +48,8 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/pablomontijo/Control/robotics/velocity&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -79,8 +80,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-PY-252.26830.99" />
-        <option value="bundled-python-sdk-164cda30dcd9-0af03a5fa574-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.26830.99" />
+        <option value="bundled-js-predefined-d6986cc7102b-3bd3a6803838-JavaScript-PY-261.22158.340" />
+        <option value="bundled-python-sdk-b63d5a1f7c97-b61e75351b1f-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.22158.340" />
       </set>
     </attachedChunks>
   </component>
@@ -136,15 +137,13 @@
       <workItem from="1760370402125" duration="4802000" />
       <workItem from="1760381892699" duration="6481000" />
       <workItem from="1760408135498" duration="555000" />
-      <workItem from="1760463359328" duration="557000" />
-    </task>
-    <task id="LOCAL-00013" summary="implemented diagramming">
-      <option name="closed" value="true" />
-      <created>1758248347541</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1758248347541</updated>
+      <workItem from="1760463359328" duration="1187000" />
+      <workItem from="1760476488361" duration="1331000" />
+      <workItem from="1761354448373" duration="61000" />
+      <workItem from="1761358714403" duration="2098000" />
+      <workItem from="1761366916714" duration="8000" />
+      <workItem from="1777054208682" duration="657000" />
+      <workItem from="1777160072152" duration="868000" />
     </task>
     <task id="LOCAL-00014" summary="implemented the motion module">
       <option name="closed" value="true" />
@@ -530,7 +529,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760376123879</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="Updated README.md to order documentation topics">
+      <option name="closed" value="true" />
+      <created>1760463952446</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1760463952446</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -551,7 +558,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="first take of the path module" />
     <MESSAGE value="all tests pass in the path module" />
     <MESSAGE value="implemente the time optimal control module. all 3 tests passed" />
     <MESSAGE value="implemente the control techniques module. 1 test fails" />
@@ -576,6 +582,7 @@
     <MESSAGE value="updated requirements.txt" />
     <MESSAGE value="committed docs files" />
     <MESSAGE value="Updated README.md to include section about documentation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated README.md to include section about documentation" />
+    <MESSAGE value="Updated README.md to order documentation topics" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated README.md to order documentation topics" />
   </component>
 </project>

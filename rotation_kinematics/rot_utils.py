@@ -1,5 +1,5 @@
 # =============================
-# File: rotation/rot_utils.py
+# File: rotation_kinematics/rot_utils.py
 # =============================
 from __future__ import annotations
 

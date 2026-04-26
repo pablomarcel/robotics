@@ -15,7 +15,7 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 # Root layout; find packages automatically
 # IMPORTANT: add __init__.py in each package directory you want importable
-# (e.g., rotation/__init__.py, orientation/__init__.py, ...)
+# (e.g., rotation_kinematics/__init__.py, orientation/__init__.py, ...)
 [tool.setuptools.packages.find]
 where = ["."]
 # Strict include list—only these top-level dirs will be treated as packages

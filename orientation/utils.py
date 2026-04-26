@@ -109,7 +109,7 @@ class OrientationUtils:
         return float(np.arccos(max(-1.0, min(1.0, x))))
 
     def project_to_so3(self, R: np.ndarray) -> np.ndarray:
-        """Project a near-rotation to SO(3) via SVD (closest in Frobenius norm)."""
+        """Project a near-rotation_kinematics to SO(3) via SVD (closest in Frobenius norm)."""
         R = np.asarray(R, dtype=float).reshape(3, 3)
         U, _, Vt = np.linalg.svd(R)
         Rproj = U @ Vt

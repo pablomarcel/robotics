@@ -275,7 +275,7 @@ class VelocityCLI:
         nik.add_argument("robot")
         nik.add_argument("--q0", required=True, help="Initial guess")
         nik.add_argument("--p", help="Target position (x,y,z)")
-        nik.add_argument("--R", help="Target rotation as JSON 3x3 or path")
+        nik.add_argument("--R", help="Target rotation_kinematics as JSON 3x3 or path")
         nik.add_argument("--euler", default=None, help="Euler sequence name (e.g., ZYX) if --angles provided")
         nik.add_argument("--angles", help="Euler angles (deg by default) CSV/JSON")
         nik.add_argument("--deg", action="store_true", help="Interpret --angles in degrees (default)")

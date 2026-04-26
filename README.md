@@ -131,13 +131,13 @@ pip install -U pip
 pip install -r requirements.txt
 
 # 3) Run a demo from *inside* a package
-cd rotation
+cd rotation_kinematics
 python cli.py --help
 # See RUNS.md in each package for copy‑paste commands
 
 # 4) Run tests (per tool)
 cd ../
-pytest rotation/tests --cov --cov-config=rotation/.coveragerc --cov-report=term-missing
+pytest rotation_kinematics/tests --cov --cov-config=rotation_kinematics/.coveragerc --cov-report=term-missing
 ```
 
 > Each folder includes an import shim so that **`python cli.py ...` works when you `cd` into that folder**.
@@ -160,7 +160,7 @@ Common capabilities:
 ## Example: rotation composition (rotation/)
 
 ```bash
-cd rotation
+cd rotation_kinematics
 python cli.py compose --about global --angles "30, -20, 45" --order "z,y,x" --plot --save "out/compose_{{kind}}.png"
 ```
 

@@ -30,7 +30,7 @@ def test_S_operator_matches_classic():
         assert np.allclose(S @ r, classic_accel(alpha, omega, r), atol=1e-12)
 
 def test_omega_alpha_from_R_derivatives_consistency():
-    # small rotation trajectory around random axis
+    # small rotation_kinematics trajectory around random axis
     rng = np.random.default_rng(2)
     u = rng.normal(size=3); u = u / np.linalg.norm(u)
     w = 0.7 * u

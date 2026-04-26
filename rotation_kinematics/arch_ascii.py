@@ -1,9 +1,9 @@
-# rotation/arch_ascii.py
+# rotation_kinematics/arch_ascii.py
 from __future__ import annotations
 import ast, os, pathlib
 from collections import defaultdict
 
-PKG = "rotation"
+PKG = "rotation_kinematics"
 FILES = ["rot_cli.py","rot_core.py","rot_design.py","rot_io.py","rot_utils.py"]
 
 def find_internal_imports(py_path: str) -> set[str]:

@@ -103,7 +103,7 @@ class BaseCommand(ABC):
 # ---------------------------------------------------------------------------
 
 class MatrixFromAxis(BaseCommand):
-    name, help = "matrix-from-axis", "Build rotation matrix from axis-angle (φ, û)."
+    name, help = "matrix-from-axis", "Build rotation_kinematics matrix from axis-angle (φ, û)."
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         p.add_argument("--axis", nargs=3, required=True, help="Unit axis vector (ux uy uz).")
@@ -138,7 +138,7 @@ class ToQuat(BaseCommand):
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         g = p.add_mutually_exclusive_group(required=True)
-        g.add_argument("--matrix", nargs=9, help="3x3 rotation matrix, row-major.")
+        g.add_argument("--matrix", nargs=9, help="3x3 rotation_kinematics matrix, row-major.")
         g.add_argument("--matrix-file", type=str,
                        help="CSV filename under orientation/in (fallback: orientation/out).")
 
@@ -152,7 +152,7 @@ class ToQuat(BaseCommand):
 
 
 class FromQuat(BaseCommand):
-    name, help = "from-quat", "Quaternion (e0 e1 e2 e3) → rotation matrix."
+    name, help = "from-quat", "Quaternion (e0 e1 e2 e3) → rotation_kinematics matrix."
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         p.add_argument("--quat", nargs=4, required=True)
@@ -166,7 +166,7 @@ class FromQuat(BaseCommand):
 
 
 class RodriguesToMatrix(BaseCommand):
-    name, help = "rodrigues-to-matrix", "Rodrigues vector w → rotation matrix."
+    name, help = "rodrigues-to-matrix", "Rodrigues vector w → rotation_kinematics matrix."
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         p.add_argument("--w", nargs=3, required=True)
@@ -183,7 +183,7 @@ class MatrixToRodrigues(BaseCommand):
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         g = p.add_mutually_exclusive_group(required=True)
-        g.add_argument("--matrix", nargs=9, help="3x3 rotation matrix, row-major.")
+        g.add_argument("--matrix", nargs=9, help="3x3 rotation_kinematics matrix, row-major.")
         g.add_argument("--matrix-file", type=str,
                        help="CSV filename under orientation/in (fallback: orientation/out).")
 
@@ -198,7 +198,7 @@ class MatrixToRodrigues(BaseCommand):
 
 
 class EulerToMatrix(BaseCommand):
-    name, help = "euler-to-matrix", "Euler angles → rotation matrix (axis order configurable)."
+    name, help = "euler-to-matrix", "Euler angles → rotation_kinematics matrix (axis order configurable)."
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         p.add_argument("--angles", nargs=3, required=True, help="Angles (default radians).")
@@ -225,7 +225,7 @@ class MatrixToEuler(BaseCommand):
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         g = p.add_mutually_exclusive_group(required=True)
-        g.add_argument("--matrix", nargs=9, help="3x3 rotation matrix, row-major.")
+        g.add_argument("--matrix", nargs=9, help="3x3 rotation_kinematics matrix, row-major.")
         g.add_argument("--matrix-file", type=str,
                        help="CSV filename under orientation/in (fallback: orientation/out).")
         p.add_argument("--order", type=str, default="ZYX")
@@ -270,7 +270,7 @@ class MatrixToEuler(BaseCommand):
 
 
 class ExpMap(BaseCommand):
-    name, help = "expmap", "Exponential map: exp(omega^) → rotation matrix."
+    name, help = "expmap", "Exponential map: exp(omega^) → rotation_kinematics matrix."
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         p.add_argument("--omega", nargs=3, required=True, help="Rotation vector (axis*angle).")

@@ -12,7 +12,7 @@ def test_central_pure_rotation_about_z_90deg():
     p = np.array([1.0, 0.0, 0.0, 1.0])  # x-axis point
     out = T @ p
     assert np.allclose(out[:3], [0.0, 1.0, 0.0], atol=1e-12)
-    # rotation block should equal Rz(90)
+    # rotation_kinematics block should equal Rz(90)
     Rz = Rotation.Rz(math.pi / 2).as_matrix()
     assert np.allclose(T[:3, :3], Rz, atol=1e-12)
 

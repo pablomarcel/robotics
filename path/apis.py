@@ -112,7 +112,7 @@ class RotRequest:
 
 
 def rot_api(R0, Rf, samples: int = 50) -> Dict[str, Any]:
-    """Angle-axis rotation path between two rotation matrices, evenly parameterized in angle."""
+    """Angle-axis rotation_kinematics path between two rotation_kinematics matrices, evenly parameterized in angle."""
     app = PathPlannerApp()
     path = app.angle_axis_path(np.asarray(R0, float), np.asarray(Rf, float))
     s = np.linspace(0, 1, samples)

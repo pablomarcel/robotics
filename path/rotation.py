@@ -13,7 +13,7 @@ def rodrigues(axis: np.ndarray, theta: float) -> np.ndarray:
     return I + np.sin(theta) * ux + (1 - np.cos(theta)) * (ux @ ux)
 
 def _axis_angle_from_R(R: np.ndarray) -> tuple[np.ndarray, float]:
-    """Stable axis-angle from rotation matrix; robust at 0 and π."""
+    """Stable axis-angle from rotation_kinematics matrix; robust at 0 and π."""
     R = np.asarray(R, float)
     # clamp trace to [-1,3]
     tr = np.clip(np.trace(R), -1.0, 3.0)

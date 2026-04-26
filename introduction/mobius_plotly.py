@@ -15,7 +15,7 @@ if __name__ == "__main__":
     X, Y, Z = mobius_uv()
     fig = go.Figure(data=[go.Surface(x=X, y=Y, z=Z, colorscale="Turbo")])
     fig.update_layout(title="Möbius strip (Plotly)", scene=dict(aspectmode="data"))
-    os.makedirs("intro/out", exist_ok=True)
-    out = "intro/out/mobius_plotly.html"
+    os.makedirs("introduction/out", exist_ok=True)
+    out = "introduction/out/mobius_plotly.html"
     fig.write_html(out)
     print(f"Wrote interactive HTML → {out}")

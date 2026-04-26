@@ -8,13 +8,13 @@ Array = np.ndarray
 
 @dataclass
 class Rotation:
-    """SO(3) rotation with basic differential kinematics."""
+    """SO(3) rotation_kinematics with basic differential kinematics."""
     R: Array = field(repr=False)
 
     def __post_init__(self):
         from .utils import is_rotation_matrix
         if not is_rotation_matrix(self.R):
-            raise ValueError("R must be a valid rotation matrix.")
+            raise ValueError("R must be a valid rotation_kinematics matrix.")
 
     @classmethod
     def from_axis_angle(cls, u: Array, phi: float) -> "Rotation":
@@ -47,7 +47,7 @@ class Rotation:
 
     @ensure_rotation
     def change_frame(self, R_to: Array) -> "Rotation":
-        """Transform this rotation into a new basis: R_new = R_to * R."""
+        """Transform this rotation_kinematics into a new basis: R_new = R_to * R."""
         return Rotation(R_to @ self.R)
 
 @dataclass

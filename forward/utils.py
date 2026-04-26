@@ -192,7 +192,7 @@ def adjoint(T: np.ndarray) -> np.ndarray:
     (6,6) ndarray
         [[R, 0],
          [p^ R, R]]
-    where R is the rotation and p is the translation.
+    where R is the rotation_kinematics and p is the translation.
     """
     T = np.asarray(T, dtype=float)
     if T.shape != (4, 4):
@@ -222,7 +222,7 @@ def homogeneous(R: np.ndarray, t: np.ndarray) -> np.ndarray:
 
 def is_rotation(R: np.ndarray, *, atol: float = 1e-8) -> bool:
     """
-    Heuristic check for a valid rotation matrix (orthonormal & det ≈ 1).
+    Heuristic check for a valid rotation_kinematics matrix (orthonormal & det ≈ 1).
     """
     R = np.asarray(R, dtype=float)
     if R.shape != (3, 3):

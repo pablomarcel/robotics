@@ -8,15 +8,15 @@ mobius.py — All-in-one Möbius strip CLI (mpl | plotly | pyvista)
     * plotly  → saves HTML (PNG if kaleido is installed), opens in browser with --show
     * pyvista → saves PNG; uses off-screen render by default, or window with --show
 
-- YAML config (e.g., intro/in/mobius.yaml) can set defaults; CLI overrides YAML.
+- YAML config (e.g., introduction/in/mobius.yaml) can set defaults; CLI overrides YAML.
 
 Examples (run from repo root)
 -----------------------------
-python intro/mobius.py --backend mpl --R 1.0 --w 0.35
-python intro/mobius.py --backend plotly --R 1.0 --w 0.3
-python intro/mobius.py --backend pyvista --R 1.0 --w 0.35
-python intro/mobius.py --from-yaml intro/in/mobius.yaml --w 0.25
-python intro/mobius.py --backend mpl --out intro/out/my_mobius.png
+python introduction/mobius.py --backend mpl --R 1.0 --w 0.35
+python introduction/mobius.py --backend plotly --R 1.0 --w 0.3
+python introduction/mobius.py --backend pyvista --R 1.0 --w 0.35
+python introduction/mobius.py --from-yaml introduction/in/mobius.yaml --w 0.25
+python introduction/mobius.py --backend mpl --out introduction/out/my_mobius.png
 """
 
 from __future__ import annotations
@@ -81,11 +81,11 @@ def ensure_out_dir(path: str):
 
 
 def default_out_path(backend: str) -> str:
-    os.makedirs("intro/out", exist_ok=True)
+    os.makedirs("introduction/out", exist_ok=True)
     if backend == "plotly":
-        return "intro/out/mobius_plotly.html"
+        return "introduction/out/mobius_plotly.html"
     ext = "png"
-    return f"intro/out/mobius_{backend}.{ext}"
+    return f"introduction/out/mobius_{backend}.{ext}"
 
 
 # -------------
@@ -204,10 +204,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--nu", type=int, help="Samples along u (angle).")
     p.add_argument("--nv", type=int, help="Samples along v (width).")
 
-    p.add_argument("--out", type=str, help="Output file path (defaults into intro/out/).")
+    p.add_argument("--out", type=str, help="Output file path (defaults into introduction/out/).")
     p.add_argument("--show", action="store_true", help="Show interactive window (mpl/pyvista).")
 
-    p.add_argument("--from-yaml", type=str, help="Load defaults from YAML (e.g., intro/in/mobius.yaml).")
+    p.add_argument("--from-yaml", type=str, help="Load defaults from YAML (e.g., introduction/in/mobius.yaml).")
     return p
 
 

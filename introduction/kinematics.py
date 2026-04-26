@@ -618,8 +618,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--v2", nargs="+", help='Vector 2: "4,-5,6" or 4 -5 6')
     p.add_argument("--v3", nargs="+", help='Vector 3: "7,8,9" or 7 8 9')
 
-    # rotation / euler
-    p.add_argument("--Rmat", nargs="+", help='3x3 row-major rotation matrix: "a,..,i" or 9 numbers')
+    # rotation_kinematics / euler
+    p.add_argument("--Rmat", nargs="+", help='3x3 row-major rotation_kinematics matrix: "a,..,i" or 9 numbers')
     p.add_argument("--euler", nargs="+", help='Euler angles "a,b,c" or 3 numbers')
     p.add_argument("--order", type=str, default="ZYX", help="Euler order (ZYX, XYZ supported)")
     p.add_argument("--radians", action="store_true", help="Interpret --euler in radians (default: degrees)")
@@ -633,7 +633,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--t-grid", nargs="+", help="Evaluate on grid: start stop steps")
 
     # I/O
-    p.add_argument("--from-yaml", type=str, help="Batch tasks file, e.g., intro/in/calcs.yaml")
+    p.add_argument("--from-yaml", type=str, help="Batch tasks file, e.g., introduction/in/calcs.yaml")
     p.add_argument("--out-txt", type=str, default=None, help="Append results to this text file")
     p.add_argument("--out-csv", type=str, default=None, help="Append results to this CSV file")
     return p
