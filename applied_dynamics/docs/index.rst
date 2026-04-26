@@ -1,6 +1,6 @@
-.. applied documentation master file
+.. applied_dynamics documentation master file
 
-Welcome to applied's docs!
+Welcome to applied_dynamics's docs!
 ==========================
 
 .. toctree::

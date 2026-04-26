@@ -1,6 +1,6 @@
-.. path documentation master file
+.. path_planning documentation master file
 
-Welcome to path's docs!
+Welcome to path_planning's docs!
 =======================
 
 .. toctree::

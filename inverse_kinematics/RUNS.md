@@ -201,3 +201,10 @@ runroot python -m inverse_kinematics.cli sphinx-skel --help
 ### Notes
 - JSON is the default output format for solver commands.
 - For iterative IK, the DLS update is \(\Delta q=(J^T J + \lambda^2 I)^{-1} J^T e\) with error stacked as `[ω; dp]` to match the Jacobian’s `[ω; v]` columns.
+
+### Sphinx
+
+python -m inverse_kinematics.cli sphinx-skel inverse_kinematics/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

@@ -211,3 +211,10 @@ curl -s -H "Content-Type: text/plain"   --data-binary @orientation_kinematics/ou
 Use them as templates for your own inputs under `orientation/in/`.
 
 ---
+
+### Sphinx
+
+python -m orientation_kinematics.cli sphinx-skel orientation_kinematics/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

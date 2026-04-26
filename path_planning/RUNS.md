@@ -296,6 +296,11 @@ print(app.io.save_csv("lspb.csv", {"t":s.t, "q":s.q, "qd":s.qd, "qdd":s.qdd}))
 PY
 ```
 
----
-
 **Enjoy building paths ✨**
+
+### Sphinx
+
+python -m path_planning.cli sphinx-skel path_planning/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

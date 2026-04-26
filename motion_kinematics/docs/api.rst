@@ -1,10 +1,10 @@
 API Reference
 =============
 
-.. automodule:: motion.apis
+.. automodule:: motion_kinematics.apis
    :members:
    :undoc-members:
 
-.. automodule:: motion.cli
+.. automodule:: motion_kinematics.cli
    :members:
    :undoc-members:

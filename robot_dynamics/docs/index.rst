@@ -1,6 +1,6 @@
-.. robot documentation master file
+.. robot_dynamics documentation master file
 
-Welcome to robot's docs!
+Welcome to robot_dynamics's docs!
 ========================
 
 .. toctree::

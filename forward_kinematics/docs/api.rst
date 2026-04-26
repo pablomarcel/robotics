@@ -1,22 +1,22 @@
 API Reference
 =============
 
-.. automodule:: forward.app
+.. automodule:: forward_kinematics.app
    :members:
    :undoc-members:
 
-.. automodule:: forward.core
+.. automodule:: forward_kinematics.core
    :members:
    :undoc-members:
 
-.. automodule:: forward.design
+.. automodule:: forward_kinematics.design
    :members:
    :undoc-members:
 
-.. automodule:: forward.io
+.. automodule:: forward_kinematics.io
    :members:
    :undoc-members:
 
-.. automodule:: forward.utils
+.. automodule:: forward_kinematics.utils
    :members:
    :undoc-members:

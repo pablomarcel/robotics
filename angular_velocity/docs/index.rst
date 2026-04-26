@@ -1,6 +1,6 @@
-.. angular documentation master file
+.. angular_velocity documentation master file
 
-Welcome to angular's docs!
+Welcome to angular_velocity's docs!
 ==========================
 
 .. toctree::

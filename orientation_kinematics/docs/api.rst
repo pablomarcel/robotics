@@ -1,19 +1,19 @@
 API Reference
 =============
 
-.. automodule:: orientation.core
+.. automodule:: orientation_kinematics.core
    :members:
    :undoc-members:
 
-.. automodule:: orientation.utils
+.. automodule:: orientation_kinematics.utils
    :members:
    :undoc-members:
 
-.. automodule:: orientation.io
+.. automodule:: orientation_kinematics.io
    :members:
    :undoc-members:
 
-.. automodule:: orientation.design
+.. automodule:: orientation_kinematics.design
    :members:
    :undoc-members:
 

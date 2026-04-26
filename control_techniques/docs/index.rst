@@ -1,6 +1,6 @@
-.. control documentation master file
+.. control_techniques documentation master file
 
-Welcome to control's docs!
+Welcome to control_techniques's docs!
 ==========================
 
 .. toctree::

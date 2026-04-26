@@ -1,6 +1,6 @@
-.. motion documentation master file
+.. motion_kinematics documentation master file
 
-Welcome to motion's docs!
+Welcome to motion_kinematics's docs!
 ==========================
 
 .. toctree::

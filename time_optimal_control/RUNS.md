@@ -254,3 +254,10 @@ sphinx-build -b html docs docs/_build/html
 ---
 
 **Happy hacking 🚀**
+
+### Sphinx
+
+python -m time_optimal_control.cli sphinx-skel time_optimal_control/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

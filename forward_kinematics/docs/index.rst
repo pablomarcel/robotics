@@ -1,6 +1,6 @@
-.. forward documentation master file
+.. forward_kinematics documentation master file
 
-Welcome to forward's docs!
+Welcome to forward_kinematics's docs!
 ==========================
 
 .. toctree::

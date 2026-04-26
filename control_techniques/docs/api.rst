@@ -1,18 +1,18 @@
 API Reference
 =============
 
-.. automodule:: control.app
+.. automodule:: control_techniques.app
    :members:
    :undoc-members:
 
-.. automodule:: control.io
+.. automodule:: control_techniques.io
    :members:
    :undoc-members:
 
-.. automodule:: control.tools.diagram_tool
+.. automodule:: control_techniques.tools.diagram_tool
    :members:
    :undoc-members:
 
-.. automodule:: control.cli
+.. automodule:: control_techniques.cli
    :members:
    :undoc-members:

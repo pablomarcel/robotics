@@ -93,7 +93,6 @@ Thumbs.db
 # Rotation app outputs (keep inputs under rotation_kinematics/in tracked)
 rotation_kinematics/out/
 introduction/out/
-# If other modules later mirror this pattern, this catches their out dirs at top-level
 acceleration_kinematics/out/
 angular_velocity/out/
 applied_dynamics/out/
@@ -104,5 +103,5 @@ motion_kinematics/out/
 orientation_kinematics/out/
 path_planning/out/
 robot_dynamics/out/
-time/out/
+time_optimal_control/out/
 velocity_kinematics/out/
