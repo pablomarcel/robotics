@@ -5,33 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="added docs">
-      <change afterPath="$PROJECT_DIR$/acceleration_kinematics/docs/_static/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/acceleration_kinematics/docs/_templates/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular_velocity/docs/_static/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/angular_velocity/docs/_templates/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/applied_dynamics/docs/_static/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/applied_dynamics/docs/_templates/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control_techniques/docs/_static/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/control_techniques/docs/_templates/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward_kinematics/docs/_static/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forward_kinematics/docs/_templates/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/introduction/cli.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/introduction/docs/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/introduction/docs/_static/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/introduction/docs/_templates/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/introduction/docs/api.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/introduction/docs/conf.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/introduction/docs/index.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/introduction/docs/usage.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/_static/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/_templates/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/api.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/conf.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/index.rst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rotation_kinematics/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/rotation_kinematics/RUNS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rotation_kinematics/rot_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/rotation_kinematics/rot_cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceleration_kinematics/docs/index.rst" beforeDir="false" afterPath="$PROJECT_DIR$/acceleration_kinematics/docs/index.rst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -169,15 +144,7 @@
       <workItem from="1761358714403" duration="2098000" />
       <workItem from="1761366916714" duration="8000" />
       <workItem from="1777054208682" duration="657000" />
-      <workItem from="1777160072152" duration="7568000" />
-    </task>
-    <task id="LOCAL-00023" summary="fixed all tests in the velocity module">
-      <option name="closed" value="true" />
-      <created>1758422543323</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1758422543323</updated>
+      <workItem from="1777160072152" duration="8313000" />
     </task>
     <task id="LOCAL-00024" summary="implemented class diagrams in the velocity module">
       <option name="closed" value="true" />
@@ -563,7 +530,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777168130185</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <task id="LOCAL-00072" summary="added docs">
+      <option name="closed" value="true" />
+      <created>1777170548411</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1777170548411</updated>
+    </task>
+    <option name="localTasksCounter" value="73" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

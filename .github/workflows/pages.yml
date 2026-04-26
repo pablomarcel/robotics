@@ -2,7 +2,7 @@ name: Build & Publish Docs
 
 on:
   push:
-    branches: [ main ]     # change if you publish from a different branch
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -30,84 +30,175 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install sphinx furo || pip install sphinx alabaster
-          # make the packages importable (editable install)
           pip install -e .
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
       - name: Build Sphinx for each package
         env:
-          # also expose source root on sys.path_planning (helps if editable install is skipped)
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          set -e
-          build_if_present () {
-            PKG="$1"
+          set -euo pipefail
+
+          PACKAGES=(
+            acceleration_kinematics
+            angular_velocity
+            applied_dynamics
+            control_techniques
+            forward_kinematics
+            inverse_kinematics
+            motion_planning
+            orientation_kinematics
+            path_planning
+            robot_modeling
+            rotation_kinematics
+            time_optimization
+            velocity_kinematics
+          )
+
+          for PKG in "${PACKAGES[@]}"; do
             if [ -d "$PKG/docs" ]; then
               echo "==> Building $PKG"
               make -C "$PKG/docs" html || sphinx-build -b html "$PKG/docs" "$PKG/docs/_build/html"
             else
               echo "==> Skipping $PKG (no docs)"
             fi
-          }
-          build_if_present acceleration
-          build_if_present angular
-          build_if_present applied
-          build_if_present control
-          build_if_present forward
-          build_if_present inverse
-          build_if_present motion
-          build_if_present orientation
-          build_if_present path
-          build_if_present robot
-          build_if_present rotation
-          build_if_present timeopt
-          build_if_present velocity
+          done
 
       - name: Assemble site folder
         run: |
+          set -euo pipefail
+
+          PACKAGES=(
+            acceleration_kinematics
+            angular_velocity
+            applied_dynamics
+            control_techniques
+            forward_kinematics
+            inverse_kinematics
+            motion_planning
+            orientation_kinematics
+            path_planning
+            robot_modeling
+            rotation_kinematics
+            time_optimization
+            velocity_kinematics
+          )
+
           mkdir -p _site
-          copy_if_present () {
-            PKG="$1"
+
+          for PKG in "${PACKAGES[@]}"; do
             if [ -d "$PKG/docs/_build/html" ]; then
+              echo "==> Copying $PKG"
               mkdir -p "_site/$PKG"
               cp -R "$PKG/docs/_build/html/"* "_site/$PKG/"
+            else
+              echo "==> No built docs for $PKG"
             fi
-          }
-          copy_if_present acceleration
-          copy_if_present angular
-          copy_if_present applied
-          copy_if_present control
-          copy_if_present forward
-          copy_if_present inverse
-          copy_if_present motion
-          copy_if_present orientation
-          copy_if_present path
-          copy_if_present robot
-          copy_if_present rotation
-          copy_if_present timeopt
-          copy_if_present velocity
+          done
 
-          # Simple landing page
+          # Professional landing page generated from the canonical package names.
           cat > _site/index.html <<'HTML'
-          <!doctype html><meta charset="utf-8">
-          <title>Robotics Docs</title>
-          <h1>Robotics Docs</h1>
-          <ul>
-            <li><a href="acceleration/">acceleration</a></li>
-            <li><a href="angular/">angular</a></li>
-            <li><a href="applied/">applied</a></li>
-            <li><a href="control/">control</a></li>
-            <li><a href="forward/">forward</a></li>
-            <li><a href="inverse/">inverse</a></li>
-            <li><a href="motion/">motion</a></li>
-            <li><a href="orientation/">orientation</a></li>
-            <li><a href="path/">path</a></li>
-            <li><a href="robot/">robot</a></li>
-            <li><a href="rotation/">rotation</a></li>
-            <li><a href="timeopt/">timeopt</a></li>
-            <li><a href="velocity/">velocity</a></li>
-          </ul>
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Robotics Docs</title>
+            <style>
+              :root {
+                color-scheme: light dark;
+                --bg: #f7f7fb;
+                --card: #ffffff;
+                --text: #171923;
+                --muted: #4a5568;
+                --link: #2454d6;
+                --border: #e2e8f0;
+              }
+              @media (prefers-color-scheme: dark) {
+                :root {
+                  --bg: #0f1117;
+                  --card: #171923;
+                  --text: #f7fafc;
+                  --muted: #a0aec0;
+                  --link: #8ab4ff;
+                  --border: #2d3748;
+                }
+              }
+              body {
+                margin: 0;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                background: var(--bg);
+                color: var(--text);
+              }
+              main {
+                max-width: 1040px;
+                margin: 0 auto;
+                padding: 56px 24px 72px;
+              }
+              h1 {
+                margin: 0 0 12px;
+                font-size: clamp(2rem, 4vw, 3.5rem);
+                letter-spacing: -0.04em;
+              }
+              p {
+                margin: 0 0 32px;
+                max-width: 760px;
+                color: var(--muted);
+                font-size: 1.1rem;
+                line-height: 1.6;
+              }
+              .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                gap: 16px;
+              }
+              a.card {
+                display: block;
+                padding: 18px 20px;
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                background: var(--card);
+                color: var(--text);
+                text-decoration: none;
+              }
+              a.card:hover {
+                border-color: var(--link);
+              }
+              .name {
+                display: block;
+                font-weight: 700;
+                margin-bottom: 6px;
+              }
+              .desc {
+                display: block;
+                color: var(--muted);
+                line-height: 1.45;
+              }
+            </style>
+          </head>
+          <body>
+            <main>
+              <h1>Robotics Docs</h1>
+              <p>Package-level API documentation for the Robotics Python toolkit.</p>
+              <div class="grid">
+                <a class="card" href="acceleration_kinematics/"><span class="name">acceleration_kinematics</span><span class="desc">Acceleration kinematics utilities and examples.</span></a>
+                <a class="card" href="angular_velocity/"><span class="name">angular_velocity</span><span class="desc">Angular velocity mappings and related workflows.</span></a>
+                <a class="card" href="applied_dynamics/"><span class="name">applied_dynamics</span><span class="desc">Applied robot dynamics calculations.</span></a>
+                <a class="card" href="control_techniques/"><span class="name">control_techniques</span><span class="desc">Control-oriented robotics methods.</span></a>
+                <a class="card" href="forward_kinematics/"><span class="name">forward_kinematics</span><span class="desc">Forward kinematics solvers and transformations.</span></a>
+                <a class="card" href="inverse_kinematics/"><span class="name">inverse_kinematics</span><span class="desc">Inverse kinematics workflows and numerical methods.</span></a>
+                <a class="card" href="motion_planning/"><span class="name">motion_planning</span><span class="desc">Motion planning examples and utilities.</span></a>
+                <a class="card" href="orientation_kinematics/"><span class="name">orientation_kinematics</span><span class="desc">Orientation representations and transformations.</span></a>
+                <a class="card" href="path_planning/"><span class="name">path_planning</span><span class="desc">Path planning algorithms and supporting tools.</span></a>
+                <a class="card" href="robot_modeling/"><span class="name">robot_modeling</span><span class="desc">Robot modeling, structure, and geometry utilities.</span></a>
+                <a class="card" href="rotation_kinematics/"><span class="name">rotation_kinematics</span><span class="desc">Rotation matrices, Euler sequences, and angular-rate maps.</span></a>
+                <a class="card" href="time_optimization/"><span class="name">time_optimization</span><span class="desc">Time optimization and trajectory timing workflows.</span></a>
+                <a class="card" href="velocity_kinematics/"><span class="name">velocity_kinematics</span><span class="desc">Velocity kinematics and Jacobian-based calculations.</span></a>
+              </div>
+            </main>
+          </body>
+          </html>
           HTML
 
       - name: Upload artifact
