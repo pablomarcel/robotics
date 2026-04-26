@@ -1,19 +1,19 @@
 API Reference
 =============
 
-.. automodule:: path.app
+.. automodule:: path_planning.app
    :members:
    :undoc-members:
 
-.. automodule:: path.core
+.. automodule:: path_planning.core
    :members:
    :undoc-members:
 
-.. automodule:: path.io
+.. automodule:: path_planning.io
    :members:
    :undoc-members:
 
-.. automodule:: path.utils
+.. automodule:: path_planning.utils
    :members:
    :undoc-members:
 

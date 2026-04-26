@@ -1,22 +1,22 @@
 API Reference
 =============
 
-.. automodule:: acceleration.app
+.. automodule:: acceleration_kinematics.app
    :members:
    :undoc-members:
 
-.. automodule:: acceleration.apis
+.. automodule:: acceleration_kinematics.apis
    :members:
    :undoc-members:
 
-.. automodule:: acceleration.core
+.. automodule:: acceleration_kinematics.core
    :members:
    :undoc-members:
 
-.. automodule:: acceleration.io
+.. automodule:: acceleration_kinematics.io
    :members:
    :undoc-members:
 
-.. automodule:: acceleration.utils
+.. automodule:: acceleration_kinematics.utils
    :members:
    :undoc-members:

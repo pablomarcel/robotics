@@ -142,3 +142,10 @@ runroot python -m control_techniques.cli diagram
 ```bash
 runroot python -m control_techniques.cli diagram --out classes_control
 ```
+
+### Sphinx
+
+python -m control_techniques.cli sphinx-skel control_techniques/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

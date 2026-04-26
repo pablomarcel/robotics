@@ -1,6 +1,6 @@
-.. inverse documentation master file
+.. inverse_kinematics documentation master file
 
-Welcome to inverse's docs!
+Welcome to inverse_kinematics's docs!
 ==========================
 
 .. toctree::

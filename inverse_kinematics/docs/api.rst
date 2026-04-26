@@ -1,22 +1,22 @@
 API Reference
 =============
 
-.. automodule:: inverse.app
+.. automodule:: inverse_kinematics.app
    :members:
    :undoc-members:
 
-.. automodule:: inverse.apis
+.. automodule:: inverse_kinematics.apis
    :members:
    :undoc-members:
 
-.. automodule:: inverse.core
+.. automodule:: inverse_kinematics.core
    :members:
    :undoc-members:
 
-.. automodule:: inverse.io
+.. automodule:: inverse_kinematics.io
    :members:
    :undoc-members:
 
-.. automodule:: inverse.utils
+.. automodule:: inverse_kinematics.utils
    :members:
    :undoc-members:

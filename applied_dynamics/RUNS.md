@@ -166,3 +166,10 @@ runroot python -m pytest applied_dynamics/tests -q
 ## 5) Outputs
 
 Most commands write to `applied/out/`. Adjust paths as needed.
+
+### Sphinx
+
+python -m applied_dynamics.cli sphinx-skel applied_dynamics/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

@@ -1,6 +1,6 @@
-.. orientation documentation master file
+.. orientation_kinematics documentation master file
 
-Welcome to orientation's docs!
+Welcome to orientation_kinematics's docs!
 ===============================
 
 .. toctree::

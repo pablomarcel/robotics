@@ -193,3 +193,10 @@ runroot python -m angular_velocity.app rigid-pt-vel --omega 0,0,2 --rP 1,2,0 --d
 ```bash
 runroot python -m angular_velocity.app screw-from-twist --twist 0,0,1,0,0.2,0.1
 ```
+
+### Sphinx
+
+python -m angular_velocity.cli sphinx-skel angular_velocity/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

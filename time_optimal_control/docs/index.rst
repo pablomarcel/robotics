@@ -1,7 +1,7 @@
-.. timeopt documentation master file
+.. time_optimal_control documentation master file
 
-Welcome to timeopt's docs!
-==========================
+Welcome to time_optimal_control's docs!
+===========================================
 
 .. toctree::
    :maxdepth: 2

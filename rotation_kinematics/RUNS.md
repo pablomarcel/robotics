@@ -264,3 +264,10 @@ runroot python -m rotation_kinematics.tools.ast_callgraph rotation_kinematics   
 # Quick ω from rates demo + trace
 viztracer -o rotation_kinematics/out/trace.json -m rotation_kinematics.rot_cli   angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
 ```
+
+### Sphinx
+
+python -m rotation_kinematics.cli sphinx-skel rotation_kinematics/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

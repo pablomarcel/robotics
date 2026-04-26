@@ -1,26 +1,26 @@
 API Reference
 =============
 
-.. automodule:: angular.app
+.. automodule:: angular_velocity.app
    :members:
    :undoc-members:
 
-.. automodule:: angular.core
+.. automodule:: angular_velocity.core
    :members:
    :undoc-members:
 
-.. automodule:: angular.design
+.. automodule:: angular_velocity.design
    :members:
    :undoc-members:
 
-.. automodule:: angular.io
+.. automodule:: angular_velocity.io
    :members:
    :undoc-members:
 
-.. automodule:: angular.utils
+.. automodule:: angular_velocity.utils
    :members:
    :undoc-members:
 
-.. automodule:: angular.tools.diagram
+.. automodule:: angular_velocity.tools.diagram
    :members:
    :undoc-members:

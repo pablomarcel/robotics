@@ -1,19 +1,19 @@
 API Reference
 =============
 
-.. automodule:: robot.core
+.. automodule:: robot_dynamics.core
    :members:
    :undoc-members:
 
-.. automodule:: robot.design
+.. automodule:: robot_dynamics.design
    :members:
    :undoc-members:
 
-.. automodule:: robot.apis
+.. automodule:: robot_dynamics.apis
    :members:
    :undoc-members:
 
-.. automodule:: robot.io
+.. automodule:: robot_dynamics.io
    :members:
    :undoc-members:
 

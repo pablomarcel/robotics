@@ -1,11 +1,11 @@
 API Reference
 =============
 
-.. automodule:: timeopt.apis
+.. automodule:: time_optimal_control.apis
    :members:
    :undoc-members:
 
-.. automodule:: timeopt.tools.diagram
+.. automodule:: time_optimal_control.tools.diagram
    :members:
    :undoc-members:
 

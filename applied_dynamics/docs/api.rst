@@ -1,34 +1,34 @@
 API Reference
 =============
 
-.. automodule:: applied.app
+.. automodule:: applied_dynamics.app
    :members:
    :undoc-members:
 
-.. automodule:: applied.core
+.. automodule:: applied_dynamics.core
    :members:
    :undoc-members:
 
-.. automodule:: applied.dynamics
+.. automodule:: applied_dynamics.dynamics
    :members:
    :undoc-members:
 
-.. automodule:: applied.models
+.. automodule:: applied_dynamics.models
    :members:
    :undoc-members:
 
-.. automodule:: applied.io
+.. automodule:: applied_dynamics.io
    :members:
    :undoc-members:
 
-.. automodule:: applied.utils
+.. automodule:: applied_dynamics.utils
    :members:
    :undoc-members:
 
-.. automodule:: applied.tools.diagram
+.. automodule:: applied_dynamics.tools.diagram
    :members:
    :undoc-members:
 
-.. automodule:: applied.apis
+.. automodule:: applied_dynamics.apis
    :members:
    :undoc-members:

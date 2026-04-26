@@ -1,14 +1,14 @@
 API Reference
 =============
 
-.. automodule:: velocity.core
+.. automodule:: velocity_kinematics.core
    :members:
    :undoc-members:
 
-.. automodule:: velocity.apis
+.. automodule:: velocity_kinematics.apis
    :members:
    :undoc-members:
 
-.. automodule:: velocity.design
+.. automodule:: velocity_kinematics.design
    :members:
    :undoc-members:

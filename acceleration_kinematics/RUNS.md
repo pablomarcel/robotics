@@ -179,3 +179,10 @@ except Exception as e:
     print('NumPy: not installed', e)
 PY
 ```
+
+### Sphinx
+
+python -m acceleration_kinematics.cli sphinx-skel acceleration_kinematics/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

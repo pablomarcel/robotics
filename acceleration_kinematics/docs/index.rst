@@ -1,6 +1,6 @@
-.. acceleration documentation master file
+.. acceleration_kinematics documentation master file
 
-Welcome to acceleration's docs!
+Welcome to acceleration_kinematics's docs!
 ================================
 
 .. toctree::

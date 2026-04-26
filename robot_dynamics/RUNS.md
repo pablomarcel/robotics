@@ -197,12 +197,7 @@ runroot python -m robot_dynamics.cli from-yaml sample_2r.yaml --q 0.3 0.1 --qd 0
 
 Each run writes a JSON with some or all keys:
 ```json
-{
-  "M": [[...], [...]],
-  "C": [[...], [...]],
-  "g": [...],
-  "tau": [...]
-}
+
 ```
 
 ---
@@ -252,3 +247,10 @@ pylint robot_dynamics || true
 - Floating-point mismatches: use `--g` consistent with your coordinate convention; by default +y is upward in the symbolic reference.
 
 Happy hacking 🤖✨
+
+### Sphinx
+
+python -m robot_dynamics.cli sphinx-skel robot_dynamics/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html

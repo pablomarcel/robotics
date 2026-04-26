@@ -226,3 +226,10 @@ runroot ls -1 motion_kinematics/in
 ```bash
 runroot ls -1 motion_kinematics/out
 ```
+
+### Sphinx
+
+python -m motion_kinematics.cli sphinx-skel motion_kinematics/docs
+python -m sphinx -b html docs docs/_build/html
+open docs/_build/html/index.html
+sphinx-autobuild docs docs/_build/html
