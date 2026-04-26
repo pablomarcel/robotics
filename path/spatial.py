@@ -61,7 +61,7 @@ class ParabolicBlend3D(TrajectoryND):
         else:
             # inside the blend window [t1 - ta, t1 + ta]
             tau = t - (self.t1 - ta)
-            ac = (v2 - v1) / (2 * ta)  # constant vector acceleration over 2*ta
+            ac = (v2 - v1) / (2 * ta)  # constant vector acceleration_kinematics over 2*ta
             # position continuity: start from r1 - v1*ta (which equals r at t1-ta)
             q = (self.r1 - v1 * ta) + v1 * tau + 0.5 * ac * (tau ** 2)
             qd = v1 + ac * tau

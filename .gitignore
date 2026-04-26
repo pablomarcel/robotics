@@ -94,9 +94,9 @@ Thumbs.db
 rotation_kinematics/out/
 introduction/out/
 # If other modules later mirror this pattern, this catches their out dirs at top-level
-acceleration/out/
+acceleration_kinematics/out/
 angular_velocity/out/
-applied/out/
+applied_dynamics/out/
 control/out/
 forward_kinematics/out/
 inverse_kinematics/out/

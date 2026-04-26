@@ -34,7 +34,7 @@ _AX = {'x': _Rx, 'y': _Ry, 'z': _Rz}
 # -----------------------------------------------------------------------------
 def _compose_local(seq: str, q: Tuple[sp.Symbol, sp.Symbol, sp.Symbol]) -> sp.Matrix:
     """
-    Local/intrinsic composition (moving axes), applied in the LISTED order by
+    Local/intrinsic composition (moving axes), applied_dynamics in the LISTED order by
     RIGHT-multiplication (starting from identity):
         R = R_axis1(q1) * R_axis2(q2) * R_axis3(q3)
     This matches SciPy's intrinsic (uppercase) convention.

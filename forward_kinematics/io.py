@@ -202,7 +202,7 @@ def load_spec_from_file(path: Union[str, Path]) -> Dict[str, Any]:
 def load_spec(path_or_dict: Union[str, Path, Mapping[str, Any]]) -> Dict[str, Any]:
     """
     Load a spec from a file path (JSON/YAML) **or** return a validated copy of
-    an in-memory dict (no validation applied here).
+    an in-memory dict (no validation applied_dynamics here).
     """
     if isinstance(path_or_dict, (str, Path)):
         return load_spec_from_file(path_or_dict)

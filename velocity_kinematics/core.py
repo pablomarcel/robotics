@@ -16,7 +16,7 @@ Notes
 URDF assumptions
 ----------------
 - We support tree URDFs; for Jacobians we use the unique parent chain from base
-  link to the chosen end-effector link. Fixed joints along the chain are applied
+  link to the chosen end-effector link. Fixed joints along the chain are applied_dynamics
   to FK (no dof). Actuated joints are those with type in {'revolute','continuous','prismatic'}.
 - Joint axis is defined in the joint frame (URDF spec). We propagate the joint
   frame pose along the chain at the CURRENT configuration and rotate axes into

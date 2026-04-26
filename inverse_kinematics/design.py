@@ -129,7 +129,7 @@ def spherical_wrist(*, wrist_type: int, d_tool: float = 0.0, name: str = "wrist"
         Type 2 (Roll–Pitch–Yaw  ≈ Z–Y–Z): α = [+π/2, -π/2, 0]
         Type 3 (Pitch–Yaw–Roll  ≈ X–Y–Z): α = [-π/2, -π/2, 0]
 
-    All links have a=0 and d=0; the tool offset is applied as M = Tz(d_tool).
+    All links have a=0 and d=0; the tool offset is applied_dynamics as M = Tz(d_tool).
 
     Parameters
     ----------
