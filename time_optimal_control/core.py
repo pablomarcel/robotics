@@ -25,7 +25,7 @@ def requires(pkg: str):
 
 @dataclass(slots=True)
 class SolveRequest:
-    """Generic request to solve a time-optimal control problem."""
+    """Generic request to solve a time-optimal control_techniques problem."""
     name: str
     params: Dict[str, Any]
     out_dir: str = "time/out"

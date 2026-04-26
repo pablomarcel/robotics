@@ -1,4 +1,4 @@
-# timeopt/app.py
+# time_optimal_control/app.py
 from __future__ import annotations
 import numpy as np
 from dataclasses import dataclass
@@ -62,7 +62,7 @@ class MinTimeDoubleIntegrator(TimeOptimalProblem):
         F_dyn = ca.Function("F", [x, v, u], [f])
 
         X = [ca.MX.sym(f"X_{k}", 2) for k in range(N+1)]   # [x,v] at nodes
-        U = [ca.MX.sym(f"U_{k}") for k in range(N)]        # control per interval
+        U = [ca.MX.sym(f"U_{k}") for k in range(N)]        # control_techniques per interval
 
         # Variable vector layout: [ tf, X_0(2), ..., X_N(2), U_0, ..., U_{N-1} ]
         w = [tf] + X + U

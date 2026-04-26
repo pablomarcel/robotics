@@ -1,4 +1,4 @@
-# control/app.py
+# control_techniques/app.py
 """
 Orchestration façade used by CLI/tests. Keeps objects small & testable.
 """

@@ -1,6 +1,6 @@
-# timeopt/tests/test_core_double_integrator.py
+# time_optimal_control/tests/test_core_double_integrator.py
 import pytest
-from timeopt.app import MinTimeDoubleIntegrator
+from time_optimal_control.app import MinTimeDoubleIntegrator
 
 casadi = pytest.importorskip("casadi")
 

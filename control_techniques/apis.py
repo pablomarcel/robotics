@@ -1,4 +1,4 @@
-# control/apis.py
+# control_techniques/apis.py
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Tuple
@@ -90,7 +90,7 @@ class SimAPI:
         ts = _time_grid(t, dt)
         sol = solve_ivp(f, t, x0, t_eval=ts, rtol=1e-8, atol=1e-10)
         X = sol.y.T
-        U = np.zeros((len(ts), 1), dtype=float)  # placeholder; control is internal
+        U = np.zeros((len(ts), 1), dtype=float)  # placeholder; control_techniques is internal
         Y = X.copy()
         return SimulationResult(ts, X, Y, U, {"ref": ref})
 

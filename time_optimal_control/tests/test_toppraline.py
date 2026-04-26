@@ -1,8 +1,8 @@
 # time/tests/test_toppraline.py
 import numpy as np
 import pytest
-from timeopt.design import Planar2RGeom
-from timeopt.app import TwoRPathTimeScaler, TwoRParams
+from time_optimal_control.design import Planar2RGeom
+from time_optimal_control.app import TwoRPathTimeScaler, TwoRParams
 
 toppra = pytest.importorskip("toppra")
 
