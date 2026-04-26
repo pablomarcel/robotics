@@ -7,14 +7,14 @@ Problem shape
 Acceleration problems are expressed as a small envelope:
 
   {
-    "op": "forward" | "inverse" | "classic" | "euler_alpha" | "quat_sb" | "mixed",
+    "op": "forward_kinematics" | "inverse_kinematics" | "classic" | "euler_alpha" | "quat_sb" | "mixed",
     "payload": { ... op-specific fields ... },
-    "model":   { "kind": "planar2r", "l1": <float>, "l2": <float> }  # required for forward/inverse
+    "model":   { "kind": "planar2r", "l1": <float>, "l2": <float> }  # required for forward_kinematics/inverse_kinematics
   }
 
 Notes
 -----
-* Unlike the inverse module, acceleration workflows do **not** require low-level
+* Unlike the inverse_kinematics module, acceleration workflows do **not** require low-level
   DH/MDH chain specs here. We build `ChainKinematics` façades from high-level models.
 * YAML input is supported if PyYAML is installed.
 * Validation uses `jsonschema` if available; otherwise we raise clear errors.
@@ -23,14 +23,14 @@ Examples
 --------
 Forward acceleration (planar 2R):
 {
-  "op": "forward",
+  "op": "forward_kinematics",
   "model":   {"kind": "planar2r", "l1": 1.0, "l2": 0.7},
   "payload": {"q": [0.1, 0.2], "qd": [0.3, -0.1], "qdd": [0.0, 1.2]}
 }
 
 Inverse acceleration:
 {
-  "op": "inverse",
+  "op": "inverse_kinematics",
   "model":   {"kind": "planar2r", "l1": 1.0, "l2": 0.7},
   "payload": {"q": [0.1, 0.2], "qd": [0.3, -0.1], "xdd": [0.2, -0.5]}
 }
@@ -118,7 +118,7 @@ def model_schema() -> Dict[str, Any]:
             "l2": _number(),
             "name": {"type": "string"},
         },
-        "additionalProperties": True,  # allow forward-compatible fields
+        "additionalProperties": True,  # allow forward_kinematics-compatible fields
     }
 
 
@@ -214,7 +214,7 @@ def problem_schema() -> Dict[str, Any]:
     """
     Top-level acceleration problem schema.
 
-    Uses `if`/`then` to require `model` for forward/inverse ops, while keeping it
+    Uses `if`/`then` to require `model` for forward_kinematics/inverse_kinematics ops, while keeping it
     optional for other ops.
     """
     return {
@@ -224,18 +224,18 @@ def problem_schema() -> Dict[str, Any]:
         "required": ["op", "payload"],
         "properties": {
             "op": {"type": "string", "enum": [
-                "forward", "inverse", "classic", "euler_alpha", "quat_sb", "mixed"
+                "forward_kinematics", "inverse_kinematics", "classic", "euler_alpha", "quat_sb", "mixed"
             ]},
             "payload": {"type": "object"},  # refined by oneOf below
             "model": model_schema(),
         },
         "allOf": [
             {
-                "if": {"properties": {"op": {"const": "forward"}}, "required": ["op"]},
+                "if": {"properties": {"op": {"const": "forward_kinematics"}}, "required": ["op"]},
                 "then": {"required": ["model"], "properties": {"payload": payload_forward_schema()}},
             },
             {
-                "if": {"properties": {"op": {"const": "inverse"}}, "required": ["op"]},
+                "if": {"properties": {"op": {"const": "inverse_kinematics"}}, "required": ["op"]},
                 "then": {"required": ["model"], "properties": {"payload": payload_inverse_schema()}},
             },
             {

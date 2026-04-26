@@ -141,23 +141,7 @@
       <workItem from="1761358714403" duration="2098000" />
       <workItem from="1761366916714" duration="8000" />
       <workItem from="1777054208682" duration="657000" />
-      <workItem from="1777160072152" duration="1192000" />
-    </task>
-    <task id="LOCAL-00015" summary="implemented diagrams in the motion module">
-      <option name="closed" value="true" />
-      <created>1758301346418</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1758301346418</updated>
-    </task>
-    <task id="LOCAL-00016" summary="implemented the forward module">
-      <option name="closed" value="true" />
-      <created>1758316190365</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1758316190365</updated>
+      <workItem from="1777160072152" duration="1473000" />
     </task>
     <task id="LOCAL-00017" summary="implemented the inverse module. 14 tests failed">
       <option name="closed" value="true" />
@@ -535,7 +519,23 @@
       <option name="project" value="LOCAL" />
       <updated>1777163519906</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="refactored packages names.">
+      <option name="closed" value="true" />
+      <created>1777163690304</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1777163690304</updated>
+    </task>
+    <task id="LOCAL-00065" summary="refactored packages names.">
+      <option name="closed" value="true" />
+      <created>1777163797832</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1777163797832</updated>
+    </task>
+    <option name="localTasksCounter" value="66" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

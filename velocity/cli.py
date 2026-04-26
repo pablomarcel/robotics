@@ -293,7 +293,7 @@ class VelocityCLI:
         lus.add_argument("--out")
         lus.set_defaults(func=self._cmd_lu_solve)
 
-        # LU inverse
+        # LU inverse_kinematics
         lui = sub.add_parser("lu-inv", help="Compute A^{-1} via LU")
         lui.add_argument("--A", required=True, help="Matrix as JSON or path")
         lui.add_argument("--out")

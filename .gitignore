@@ -98,8 +98,8 @@ acceleration/out/
 angular/out/
 applied/out/
 control/out/
-forward/out/
-inverse/out/
+forward_kinematics/out/
+inverse_kinematics/out/
 motion_kinematics/out/
 orientation_kinematics/out/
 path/out/

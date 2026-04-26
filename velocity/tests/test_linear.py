@@ -93,7 +93,7 @@ def test_pinv_damped_converges_to_lstsq_when_well_conditioned():
     J = robot.jacobian_geometric(q)
     xdot = np.array([0.1, -0.02, 0.0, 0.0, 0.0, 0.0])
 
-    # Damping extremely small ≈ pseudo-inverse
+    # Damping extremely small ≈ pseudo-inverse_kinematics
     q_damped = utils.pinv_damped(J, lam=1e-9) @ xdot
 
     # Compare with least-squares solution via SVD-based pinv

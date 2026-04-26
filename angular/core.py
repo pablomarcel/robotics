@@ -138,7 +138,7 @@ class KinematicsEngine:
     def rigid_body_point_velocity(omega_g: Array, r_gp: Array, d_gb: Array, d_gb_dot: Array) -> Array:
         return np.cross(omega_g.reshape(3), (r_gp - d_gb).reshape(3)) + d_gb_dot.reshape(3)
 
-    # ---- Eq. 7.351 etc: velocity matrix and inverse mapping ----
+    # ---- Eq. 7.351 etc: velocity matrix and inverse_kinematics mapping ----
     @staticmethod
     def velocity_matrix(R: Array, d: Array, Rdot: Array, ddot: Array) -> Array:
         return Transform(R, d).velocity_matrix(Rdot, ddot)

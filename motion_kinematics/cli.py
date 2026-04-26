@@ -369,7 +369,7 @@ def build_parser() -> argparse.ArgumentParser:
     ppd.add_argument("--out", type=Path, help="output JSON path (default motion_kinematics/out/plane-dist.json)")
     ppd.set_defaults(func=cmd_plane_dist)
 
-    # forward kinematics (DH)
+    # forward_kinematics kinematics (DH)
     pfk = sub.add_parser("fk", help="Forward kinematics with DH rows: a,alpha,d,theta")
     pfk.add_argument("--dh", type=_parse_dh, required=True, action="append",
                      help="DH row (repeatable). Example: --dh 0.1,0.0,0.2,1.57")

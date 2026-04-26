@@ -198,7 +198,7 @@ class PinocchioBackend(Backend):
 
         Computes:
             ẍ = J(q) q̈ + J̇(q, q̇) q̇
-        using Pinocchio’s forward kinematics for (q, q̇, q̈) and then
+        using Pinocchio’s forward_kinematics kinematics for (q, q̇, q̈) and then
         returning the frame acceleration expressed in the configured reference.
         """
         _ensure_pinocchio()

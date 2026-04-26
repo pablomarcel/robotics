@@ -7,7 +7,7 @@ Layers
 1) AppliedDynamicsAPI — test-oriented façade exposing quick symbolic derivations.
    Returns `applied.utils.Result` payloads, keeping a single LagrangeEngine.
 
-2) AppliedService — optional, app-oriented façade mirroring the inverse module
+2) AppliedService — optional, app-oriented façade mirroring the inverse_kinematics module
    style. Useful for batch runs, file I/O helpers, and diagram generation without
    tying to a web framework.
 
@@ -99,14 +99,14 @@ class AppliedDynamicsAPI:
 
 
 # -----------------------------------------------------------------------------
-# App-oriented façade (optional; mirrors inverse module style)
+# App-oriented façade (optional; mirrors inverse_kinematics module style)
 # -----------------------------------------------------------------------------
 
 @dataclass
 class AppliedService:
     """
     Higher-level façade around `AppliedApp`. Not required by current tests,
-    but useful for parity with the inverse module’s service and for scripting.
+    but useful for parity with the inverse_kinematics module’s service and for scripting.
     """
 
     def run_all(self) -> List[Result]:

@@ -561,7 +561,7 @@ class solvers:
         euler: str = "ZYX",
     ) -> Tuple[np.ndarray, Dict[str, Any]]:
         """
-        Newton–Raphson inverse kinematics on pose x = [p; orientation_kinematics].
+        Newton–Raphson inverse_kinematics kinematics on pose x = [p; orientation_kinematics].
 
         Task selection (static mask built from x_target):
           - If 'p' in x_target, include translational rows (0..2).

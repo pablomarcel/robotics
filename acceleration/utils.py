@@ -119,7 +119,7 @@ def skew(v: Sequence[float] | np.ndarray) -> np.ndarray:
 
 def vex(S: np.ndarray) -> np.ndarray:
     """
-    Vee operator (inverse of skew). Extracts the vector from a 3×3 skew-symmetric matrix.
+    Vee operator (inverse_kinematics of skew). Extracts the vector from a 3×3 skew-symmetric matrix.
 
     Preserves dtype (supports complex-step).
     """

@@ -24,7 +24,7 @@ def test_inverse_blocks_match_formula():
     T = SE3(R, t)
     Ti = T.inv().as_matrix()
 
-    # Expected inverse: [ R^T  -R^T t ; 0 0 0 1 ]
+    # Expected inverse_kinematics: [ R^T  -R^T t ; 0 0 0 1 ]
     RT = R.T
     expected = np.eye(4)
     expected[:3, :3] = RT

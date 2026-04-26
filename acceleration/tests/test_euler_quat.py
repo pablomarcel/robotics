@@ -215,7 +215,7 @@ def test_quaternion_omega_alpha_match_numerical(seq):
 
 def test_quat_kinematics_matrix_consistency():
     """
-    Check q̇ ≈ 0.5 Q(q) ω and inverse ω(q, q̇) round-trip for small motions.
+    Check q̇ ≈ 0.5 Q(q) ω and inverse_kinematics ω(q, q̇) round-trip for small motions.
     """
     rng = np.random.default_rng(20)
     # random rotation_kinematics → quaternion

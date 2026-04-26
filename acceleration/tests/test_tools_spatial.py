@@ -213,7 +213,7 @@ def test_spatial_inertia_transform_consistency():
     X_AB = motion_xform(T_A_to_B)
     Xstar_AB = force_xform(T_A_to_B)
 
-    # Build X_BA without directly inverting the 6x6: use the inverse SE(3)
+    # Build X_BA without directly inverting the 6x6: use the inverse_kinematics SE(3)
     T_B_to_A = np.linalg.inv(T_A_to_B)
     X_BA = motion_xform(T_B_to_A)
 

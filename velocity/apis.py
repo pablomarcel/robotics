@@ -226,7 +226,7 @@ class VelocityAPI:
         weights: Optional[Sequence[float]] = None,
     ) -> NDArray:
         """
-        Solve inverse velocity (resolved-rates) q̇ from Ẋ = J q̇.
+        Solve inverse_kinematics velocity (resolved-rates) q̇ from Ẋ = J q̇.
 
         If the system is square and nonsingular: J^{-1} Ẋ.
         Otherwise uses (weighted) damped least squares.
@@ -263,7 +263,7 @@ class VelocityAPI:
         euler: str = "ZYX",
     ) -> Tuple[NDArray, Dict[str, Any]]:
         """
-        Newton–Raphson inverse kinematics on pose (position + orientation_kinematics).
+        Newton–Raphson inverse_kinematics kinematics on pose (position + orientation_kinematics).
 
         Parameters
         ----------

@@ -201,7 +201,7 @@ class App:
         output_path: Optional[Union[str, Path]] = None,
     ) -> Dict[str, Any]:
         """
-        Compute forward kinematics from a DH table.
+        Compute forward_kinematics kinematics from a DH table.
         Each row: [a, alpha, d, theta] (radians).
         """
         self.logger.debug("Forward kinematics with DH params (first row if any): %s",

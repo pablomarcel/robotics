@@ -113,7 +113,7 @@ def test_api_lu_tools_with_fake_module(monkeypatch: pytest.MonkeyPatch) -> None:
         L = np.asarray(L, float)
         U = np.asarray(U, float)
         b = np.asarray(b, float).reshape(-1)
-        # forward
+        # forward_kinematics
         y = np.zeros_like(b)
         for i in range(L.shape[0]):
             y[i] = b[i] - L[i, :i] @ y[:i]

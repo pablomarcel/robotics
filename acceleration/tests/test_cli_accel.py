@@ -13,7 +13,7 @@ def test_cli_help_runs():
     assert "acceleration" in res.output.lower() or "help" in res.output.lower()
 
 def test_cli_diagram_mermaid(tmp_path):
-    # If your CLI exposes a diagram command mirroring inverse/cli.py
+    # If your CLI exposes a diagram command mirroring inverse_kinematics/cli.py
     runner = CliRunner()
     out = tmp_path / "diagram.md"
     res = runner.invoke(cli_mod.cli, ["diagram-mermaid", "--out", str(out)])

@@ -192,7 +192,7 @@ class DesignLibrary:
 
 # ------------------------------ Convenience -------------------------------- #
 
-# Friendly aliases for external imports (mirrors inverse.design style)
+# Friendly aliases for external imports (mirrors inverse_kinematics.design style)
 build_simple_pendulum = build_pendulum
 build_spherical = build_spherical_pendulum
 build_2r = build_planar_2r

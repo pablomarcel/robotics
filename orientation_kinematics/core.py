@@ -393,7 +393,7 @@ class SO3:
     Methods
     -------
     compose(other) -> SO3
-    inverse() -> SO3
+    inverse_kinematics() -> SO3
     act(v) -> np.ndarray
     angle() -> float
     axis() -> np.ndarray

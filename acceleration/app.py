@@ -2,8 +2,8 @@
 """
 High-level façade for the acceleration-kinematics package.
 
-This class mirrors the inverse module’s app: it centralizes file I/O,
-preset builders, forward/inverse acceleration, and small convenience
+This class mirrors the inverse_kinematics module’s app: it centralizes file I/O,
+preset builders, forward_kinematics/inverse_kinematics acceleration, and small convenience
 APIs (classic acceleration, Euler/Quaternion, mixed derivatives) behind
 a small, testable surface. Importantly, it **does not** import
 `acceleration.apis` to avoid accidental circular imports with any CLI or
@@ -51,10 +51,10 @@ from .core import (
 )
 from .backends.numpy_backend import Planar2R
 from . import io as io_mod
-from . import design as design_mod  # (placeholder; keeps symmetry with inverse)
+from . import design as design_mod  # (placeholder; keeps symmetry with inverse_kinematics)
 # If you later add design helpers (e.g., DH builders), we can route here.
 
-# Optional: if you add tools.diagram like the inverse module, wire it:
+# Optional: if you add tools.diagram like the inverse_kinematics module, wire it:
 try:
     from .tools.diagram import render_dot as _render_dot  # type: ignore
 except Exception:  # pragma: no cover - optional helper
@@ -88,7 +88,7 @@ class AccelApp:
     Responsibilities
     ----------------
     * Build robot backends (Planar 2R out of the box; backends pluggable).
-    * Forward & inverse acceleration for chains (9.283 / 9.291 / 9.327).
+    * Forward & inverse_kinematics acceleration for chains (9.283 / 9.291 / 9.327).
     * Classic tangential+centripetal term (α×r + ω×(ω×r)).
     * Euler/Quaternion helpers (orientation_kinematics kinematics).
     * Mixed accelerations (representative helpers for 9.400–9.426).
@@ -110,7 +110,7 @@ class AccelApp:
         """
         Return a ChainKinematics façade over the numpy Planar2R backend.
 
-        This mirrors the inverse app’s `preset_planar_2r`, but here we return
+        This mirrors the inverse_kinematics app’s `preset_planar_2r`, but here we return
         a ChainKinematics so we can call `forward_accel` / `inverse_accel`.
         """
         backend = Planar2R(float(l1), float(l2))
@@ -120,7 +120,7 @@ class AccelApp:
     # - preset_from_pinocchio(model_path) -> ChainKinematics
     # - preset_from_drake(plant_builder)  -> ChainKinematics
 
-    # ---------- Chain acceleration (forward / inverse) ----------
+    # ---------- Chain acceleration (forward_kinematics / inverse_kinematics) ----------
 
     @timed
     def forward_accel(
@@ -280,8 +280,8 @@ class AccelApp:
         """
         Solve a single problem dict of the form:
 
-          {"op": "forward|inverse|classic|euler_alpha|quat_SB|mixed",
-           "model": {...},   # only for forward|inverse
+          {"op": "forward_kinematics|inverse_kinematics|classic|euler_alpha|quat_SB|mixed",
+           "model": {...},   # only for forward_kinematics|inverse_kinematics
            "payload": {...}} # op-specific arguments
 
         Returns a JSON-serializable result (lists).
@@ -290,9 +290,9 @@ class AccelApp:
         model = problem.get("model", {})
         payload = problem.get("payload", {})
 
-        if op == "forward":
+        if op == "forward_kinematics":
             return self._op_forward(model, payload)
-        if op == "inverse":
+        if op == "inverse_kinematics":
             return self._op_inverse(model, payload)
         if op == "classic":
             return self._op_classic(payload)
