@@ -62,17 +62,17 @@ class ForwardService:
 
     # ---- Spec I/O ----
     def load_file(self, path: str, *, validate: bool = True) -> SerialChain:
-        """Load a robot spec from JSON/YAML file and build a :class:`SerialChain`."""
+        """Load a robot_dynamics spec from JSON/YAML file and build a :class:`SerialChain`."""
         return self.app.load_robot(path, validate=validate)
 
     def load_spec(self, spec: Dict[str, Any], *, validate: bool = True) -> SerialChain:
-        """Load a robot spec from an in-memory dict (already parsed)."""
+        """Load a robot_dynamics spec from an in-memory dict (already parsed)."""
         if validate:
             io_mod.validate_spec(spec, io_mod.robot_schema())
         return io_mod.build_chain_from_spec(spec)
 
     def schema(self) -> Dict[str, Any]:
-        """Return the JSON Schema used for robot specifications."""
+        """Return the JSON Schema used for robot_dynamics specifications."""
         return io_mod.robot_schema()
 
     def validate(self, spec: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
@@ -142,7 +142,7 @@ def create_rest_app():
     svc = ForwardService()
 
     class SpecModel(BaseModel):
-        """Generic robot spec (validated against jsonschema at runtime)."""
+        """Generic robot_dynamics spec (validated against jsonschema at runtime)."""
         # Accept arbitrary content; the jsonschema validator will check structure.
         __root__: Dict[str, Any]
 

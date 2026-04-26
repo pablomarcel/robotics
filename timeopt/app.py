@@ -146,7 +146,7 @@ class MinTimeDoubleIntegrator(TimeOptimalProblem):
 
 
 # =======================
-# 2) 2R path time-parameterization via TOPPRA (0.6.3 API)
+# 2) 2R path_planning time-parameterization via TOPPRA (0.6.3 API)
 # =======================
 
 @dataclass
@@ -161,7 +161,7 @@ class TwoRParams:
 
 class TwoRPathTimeScaler(TimeOptimalProblem):
     """
-    Time-optimal path parameterization along a given joint path q(s) using TOPPRA.
+    Time-optimal path_planning parameterization along a given joint path_planning q(s) using TOPPRA.
     Matches §13.3 (Eqs. 13.129–13.146) and Fig. 13.14/13.16 behavior.
     """
     def __init__(self, name: str, qs: np.ndarray, params: TwoRParams):

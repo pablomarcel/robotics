@@ -1,6 +1,6 @@
 # velocity_kinematics/tools/robotviz.py
 """
-RobotViz — minimal DH robot stick-figure renderer (SVG/PNG/PDF).
+RobotViz — minimal DH robot_dynamics stick-figure renderer (SVG/PNG/PDF).
 
 New in this version
 -------------------
@@ -11,7 +11,7 @@ New in this version
 
 What it does
 ------------
-- Loads a DH robot spec (YAML or JSON) compatible with velocity_kinematics.core.DHRobot.from_spec
+- Loads a DH robot_dynamics spec (YAML or JSON) compatible with velocity_kinematics.core.DHRobot.from_spec
 - Runs FK at a provided configuration q (defaults to zeros)
 - Projects joints to a view plane (xy/xz/yz/isometric)
 - Renders a clean diagram: links as segments, joints as circles, TCP & base as squares
@@ -98,7 +98,7 @@ class VizConfig:
 
 def _load_spec(path: Path) -> dict:
     """
-    Load a robot spec (YAML or JSON). The format must match core.DHRobot.from_spec.
+    Load a robot_dynamics spec (YAML or JSON). The format must match core.DHRobot.from_spec.
     """
     s = path.suffix.lower()
     if s in (".yaml", ".yml"):
@@ -118,7 +118,7 @@ def _parse_q(arg: Optional[str], dof: int) -> np.ndarray:
         return np.zeros(dof, dtype=float)
     vals = [float(x) for x in arg.split(",")]
     if len(vals) != dof:
-        raise SystemExit(f"--q has {len(vals)} values, but robot has {dof} joints")
+        raise SystemExit(f"--q has {len(vals)} values, but robot_dynamics has {dof} joints")
     return np.asarray(vals, dtype=float)
 
 
@@ -218,7 +218,7 @@ def _svg_text(x, y, txt, color, size=11, anchor="middle") -> str:
 
 def render_robot_svg(spec: dict, q: Sequence[float], cfg: VizConfig) -> Tuple[str, int, int]:
     """
-    Build SVG string for the given robot spec and configuration.
+    Build SVG string for the given robot_dynamics spec and configuration.
     Returns: (svg_text, width_px, height_px)
     """
     robot = core.DHRobot.from_spec(spec)
@@ -335,15 +335,15 @@ def _write_png_pdf(svg: str, out_path: Path, fmt: Literal["png", "pdf"], *,
 # ------------------------------ CLI plumbing -----------------------------------
 
 def _build_cli() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="velocity_kinematics.tools.robotviz", description="Render a DH robot spec as SVG/PNG/PDF")
+    p = argparse.ArgumentParser(prog="velocity_kinematics.tools.robotviz", description="Render a DH robot_dynamics spec as SVG/PNG/PDF")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     d = sub.add_parser("draw", help="Render diagram")
-    d.add_argument("robot", help="Path to YAML/JSON DH robot spec (velocity_kinematics/in/...)")
+    d.add_argument("robot_dynamics", help="Path to YAML/JSON DH robot_dynamics spec (velocity_kinematics/in/...)")
     d.add_argument("--q", default="", help="Comma-separated joint values (rad/m). Default: zeros")
 
     d.add_argument("--fmt", default="svg", choices=["svg", "png", "pdf"], help="Output format")
-    d.add_argument("--out", default="", help="Output file path; if blank, uses velocity_kinematics/out/<name>.<fmt>")
+    d.add_argument("--out", default="", help="Output file path_planning; if blank, uses velocity_kinematics/out/<name>.<fmt>")
 
     d.add_argument("--view", default="xy", choices=["xy", "xz", "yz", "iso"], help="Projection plane")
     d.add_argument("--scale", type=float, default=220.0, help="Pixels per meter (SVG logical units)")
@@ -387,7 +387,7 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
 
         # Choose default output if not provided
         if not args.out:
-            name = spec.get("name", "robot")
+            name = spec.get("name", "robot_dynamics")
             out_dir = Path("velocity_kinematics/out")
             out_dir.mkdir(parents=True, exist_ok=True)
             out_path = out_dir / f"{name}.{args.fmt}"

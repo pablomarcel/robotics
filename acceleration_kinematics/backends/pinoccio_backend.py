@@ -18,7 +18,7 @@ This module is optional. Import errors are raised at construction time if
 
 Examples
 --------
->>> # Build from URDF path
+>>> # Build from URDF path_planning
 >>> be = PinocchioBackend.from_urdf("my_robot.urdf", reference="world")
 >>> kin = ChainKinematics(backend=be, frame="tool0")
 >>> J = be.jacobian("tool0", q)           # (6, nv)
@@ -111,12 +111,12 @@ class PinocchioBackend(Backend):
     @classmethod
     def from_urdf(cls, urdf_path: str, *, reference: str = "world", package_dirs: Sequence[str] | None = None) -> "PinocchioBackend":
         """
-        Build backend from a URDF path.
+        Build backend from a URDF path_planning.
 
         Parameters
         ----------
         urdf_path : str
-            Path to the robot URDF.
+            Path to the robot_dynamics URDF.
         reference : str
             Frame reference convention.
         package_dirs : list[str] | None
@@ -203,7 +203,7 @@ class PinocchioBackend(Backend):
         """
         _ensure_pinocchio()
         # For fixed-base arms, nq == nv; otherwise ensure your state.q represents q.
-        # If your robot has a floating base, pass the full q directly to jacobian/jdot_qdot.
+        # If your robot_dynamics has a floating base, pass the full q directly to jacobian/jdot_qdot.
         q = self._coerce_q(state.q if state.q.size == self.model.nq else np.r_[state.q])
         v = self._coerce_v(state.qd)
         a = self._coerce_v(state.qdd)

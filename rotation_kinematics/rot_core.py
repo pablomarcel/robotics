@@ -211,10 +211,10 @@ def align_body_x(u: Sequence[float]) -> R:
 # ---------------------------------------------------------------------
 
 def save_R(path: str, Robj: R) -> None:
-    """Save a rotation_kinematics matrix to CSV at rotation_kinematics/out/<path>."""
+    """Save a rotation_kinematics matrix to CSV at rotation_kinematics/out/<path_planning>."""
     save_matrix_csv(path, Robj)
 
 
 def save_series(path: str, t: np.ndarray, data: np.ndarray, header: str) -> None:
-    """Save a time series (t, data[*,3]) to CSV at rotation_kinematics/out/<path> with a header."""
+    """Save a time series (t, data[*,3]) to CSV at rotation_kinematics/out/<path_planning> with a header."""
     save_series_csv(path, t, data, header)

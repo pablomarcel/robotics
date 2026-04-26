@@ -87,7 +87,7 @@ class AccelApp:
 
     Responsibilities
     ----------------
-    * Build robot backends (Planar 2R out of the box; backends pluggable).
+    * Build robot_dynamics backends (Planar 2R out of the box; backends pluggable).
     * Forward & inverse_kinematics acceleration_kinematics for chains (9.283 / 9.291 / 9.327).
     * Classic tangential+centripetal term (α×r + ω×(ω×r)).
     * Euler/Quaternion helpers (orientation_kinematics kinematics).

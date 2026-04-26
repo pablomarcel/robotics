@@ -12,7 +12,7 @@ wraps the lower-level building blocks in ``core.py``, ``io.py``, and
     * Class diagram generation via Graphviz DOT.
     * Timing and structured logging for reproducibility.
 
-The design keeps public methods side-effect free (unless an output path
+The design keeps public methods side-effect free (unless an output path_planning
 is provided) so they are straightforward to unit test under pytest.
 
 Typical usage
@@ -77,7 +77,7 @@ class ForwardApp:
     Delegates to:
       - :mod:`forward_kinematics.io` for parsing/validation/building serial chains.
       - :mod:`forward_kinematics.core` for Transform & kinematics math.
-      - :mod:`forward_kinematics.design` for predefined robot factories.
+      - :mod:`forward_kinematics.design` for predefined robot_dynamics factories.
       - :mod:`forward_kinematics.tools.class_diagram` for DOT generation.
 
     All public methods use explicit inputs and return values to remain
@@ -101,7 +101,7 @@ class ForwardApp:
 
     def load_robot(self, path: PathLike, *, validate: bool = True) -> SerialChain:
         """
-        Load a robot specification (JSON or YAML) and build a :class:`SerialChain`.
+        Load a robot_dynamics specification (JSON or YAML) and build a :class:`SerialChain`.
 
         The spec format is shared between JSON and YAML. Validation uses the
         JSON Schema returned by :func:`forward_kinematics.io.robot_schema`.
@@ -109,7 +109,7 @@ class ForwardApp:
         Parameters
         ----------
         path : str or Path
-            File path to JSON/YAML robot specification.
+            File path_planning to JSON/YAML robot_dynamics specification.
         validate : bool
             Whether to validate against the schema before building.
 
@@ -125,7 +125,7 @@ class ForwardApp:
 
     def validate_file(self, path: PathLike) -> Tuple[bool, Optional[str]]:
         """
-        Validate a robot specification file against the JSON Schema.
+        Validate a robot_dynamics specification file against the JSON Schema.
 
         Returns
         -------
@@ -187,7 +187,7 @@ class ForwardApp:
         Parameters
         ----------
         chain : SerialChain
-            The robot model.
+            The robot_dynamics model.
         q : array-like
             Joint vector (length == number of joints).
 
@@ -229,13 +229,13 @@ class ForwardApp:
         Parameters
         ----------
         path : PathLike
-            Output path (JSON).
+            Output path_planning (JSON).
         T : Transform
             Homogeneous transform to save.
 
         Returns
         -------
-        Path  (actual file path written)
+        Path  (actual file path_planning written)
         """
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)

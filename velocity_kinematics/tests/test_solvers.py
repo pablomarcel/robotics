@@ -2,7 +2,7 @@
 """
 Solver-focused tests:
 - Weighted damped least squares matches explicit weighting construction
-- Adaptive damping path (damping=None) returns finite solution with small residual
+- Adaptive damping path_planning (damping=None) returns finite solution with small residual
 - Orientation-only Newton IK on a 3R spherical wrist (ZXZ target) converges
 """
 
@@ -25,7 +25,7 @@ def test_resolved_rates_weighted_matches_explicit():
     weights = np.array([1.0, 0.5, 2.0, 0.25])  # diagonal task weights
     lam = 1e-3
 
-    # Solver path
+    # Solver path_planning
     q_solver = core.solvers.resolved_rates(J, xdot, damping=lam, weights=weights)
 
     # Explicit construction: W^{1/2} J, W^{1/2} x
@@ -38,7 +38,7 @@ def test_resolved_rates_weighted_matches_explicit():
 
 
 # --------------------------------------------------------------------------- #
-# Adaptive damping path (damping=None)
+# Adaptive damping path_planning (damping=None)
 # --------------------------------------------------------------------------- #
 
 def test_resolved_rates_adaptive_damping_is_finite_and_small_residual():

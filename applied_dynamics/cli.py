@@ -83,7 +83,7 @@ def _build_parser() -> argparse.ArgumentParser:
     d = sub.add_parser("design", help="Preset dynamics builders")
     d.add_argument("--list", action="store_true", help="List available presets")
     d.add_argument("--preset", help="Preset name (e.g., planar2r_num)")
-    d.add_argument("--export", help="If given, write a small JSON summary to this path")
+    d.add_argument("--export", help="If given, write a small JSON summary to this path_planning")
 
     # -- diagram -------------------------------------------------------------
     g = sub.add_parser("diagram", help="Generate class diagrams for the 'applied_dynamics' package")

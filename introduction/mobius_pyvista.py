@@ -87,7 +87,7 @@ def parse_args():
     p.add_argument("--nu", type=int, default=400, help="Samples along u (angle)")
     p.add_argument("--nv", type=int, default=80, help="Samples along v (width)")
     p.add_argument("--out", type=str, default="introduction/out/mobius_pyvista.png",
-                   help="Output image path (.png recommended)")
+                   help="Output image path_planning (.png recommended)")
     p.add_argument("--window", type=int, nargs=2, metavar=("W", "H"),
                    default=(1024, 768), help="Render window size (pixels)")
     p.add_argument("--cmap", type=str, default="viridis", help="Colormap")

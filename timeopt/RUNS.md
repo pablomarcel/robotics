@@ -124,7 +124,7 @@ runroot python -m timeopt.cli run double-integrator \
 
 ### 3.4 Run the 2R TOPPRA time-scaling along a straight line
 ```bash
-runroot python -m timeopt.cli run 2r-path \
+runroot python -m timeopt.cli run 2r-path_planning \
   --name twoR_cli \
   --y 0.5 --x0 1.9 --x1 0.5 --n 150 \
   --l1 1.0 --l2 1.0 --tau-max 100 100
@@ -193,10 +193,10 @@ sphinx-quickstart docs
 # Install theme (Furo already listed above)
 pip install furo
 
-# Configure docs/conf.py to include the project path and extensions like autodoc:
+# Configure docs/conf.py to include the project path_planning and extensions like autodoc:
 #   extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon"]
 #   html_theme = "furo"
-#   sys.path.insert(0, os.path.abspath(".."))
+#   sys.path_planning.insert(0, os.path_planning.abspath(".."))
 
 # Autodoc stubs (example)
 sphinx-apidoc -o docs/api timeopt

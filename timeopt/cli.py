@@ -4,15 +4,15 @@
 Time-optimal control toolbox CLI (click-based)
 
 Improvements ("dirty trick"):
-- Robust path handling:
-    * --out may be a directory or a file path; we create parents as needed.
+- Robust path_planning handling:
+    * --out may be a directory or a file path_planning; we create parents as needed.
     * Defaults keep back-compat with "time/out" but we also accept "timeopt/out".
 - Helpful echoes: print where artifacts are written.
 - New: `sphinx-skel` command to scaffold minimal Sphinx docs quickly.
 
 Existing commands preserved:
     di         → minimum-time double integrator
-    2r-line    → 2R time-opt path scaling along y=const
+    2r-line    → 2R time-opt path_planning scaling along y=const
     diagram    → emit a tiny PlantUML class diagram
 """
 
@@ -50,7 +50,7 @@ def _normalize_out_dir(out: Optional[str]) -> Path:
 
 def _normalize_out_path(out: Optional[str], default_name: str) -> Path:
     """
-    Resolve an output *file* path. If `out` is a directory, place default_name inside it.
+    Resolve an output *file* path_planning. If `out` is a directory, place default_name inside it.
     If `out` is None, use legacy directory with default_name (fallback to modern).
     """
     if not out:
@@ -86,11 +86,11 @@ def run_di(x0, xf, m, Fmax, mu, drag, out):
     """Minimum-time double-integrator (CasADi)."""
     out_dir = _normalize_out_dir(out)
     res = DoubleIntegratorAPI().solve(x0=x0, xf=xf, m=m, F=Fmax, mu=mu, drag=drag, out_dir=str(out_dir))
-    # API is assumed to write artifacts inside out_dir; echo a summary/path.
+    # API is assumed to write artifacts inside out_dir; echo a summary/path_planning.
     click.echo(res.data if hasattr(res, "data") else f"Wrote artifacts to {out_dir}")
 
 @cli.command("2r-line")
-@click.option("--y", type=float, required=True, help="Constant y for the line path")
+@click.option("--y", type=float, required=True, help="Constant y for the line path_planning")
 @click.option("--x0", type=float, required=True, help="Start x")
 @click.option("--x1", type=float, required=True, help="End x")
 @click.option("--n", type=int, default=200, show_default=True, help="Number of samples")
@@ -111,7 +111,7 @@ def run_2r_line(y, x0, x1, n, tau, out):
 
 @cli.command("diagram")
 @click.option("--out", type=str, default=str(LEGACY_DEFAULT_OUT / "time.puml"),
-              show_default=True, help="Output .puml path")
+              show_default=True, help="Output .puml path_planning")
 def diagram(out):
     """Emit a minimal PlantUML class diagram."""
     classes = ["TimeOptimalProblem", "MinTimeDoubleIntegrator", "TwoRPathTimeScaler", "Planar2RGeom"]

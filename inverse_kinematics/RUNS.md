@@ -81,7 +81,7 @@ JSON
 Solve:
 
 ```bash
-runroot python -m inverse_kinematics.cli ik-solve --model planar2r --l1 1.0 --l2 1.0 --method iterative --T-path inverse_kinematics/in/target_T.json --q0 0.1 --q0 0.1 --tol 1e-8 --itmax 200 --lambda-damp 1e-3 -o inverse_kinematics/out/solutions_iterative_generic_T.json
+runroot python -m inverse_kinematics.cli ik-solve --model planar2r --l1 1.0 --l2 1.0 --method iterative --T-path_planning inverse_kinematics/in/target_T.json --q0 0.1 --q0 0.1 --tol 1e-8 --itmax 200 --lambda-damp 1e-3 -o inverse_kinematics/out/solutions_iterative_generic_T.json
 ```
 
 ---

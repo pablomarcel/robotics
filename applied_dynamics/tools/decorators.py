@@ -7,14 +7,14 @@ Utility decorators for file-emitting helpers in the **applied_dynamics** module.
 What you get
 ------------
 - ensure_outfile_param(param="outfile", default=None)
-    Ensure a path parameter exists (kwarg) and parent dirs are created.
+    Ensure a path_planning parameter exists (kwarg) and parent dirs are created.
     * `default` may be:
-        - a string path,
+        - a string path_planning,
         - a format string (e.g., "applied_dynamics/out/{name}.txt"),
         - a callable: default(*args, **kwargs) -> str | Path | None.
 
 - write_text_result(param="outfile", encoding="utf-8", atomic=True)
-    If the wrapped function returns `str`, write it to the outfile path.
+    If the wrapped function returns `str`, write it to the outfile path_planning.
     Returns the output `Path`.
 
 - write_json_result(param="outfile", indent=2, default=str, atomic=True)
@@ -67,7 +67,7 @@ def _resolve_default(default: Optional[Union[PathLike, str, Resolver]],
 
     - If default is callable: call(default)(*args, **kwargs)
     - If default is a string containing '{...}': format with kwargs
-    - Else treat default as a literal path
+    - Else treat default as a literal path_planning
     """
     if default is None:
         return None
@@ -113,14 +113,14 @@ def ensure_outfile_param(
     default: Optional[Union[PathLike, str, Resolver]] = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
-    Ensure a function receives a writable output path in a kwarg.
+    Ensure a function receives a writable output path_planning in a kwarg.
 
     Behavior
     --------
     - If the kwarg `param` is provided (str|Path), parents are created.
     - Else, try to resolve `default` (callable or format string is allowed).
-    - Else, if the last positional argument *looks* like a path, use that.
-    - The resolved path is injected back into kwargs[param] as a `Path`.
+    - Else, if the last positional argument *looks* like a path_planning, use that.
+    - The resolved path_planning is injected back into kwargs[param] as a `Path`.
     - Returns the wrapped function's normal return value.
 
     This decorator **does not** perform the write; pair it with
@@ -132,11 +132,11 @@ def ensure_outfile_param(
         def wrapped(*args: Any, **kwargs: Any) -> Any:
             out = _coerce_outfile(kwargs.get(param))
             if out is None and args:
-                out = _coerce_outfile(args[-1])  # conventional last positional path
+                out = _coerce_outfile(args[-1])  # conventional last positional path_planning
             if out is None:
                 out = _resolve_default(default, args, kwargs)
             if out is None:
-                raise ValueError(f"Missing output path for parameter '{param}' and no usable default.")
+                raise ValueError(f"Missing output path_planning for parameter '{param}' and no usable default.")
             ensure_outfile(out)  # creates parents
             kwargs[param] = out
             return func(*args, **kwargs)

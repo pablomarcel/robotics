@@ -1,6 +1,6 @@
 # inverse_kinematics/tests/test_cli.py
 # Pytest suite for the inverse_kinematics CLI.
-# These tests exercise the happy-path flows and file I/O surfaces using Click's CliRunner.
+# These tests exercise the happy-path_planning flows and file I/O surfaces using Click's CliRunner.
 
 from __future__ import annotations
 
@@ -104,7 +104,7 @@ def test_ik_solve_iterative_with_T_path(tmp_path: Path):
             "--l1", "1.0",
             "--l2", "1.0",
             "--method", "iterative",
-            "--T-path", str(Tfile),
+            "--T-path_planning", str(Tfile),
             "--q0", "0.1", "--q0", "0.1",
             "--tol", "1e-8",
             "--itmax", "200",

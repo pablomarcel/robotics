@@ -164,7 +164,7 @@ class InverseService:
         q0: Optional[Sequence[float]] = None,
     ) -> List[List[np.ndarray]]:
         """
-        Run IK for a set of pose specs (e.g., a path).
+        Run IK for a set of pose specs (e.g., a path_planning).
 
         Returns
         -------
@@ -186,7 +186,7 @@ class InverseService:
 
     def save_solutions(self, out_path_or_name: str, solutions: List[np.ndarray]) -> str:
         """
-        Save solutions JSON and return the actual file path (as string).
+        Save solutions JSON and return the actual file path_planning (as string).
 
         The file layout is a simple list-of-lists under {"solutions": ...}.
         """
@@ -392,14 +392,14 @@ def create_rest_app():
     @app.post("/diagram/puml/save")
     def diagram_puml_save(name: str = "classes.puml"):
         """
-        Write a PlantUML file under inverse_kinematics/out/{name} and return the path.
+        Write a PlantUML file under inverse_kinematics/out/{name} and return the path_planning.
         """
         try:
             txt = _puml_text()
             out = svc.app.out_dir / name
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(txt, encoding="utf-8")
-            return {"path": str(out)}
+            return {"path_planning": str(out)}
         except Exception as exc:
             raise HTTPException(status_code=500, detail=f"PUML save failed: {exc}")
 

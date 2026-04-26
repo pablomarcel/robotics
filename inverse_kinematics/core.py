@@ -169,7 +169,7 @@ class MDHLink(Link):
 # --------------------------------------------------------------------------
 
 class SerialChain:
-    def __init__(self, links: Sequence[Link], M: Optional[np.ndarray] = None, name: str = "robot"):
+    def __init__(self, links: Sequence[Link], M: Optional[np.ndarray] = None, name: str = "robot_dynamics"):
         self._links: List[Link] = list(links)
         self.M = np.eye(4) if M is None else np.array(M, dtype=float)
         self.name = name

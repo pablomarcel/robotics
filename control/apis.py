@@ -101,7 +101,7 @@ class SimAPI:
         C = np.eye(2); D = np.zeros((2, 1))
         return {"A": A, "B": B, "C": C, "D": D}
 
-    @track("robot.ctpd")
+    @track("robot_dynamics.ctpd")
     def robot_computed_torque(
         self,
         robot: Planar2R | Any,

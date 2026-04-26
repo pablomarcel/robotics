@@ -18,7 +18,7 @@ Typical usage
 from motion_kinematics.io import IO, IOConfig
 
 io = IO()  # defaults to motion_kinematics/in and motion_kinematics/out (relative to this package)
-path = io.save_json({"hello": "world"}, "example.json")
+path_planning = io.save_json({"hello": "world"}, "example.json")
 T = np.eye(4); io.save_transform(T, "pose_A")  # writes pose_A.npy and pose_A.json
 P = io.load_points_csv("cloud.csv")            # reads motion_kinematics/in/cloud.csv by default
 """
@@ -121,7 +121,7 @@ class IO:
         Save any JSON-serializable object (dataclasses & numpy supported).
 
         If `name_or_path` is relative, it is written under motion_kinematics/out/.
-        Returns the absolute path as a string.
+        Returns the absolute path_planning as a string.
         """
         path = self._resolve_out(name_or_path)
         payload = json.dumps(obj, cls=_NumpyJSONEncoder, indent=2)
@@ -130,7 +130,7 @@ class IO:
 
     def load_json(self, name_or_path: Union[str, Path]) -> Any:
         """
-        Load JSON from motion_kinematics/in (if relative) or an absolute path.
+        Load JSON from motion_kinematics/in (if relative) or an absolute path_planning.
         """
         path = self._resolve_in(name_or_path)
         with path.open("r", encoding="utf-8") as f:
@@ -154,7 +154,7 @@ class IO:
 
     def load_matrix(self, name_or_path: Union[str, Path]) -> np.ndarray:
         """
-        Load a .npy array from motion_kinematics/in (if relative) or absolute path.
+        Load a .npy array from motion_kinematics/in (if relative) or absolute path_planning.
         """
         path = self._resolve_in(name_or_path)
         return np.load(str(path))
@@ -218,7 +218,7 @@ class IO:
 
     def load_points_csv(self, name_or_path: Union[str, Path]) -> np.ndarray:
         """
-        Load Nx3 points from CSV in motion_kinematics/in/ (if relative) or absolute path.
+        Load Nx3 points from CSV in motion_kinematics/in/ (if relative) or absolute path_planning.
         """
         path = self._resolve_in(name_or_path)
         rows: List[List[float]] = []

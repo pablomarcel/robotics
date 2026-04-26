@@ -104,14 +104,14 @@ class DiagramTool:
     def render_graphviz(self, *, fmt: str = "png", rankdir: str = "LR",
                         out_stem: str = "classes") -> str:
         """
-        Render a Graphviz diagram. Returns the produced file path.
+        Render a Graphviz diagram. Returns the produced file path_planning.
 
         Parameters
         ----------
         fmt : {'png','svg','pdf',...}
         rankdir : {'LR','TB'}
         out_stem : str
-            Output path (stem only) within out_dir; extension is added by Graphviz.
+            Output path_planning (stem only) within out_dir; extension is added by Graphviz.
         """
         model = self.discover()
         out_path = str((self.cfg.out_dir / out_stem).as_posix())
@@ -130,7 +130,7 @@ class DiagramTool:
     @timing
     def emit_plantuml(self, *, out_file: str = "classes.puml") -> str:
         """
-        Emit PlantUML text file and return its path.
+        Emit PlantUML text file and return its path_planning.
         """
         model = self.discover()
         path = str((self.cfg.out_dir / out_file).as_posix())
@@ -139,7 +139,7 @@ class DiagramTool:
     @timing
     def emit_mermaid(self, *, out_file: str = "classes.mmd") -> str:
         """
-        Emit Mermaid text file and return its path.
+        Emit Mermaid text file and return its path_planning.
         """
         model = self.discover()
         path = str((self.cfg.out_dir / out_file).as_posix())
@@ -148,7 +148,7 @@ class DiagramTool:
     @timing
     def export_model_json(self, *, out_file: str = "classes.json") -> str:
         """
-        Save the discovered model as JSON for snapshot tests; returns path.
+        Save the discovered model as JSON for snapshot tests; returns path_planning.
         """
         model = self.discover()
         path = str((self.cfg.out_dir / out_file).as_posix())

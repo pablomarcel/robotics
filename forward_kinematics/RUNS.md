@@ -79,7 +79,7 @@ runroot python -m forward_kinematics.cli validate forward_kinematics/in/my_robot
 ```
 
 ```bash
-runroot python -m forward_kinematics.cli schema -o forward_kinematics/out/robot.schema.json
+runroot python -m forward_kinematics.cli schema -o forward_kinematics/out/robot_dynamics.schema.json
 ```
 
 ---

@@ -19,8 +19,8 @@ _SVC = AccelService()
 
 def _ensure_out_path(path: Optional[Path], default_name: str) -> Path:
     """
-    If `path` is None or a directory, return DEFAULT_OUT_DIR/default_name.json.
-    If `path` has a suffix, ensure parent exists and return it verbatim.
+    If `path_planning` is None or a directory, return DEFAULT_OUT_DIR/default_name.json.
+    If `path_planning` has a suffix, ensure parent exists and return it verbatim.
     """
     if path is None:
         DEFAULT_OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -181,8 +181,8 @@ def cmd_quat_sb(q: Iterable[float], qd: Iterable[float], qdd: Iterable[float], o
 
 
 @cli.command("mixed")
-@click.option("--R-path", "r_path", type=click.Path(exists=True, path_type=Path), required=True,
-              help="JSON path to a 3x3 rotation_kinematics matrix.")
+@click.option("--R-path_planning", "r_path", type=click.Path(exists=True, path_type=Path), required=True,
+              help="JSON path_planning to a 3x3 rotation_kinematics matrix.")
 @click.option("--omega", type=float, multiple=True, required=True, help="ω of B in G (3).")
 @click.option("--alpha", type=float, multiple=True, required=True, help="α of B in G (3).")
 @click.option("--r", type=float, multiple=True, required=True, help="Position vector r (3).")

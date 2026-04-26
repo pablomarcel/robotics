@@ -142,7 +142,7 @@ class AccelService:
 
     def save_result(self, out_path_or_name: str, result: Any) -> str:
         """
-        Save a generic result JSON and return the actual file path (as string).
+        Save a generic result JSON and return the actual file path_planning (as string).
         """
         out = Path(out_path_or_name)
         out.parent.mkdir(parents=True, exist_ok=True)

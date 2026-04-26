@@ -1,6 +1,6 @@
 # applied_dynamics/utils.py
 """
-Utility decorators, math helpers, and path constants for **applied_dynamics dynamics**.
+Utility decorators, math helpers, and path_planning constants for **applied_dynamics dynamics**.
 
 Highlights
 ----------
@@ -18,7 +18,7 @@ Highlights
 
 - Paths & I/O helpers:
     * APPLIED_ROOT, IN_DIR, OUT_DIR
-    * ensure_outfile(path)
+    * ensure_outfile(path_planning)
     * Result dataclass (light result carrier)
 """
 from __future__ import annotations
@@ -44,7 +44,7 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 IN_DIR.mkdir(parents=True, exist_ok=True)
 
 def ensure_outfile(path: Path) -> Path:
-    """Ensure parent directory exists and return the path."""
+    """Ensure parent directory exists and return the path_planning."""
     path.parent.mkdir(parents=True, exist_ok=True)
     return path
 

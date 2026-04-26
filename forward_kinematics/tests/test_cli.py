@@ -50,7 +50,7 @@ def _simple_2r_spec_json():
 
 def test_validate_json_ok(tmp_path: Path):
     spec = _simple_2r_spec_json()
-    spec_path = _write_json(tmp_path / "robot.json", spec)
+    spec_path = _write_json(tmp_path / "robot_dynamics.json", spec)
     r = CliRunner().invoke(cli, ["validate", str(spec_path)])
     assert r.exit_code == 0, r.output
     assert "VALID" in r.output
@@ -58,13 +58,13 @@ def test_validate_json_ok(tmp_path: Path):
 def test_validate_yaml_ok(tmp_path: Path):
     # only runs if PyYAML is installed
     spec = _simple_2r_spec_json()
-    spec_path = _write_yaml(tmp_path / "robot.yaml", spec)
+    spec_path = _write_yaml(tmp_path / "robot_dynamics.yaml", spec)
     r = CliRunner().invoke(cli, ["validate", str(spec_path)])
     assert r.exit_code == 0, r.output
     assert "VALID" in r.output
 
 def test_schema_export(tmp_path: Path):
-    out = tmp_path / "robot.schema.json"
+    out = tmp_path / "robot_dynamics.schema.json"
     r = CliRunner().invoke(cli, ["schema", "-o", str(out)])
     assert r.exit_code == 0, r.output
     assert out.exists()
@@ -73,7 +73,7 @@ def test_schema_export(tmp_path: Path):
 
 def test_fk_command_outputs_transform(tmp_path: Path):
     spec = _simple_2r_spec_json()
-    spec_path = _write_json(tmp_path / "robot.json", spec)
+    spec_path = _write_json(tmp_path / "robot_dynamics.json", spec)
     out = tmp_path / "T.json"
     # NOTE: --q is repeatable now
     r = CliRunner().invoke(cli, ["fk", str(spec_path), "--q", "0.0", "--q", "0.0", "-o", str(out)])
@@ -88,7 +88,7 @@ def test_fk_command_outputs_transform(tmp_path: Path):
 
 def test_jacobian_space_command(tmp_path: Path):
     spec = _simple_2r_spec_json()
-    spec_path = _write_json(tmp_path / "robot.json", spec)
+    spec_path = _write_json(tmp_path / "robot_dynamics.json", spec)
     out = tmp_path / "Js.json"
     r = CliRunner().invoke(cli, ["jacobian-space", str(spec_path), "--q", "0.0", "--q", "0.0", "-o", str(out)])
     assert r.exit_code == 0, r.output
@@ -98,7 +98,7 @@ def test_jacobian_space_command(tmp_path: Path):
 
 def test_jacobian_body_command(tmp_path: Path):
     spec = _simple_2r_spec_json()
-    spec_path = _write_json(tmp_path / "robot.json", spec)
+    spec_path = _write_json(tmp_path / "robot_dynamics.json", spec)
     out = tmp_path / "Jb.json"
     r = CliRunner().invoke(cli, ["jacobian-body", str(spec_path), "--q", "0.0", "--q", "0.0", "-o", str(out)])
     assert r.exit_code == 0, r.output

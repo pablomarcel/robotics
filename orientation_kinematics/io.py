@@ -14,7 +14,7 @@ Security
 --------
 - All writes create parent directories as needed.
 - Filenames are validated to remain under the configured in/out dirs
-  (prevents path traversal).
+  (prevents path_planning traversal).
 
 Author: Robotics project
 """
@@ -80,7 +80,7 @@ class IOManager:
     # ---------------- internal helpers ----------------
 
     def _safe_path(self, rel_or_name: str | Path, *, kind: str) -> Path:
-        """Return a path inside in_dir/out_dir; raises on traversal."""
+        """Return a path_planning inside in_dir/out_dir; raises on traversal."""
         base = self.config.in_dir if kind == "in" else self.config.out_dir
         p = (base / Path(rel_or_name)).resolve()
         if not str(p).startswith(str(base)):

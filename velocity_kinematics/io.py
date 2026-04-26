@@ -4,9 +4,9 @@ File I/O helpers for the Velocity Kinematics Toolkit.
 
 What’s provided
 ---------------
-- load_dh_from_file(path)   -> dict with {"name", "joints", "tool"?}
-- load_urdf_from_file(path) -> dict with {"name", "raw"?, "links"?, "joints"?}
-- save_report(path, obj)    -> JSON writer tolerant of NumPy types
+- load_dh_from_file(path_planning)   -> dict with {"name", "joints", "tool"?}
+- load_urdf_from_file(path_planning) -> dict with {"name", "raw"?, "links"?, "joints"?}
+- save_report(path_planning, obj)    -> JSON writer tolerant of NumPy types
 
 Design goals
 ------------
@@ -39,7 +39,7 @@ import numpy as np
 
 def load_dh_from_file(path: str | Path) -> Dict[str, Any]:
     """
-    Load a standard-DH robot description from YAML or JSON.
+    Load a standard-DH robot_dynamics description from YAML or JSON.
 
     Parameters
     ----------
@@ -106,12 +106,12 @@ def load_urdf_from_file(path: str | Path) -> Dict[str, Any]:
 
 def save_report(path: str | Path, obj: Any) -> None:
     """
-    Save a JSON report to `path`, handling NumPy arrays and numbers.
+    Save a JSON report to `path_planning`, handling NumPy arrays and numbers.
 
     Parameters
     ----------
     path : str | Path
-        Output file path (directories are created if needed).
+        Output file path_planning (directories are created if needed).
     obj : Any
         Serializable object; NumPy arrays/numbers are converted automatically.
     """

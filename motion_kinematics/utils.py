@@ -91,7 +91,7 @@ class NumpyJSONEncoder(json.JSONEncoder):
 
 def to_json(obj: Any, path: Union[str, Path]) -> str:
     """
-    Serialize `obj` to JSON at `path` using NumpyJSONEncoder.
+    Serialize `obj` to JSON at `path_planning` using NumpyJSONEncoder.
     """
     path = Path(path)
     ensure_dir(path.parent)
@@ -102,7 +102,7 @@ def to_json(obj: Any, path: Union[str, Path]) -> str:
 
 def from_json(path: Union[str, Path]) -> Any:
     """
-    Load JSON from `path`.
+    Load JSON from `path_planning`.
     """
     with Path(path).open("r", encoding="utf-8") as f:
         return json.load(f)

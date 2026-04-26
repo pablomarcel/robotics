@@ -70,7 +70,7 @@ def cli():
 @cli.command("validate")
 @click.argument("spec_path", type=click.Path(exists=True, path_type=Path))
 def cmd_validate(spec_path: Path):
-    """Validate a JSON/YAML robot specification against the JSON Schema."""
+    """Validate a JSON/YAML robot_dynamics specification against the JSON Schema."""
     spec = _read_spec(spec_path)
     ok, err = _SVC.validate(spec)
     if ok:
@@ -81,11 +81,11 @@ def cmd_validate(spec_path: Path):
 
 
 @cli.command("schema")
-@click.option("-o", "--out", type=click.Path(path_type=Path), help="Output path (.json).")
+@click.option("-o", "--out", type=click.Path(path_type=Path), help="Output path_planning (.json).")
 def cmd_schema(out: Optional[Path]):
     """Export the JSON Schema used by the toolkit."""
     schema = _SVC.schema()
-    out = out or (DEFAULT_OUT_DIR / "robot.schema.json")
+    out = out or (DEFAULT_OUT_DIR / "robot_dynamics.schema.json")
     out = _ensure_out_dir(out)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(schema, f, indent=2)

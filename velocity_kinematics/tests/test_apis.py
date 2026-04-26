@@ -85,7 +85,7 @@ def test_api_resolved_rates_and_newton_ik(tmp_path: Path) -> None:
 
 
 # --------------------------------------------------------------------------- #
-# LU tool path via monkeypatching a fake velocity_kinematics.tools.lu
+# LU tool path_planning via monkeypatching a fake velocity_kinematics.tools.lu
 # --------------------------------------------------------------------------- #
 
 def test_api_lu_tools_with_fake_module(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -150,11 +150,11 @@ def test_api_lu_tools_with_fake_module(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Error path coverage
+# Error path_planning coverage
 # --------------------------------------------------------------------------- #
 
 def test_api_load_robot_unsupported_extension(tmp_path: Path) -> None:
-    p = tmp_path / "robot.txt"
+    p = tmp_path / "robot_dynamics.txt"
     p.write_text("oops", encoding="utf-8")
     api = VelocityAPI()
     with pytest.raises(APIError):
