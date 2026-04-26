@@ -177,7 +177,7 @@ def E_zyx(angles: Sequence[float] | np.ndarray) -> np.ndarray:
 @ensure_shape(3,)
 def omega_zyx(angles: Sequence[float] | np.ndarray,
               rates: Sequence[float] | np.ndarray) -> np.ndarray:
-    """Angular velocity **ω = E(q) q̇** for ZYX angles."""
+    """Angular velocity_kinematics **ω = E(q) q̇** for ZYX angles."""
     q = asvec(angles, 3)
     qd = asvec(rates, 3)
     out = E_zyx(q) @ qd

@@ -282,7 +282,7 @@ def transform_inertia(T_AB: np.ndarray, I_A: np.ndarray) -> np.ndarray:
 
 
 # -----------------------------------------------------------------------------
-# Point transport (velocity & acceleration)
+# Point transport (velocity_kinematics & acceleration)
 # -----------------------------------------------------------------------------
 
 def transport_velocity(omega: Sequence[float] | np.ndarray,
@@ -352,7 +352,7 @@ def accel_point_from_frame(alpha: Sequence[float] | np.ndarray,
     If v_rel=a_rel=None this reduces to the classic fixed-point formula.
     """
     aB = np.zeros(3) if aB is None else np.asarray(aB, float).reshape(3)
-    _ = vB  # unused; kept for signature symmetry with velocity transport
+    _ = vB  # unused; kept for signature symmetry with velocity_kinematics transport
     a_fixed = transport_acceleration(alpha, omega, aB, r, v_rel=np.zeros(3), a_rel=np.zeros(3))
     extra = np.zeros(3)
     if v_rel is not None:

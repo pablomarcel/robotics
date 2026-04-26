@@ -20,7 +20,7 @@ class ParabolicBlend3D(TrajectoryND):
 
     The blend of duration `tblend` (= t′ in the text) is centered at t1, i.e.
     [t1 - tblend, t1 + tblend]. Acceleration is constant (vector) within the
-    blend, yielding C¹ continuity of velocity across the corner.
+    blend, yielding C¹ continuity of velocity_kinematics across the corner.
     """
     r0: np.ndarray
     r1: np.ndarray

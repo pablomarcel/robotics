@@ -14,7 +14,7 @@ What this module provides
       * quat_multiply(p, q)
       * quat_to_R(q), R_to_quat(R)
 
-- Angular velocity / acceleration mappings (world-frame convention):
+- Angular velocity_kinematics / acceleration mappings (world-frame convention):
     Canonical:
       * A_of_q(q)                  → (4×3) with q̇ = 0.5 * A(q) ω
       * Adot_of_q_qdot(q, qdot)   → (4×3) time derivative
@@ -194,7 +194,7 @@ def Adot_of_q_qdot(q: Sequence[float] | np.ndarray,
 @ensure_shape(3,)
 def omega_from_qdot(q: Sequence[float] | np.ndarray,
                     qdot: Sequence[float] | np.ndarray) -> np.ndarray:
-    """Angular velocity (world-frame) from quaternion and quaternion rate: ω = 2 * A(q)^T q̇."""
+    """Angular velocity_kinematics (world-frame) from quaternion and quaternion rate: ω = 2 * A(q)^T q̇."""
     qn = q_normalize(q)
     qd = asvec(qdot, 4)
     return 2.0 * (A_of_q(qn).T @ qd)
@@ -264,7 +264,7 @@ def alpha_from_quat_rates(q: Sequence[float] | np.ndarray,
 @dataclass(frozen=True)
 class QuaternionKinematics:
     """
-    Immutable quaternion kinematics helper (world-frame angular quantities).
+    Immutable quaternion kinematics helper (world-frame angular_velocity quantities).
 
     Attributes
     ----------
@@ -274,8 +274,8 @@ class QuaternionKinematics:
 
     Methods
     -------
-    omega()  → (3,) world angular velocity
-    alpha()  → (3,) world angular acceleration
+    omega()  → (3,) world angular_velocity velocity_kinematics
+    alpha()  → (3,) world angular_velocity acceleration
     update(q=None, qdot=None, qddot=None) → QuaternionKinematics
     """
     q: np.ndarray

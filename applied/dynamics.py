@@ -251,7 +251,7 @@ class NewtonEuler:
         return sp.Matrix(I_C) * sp.Matrix(omega)
 
     def shift_angular_momentum(self, H_C: sp.Matrix, r_PC: sp.Matrix, p: sp.Matrix) -> sp.Matrix:
-        """Shift angular momentum from CoM to point P: H_P = H_C + r_PC × p."""
+        """Shift angular_velocity momentum from CoM to point P: H_P = H_C + r_PC × p."""
         return sp.Matrix(H_C) + sp.Matrix(r_PC).cross(sp.Matrix(p))
 
     def resultant_force(self, p: sp.Matrix, t: sp.Symbol) -> sp.Matrix:

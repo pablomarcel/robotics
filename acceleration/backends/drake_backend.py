@@ -3,7 +3,7 @@
 Drake backend for **acceleration kinematics**.
 
 This adapter conforms to :class:`acceleration.backends.base.Backend` and exposes
-6D frame kinematics (angular on top, linear on bottom) using Drake's
+6D frame kinematics (angular_velocity on top, linear on bottom) using Drake's
 MultibodyPlant:
 
     J(q)          ← CalcJacobianSpatialVelocity(..., JacobianWrtVariable.kV, ...)
@@ -180,7 +180,7 @@ class DrakeBackend(Backend):
 
     def jacobian(self, frame: str, q: ArrayLike) -> np.ndarray:
         """
-        Spatial-velocity Jacobian J(q) ∈ R^{6×nv} of a frame point, expressed in `expressed_in`.
+        Spatial-velocity_kinematics Jacobian J(q) ∈ R^{6×nv} of a frame point, expressed in `expressed_in`.
         We use the frame’s origin as the point of interest.
         """
         _ensure_drake()

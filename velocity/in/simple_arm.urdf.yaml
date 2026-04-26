@@ -1,4 +1,0 @@
-urdf: velocity/in/simple_arm.urdf
-name: simple_arm
-base_link: base
-ee_link: l2

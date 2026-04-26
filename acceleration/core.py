@@ -173,7 +173,7 @@ class ClassicAccel:
 class MixedAcceleration:
     """
     Representative mixed-derivative helper from §9.4xx family:
-    returns (^B G a, ^G B a) for a point with local velocity v_B.
+    returns (^B G a, ^G B a) for a point with local velocity_kinematics v_B.
     """
     @staticmethod
     def G_of_B(R: np.ndarray, omega: np.ndarray, alpha: np.ndarray,
@@ -196,7 +196,7 @@ class MixedAcceleration:
 @dataclass
 class EulerKinematics:
     """
-    Euler-angle angular acceleration. This minimal drop supports ZYX,
+    Euler-angle angular_velocity acceleration. This minimal drop supports ZYX,
     which covers the common robotics convention and maps to (9.127–9.131).
     """
     seq: str = "ZYX"
@@ -214,7 +214,7 @@ class EulerKinematics:
 
     def alpha(self, angles: Sequence[float], rates: Sequence[float], accels: Sequence[float]) -> np.ndarray:
         """
-        Return angular acceleration α for ZYX Euler using a numerically-stable
+        Return angular_velocity acceleration α for ZYX Euler using a numerically-stable
         Jacobian-time-derivative approach (sufficient for unit tests).
         """
         if self.seq.upper() != "ZYX":
@@ -250,7 +250,7 @@ class QuaternionKinematics:
 
     @staticmethod
     def quat_omega(q: np.ndarray, qd: np.ndarray) -> np.ndarray:
-        """Angular velocity ω from quaternion rate (compact linear map)."""
+        """Angular velocity_kinematics ω from quaternion rate (compact linear map)."""
         w, x, y, z = np.asarray(q, float)
         E = np.array([[-x, -y, -z],
                       [ w, -z,  y],

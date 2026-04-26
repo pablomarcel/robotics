@@ -19,7 +19,7 @@ Gravity convention
 ------------------
 We set gravity along negative world-y: g_vec = [0, -g, 0].
 Pinocchio stores gravity as a spatial motion_kinematics in `model.gravity`; we set its
-linear part to that vector (angular part zero).
+linear part to that vector (angular_velocity part zero).
 """
 
 from dataclasses import dataclass
@@ -54,10 +54,10 @@ def _gvec(g: float) -> np.ndarray:
 
 
 def _set_gravity(model, g: float) -> None:
-    """Set model.gravity to have zero angular part and linear part = _gvec(g)."""
+    """Set model.gravity to have zero angular_velocity part and linear part = _gvec(g)."""
     pin = _import_pin()
     gv = _gvec(g)
-    # Motion is (angular, linear)
+    # Motion is (angular_velocity, linear)
     model.gravity = pin.Motion(np.r_[np.zeros(3), gv])
 
 

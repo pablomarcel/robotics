@@ -14,7 +14,7 @@ Supported operations (extensible):
 - forward_accel:  ẍ = J q̈ + J̇ q̇  (9.283)
 - inverse_accel:  q̈ = J⁺ (ẍ − J̇ q̇) (9.291 / 9.327 damped)
 - classic:        α×r + ω×(ω×r)     (tangential + centripetal)
-- euler_alpha:    ZYX Euler angular acceleration (9.127–9.131)
+- euler_alpha:    ZYX Euler angular_velocity acceleration (9.127–9.131)
 - quaternion_SB:  quaternion-based acceleration transform (9.175–9.181)
 - mixed:          representative mixed acceleration cases (9.400–9.426)
 
@@ -180,7 +180,7 @@ class AccelApp:
         rates: ArrayLike,
         accels: ArrayLike,
     ) -> np.ndarray:
-        """ZYX Euler angular acceleration (9.127–9.131 analogue)."""
+        """ZYX Euler angular_velocity acceleration (9.127–9.131 analogue)."""
         return EulerKinematics("ZYX").alpha(np.asarray(angles, float),
                                             np.asarray(rates, float),
                                             np.asarray(accels, float))
