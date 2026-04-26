@@ -223,7 +223,7 @@ class URDFRobot(_BaseRobot):
     """
     URDF-backed robot using `urdfpy`.
 
-    - FK computed along the base→EE chain using joint origins and motion
+    - FK computed along the base→EE chain using joint origins and motion_kinematics
     - Geometric Jacobian computed analytically from world joint axes/origins
     - Analytic Jacobian via Euler maps (ZYX/ZXZ)
 
@@ -389,7 +389,7 @@ class URDFRobot(_BaseRobot):
             T = T @ self._origin_matrix(joint)  # parent -> joint frame (fixed)
             if joint.joint_type in ("revolute", "continuous", "prismatic"):
                 q_i = qmap[joint.name]
-                T = T @ self._joint_motion(joint, q_i)  # joint motion to child link
+                T = T @ self._joint_motion(joint, q_i)  # joint motion_kinematics to child link
             frames.append(T.copy())
         T_0e = frames[-1]
         return frames, T_0e
@@ -404,7 +404,7 @@ class URDFRobot(_BaseRobot):
           - k_i (world) = R_world @ axis_i (joint axis in joint frame)
           - p_i (world) = position of the joint origin (after fixed transforms and
             preceding joints). We use the pose just BEFORE applying this joint's
-            own motion (axis orientation_kinematics is invariant to its own rotation_kinematics).
+            own motion_kinematics (axis orientation_kinematics is invariant to its own rotation_kinematics).
           - J_i = [ k_i × (p_e - p_i) ; k_i ] for revolute/continuous
                   [ k_i               ; 0   ] for prismatic
         """
@@ -421,7 +421,7 @@ class URDFRobot(_BaseRobot):
         T_world = np.eye(4, dtype=float)
         q_iter = iter(q)
         for parent, joint, child in self._chain:
-            # World pose at this joint origin (before motion)
+            # World pose at this joint origin (before motion_kinematics)
             T_world = T_world @ self._origin_matrix(joint)
             p_i = T_world[:3, 3]
             R_w = T_world[:3, :3]
@@ -444,7 +444,7 @@ class URDFRobot(_BaseRobot):
                     Jcol[:3] = k_i
                 J_cols.append(Jcol)
 
-                # Advance through the joint motion using the provided q
+                # Advance through the joint motion_kinematics using the provided q
                 q_i = next(q_iter)
                 T_world = T_world @ self._joint_motion(joint, q_i)
             else:

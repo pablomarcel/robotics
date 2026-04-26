@@ -1,4 +1,4 @@
-# motion/tests/test_diagram_tool.py
+# motion_kinematics/tests/test_diagram_tool.py
 import json
 import os
 import shutil
@@ -6,25 +6,25 @@ from pathlib import Path
 
 import pytest
 
-from motion.tools.diagram import DiagramTool, DiagramConfig
+from motion_kinematics.tools.diagram import DiagramTool, DiagramConfig
 
 
 def test_discover_and_export_json_snapshot(tmp_path):
     outdir = tmp_path / "out"
-    tool = DiagramTool(DiagramConfig(package="motion", out_dir=outdir))
+    tool = DiagramTool(DiagramConfig(package="motion_kinematics", out_dir=outdir))
 
     json_path = tool.export_model_json(out_file="classes.json")
     p = Path(json_path)
     assert p.exists() and p.is_file()
 
     data = json.loads(p.read_text(encoding="utf-8"))
-    assert data["package"] == "motion"
+    assert data["package"] == "motion_kinematics"
     # sanity: we discovered some classes
     assert isinstance(data["classes"], list) and len(data["classes"]) > 0
     # spot-check core types
     qualnames = {c["qualname"] for c in data["classes"]}
-    assert "motion.core.SE3" in qualnames
-    assert "motion.core.Rotation" in qualnames
+    assert "motion_kinematics.core.SE3" in qualnames
+    assert "motion_kinematics.core.Rotation" in qualnames
 
 
 def test_emit_plantuml_and_mermaid(tmp_path):

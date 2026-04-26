@@ -1,10 +1,10 @@
-# motion/tests/test_se3_inverse.py
+# motion_kinematics/tests/test_se3_inverse.py
 import math
 import numpy as np
 import pytest
 
-from motion.core import SE3, Rotation
-from motion.utils import is_se3, is_rotation_matrix
+from motion_kinematics.core import SE3, Rotation
+from motion_kinematics.utils import is_se3, is_rotation_matrix
 
 
 def test_inverse_rule_Tinv_T_is_identity():

@@ -1,10 +1,10 @@
-# motion/tools/diagram.py
+# motion_kinematics/tools/diagram.py
 """
-Tools for generating class diagrams of the `motion` package.
+Tools for generating class diagrams of the `motion_kinematics` package.
 
 This module provides:
 - DiagramTool: an OOP facade to discover classes and emit diagrams
-- A small CLI (python -m motion.tools.diagram ...) for scripts/CI
+- A small CLI (python -m motion_kinematics.tools.diagram ...) for scripts/CI
 
 Backends supported (all optional except discover/JSON):
 - Graphviz (PNG/SVG/PDF)         -> requires the 'graphviz' python package
@@ -15,19 +15,19 @@ Backends supported (all optional except discover/JSON):
 
 Typical usage
 -------------
-from motion.tools.diagram import DiagramTool, DiagramConfig
+from motion_kinematics.tools.diagram import DiagramTool, DiagramConfig
 
-tool = DiagramTool()  # defaults to the 'motion' package and motion/out
+tool = DiagramTool()  # defaults to the 'motion_kinematics' package and motion_kinematics/out
 model = tool.discover()
 paths = tool.render_all()  # produce a sensible set of outputs
 
 # CLI:
-#   python -m motion.tools.diagram discover --package motion
-#   python -m motion.tools.diagram graphviz  --fmt png --out motion/out/classes
-#   python -m motion.tools.diagram pyreverse --out motion/out
-#   python -m motion.tools.diagram plantuml  --out motion/out/classes.puml
-#   python -m motion.tools.diagram mermaid   --out motion/out/classes.mmd
-#   python -m motion.tools.diagram json      --out motion/out/classes.json
+#   python -m motion_kinematics.tools.diagram discover --package motion_kinematics
+#   python -m motion_kinematics.tools.diagram graphviz  --fmt png --out motion_kinematics/out/classes
+#   python -m motion_kinematics.tools.diagram pyreverse --out motion_kinematics/out
+#   python -m motion_kinematics.tools.diagram plantuml  --out motion_kinematics/out/classes.puml
+#   python -m motion_kinematics.tools.diagram mermaid   --out motion_kinematics/out/classes.mmd
+#   python -m motion_kinematics.tools.diagram json      --out motion_kinematics/out/classes.json
 """
 
 from __future__ import annotations
@@ -39,8 +39,8 @@ from typing import Dict, Iterable, List, Optional
 import json
 import os
 
-from motion.utils import timing
-from motion.design import (
+from motion_kinematics.utils import timing
+from motion_kinematics.design import (
     discover as _discover,
     render_graphviz as _render_graphviz,
     generate_pyreverse as _generate_pyreverse,
@@ -61,12 +61,12 @@ class DiagramConfig:
     Attributes
     ----------
     package : str
-        Top-level package to scan (defaults to 'motion').
+        Top-level package to scan (defaults to 'motion_kinematics').
     out_dir : Path
         Base output directory for generated assets.
     """
-    package: str = "motion"
-    out_dir: Path = Path("motion/out")
+    package: str = "motion_kinematics"
+    out_dir: Path = Path("motion_kinematics/out")
 
 
 # ---------------------------------- service -----------------------------------
@@ -190,13 +190,13 @@ class DiagramTool:
 def _build_cli():
     import argparse
 
-    p = argparse.ArgumentParser(prog="motion.tools.diagram", description="Class diagram generator for the motion package")
+    p = argparse.ArgumentParser(prog="motion_kinematics.tools.diagram", description="Class diagram generator for the motion_kinematics package")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     # Shared
     def add_shared(a):
-        a.add_argument("--package", default="motion", help="Top-level package to inspect (default: motion)")
-        a.add_argument("--outdir", default="motion/out", help="Output directory (default: motion/out)")
+        a.add_argument("--package", default="motion_kinematics", help="Top-level package to inspect (default: motion_kinematics)")
+        a.add_argument("--outdir", default="motion_kinematics/out", help="Output directory (default: motion_kinematics/out)")
 
     # discover
     d = sub.add_parser("discover", help="Discover classes and print JSON to stdout")

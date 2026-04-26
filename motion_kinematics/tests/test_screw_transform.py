@@ -1,9 +1,9 @@
-# motion/tests/test_screw_transform.py
+# motion_kinematics/tests/test_screw_transform.py
 import math
 import numpy as np
 import pytest
 
-from motion.core import Rotation, SE3, Screw
+from motion_kinematics.core import Rotation, SE3, Screw
 
 
 def test_central_pure_rotation_about_z_90deg():

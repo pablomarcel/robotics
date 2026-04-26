@@ -1,6 +1,6 @@
-# motion/design.py
+# motion_kinematics/design.py
 """
-Class diagram utilities for the `motion` package.
+Class diagram utilities for the `motion_kinematics` package.
 
 Goals
 -----
@@ -13,23 +13,23 @@ Goals
 
 Typical usage
 -------------
-from motion import design
+from motion_kinematics import design
 
 # Discover classes (pure python)
-model = design.discover(package="motion")
+model = design.discover(package="motion_kinematics")
 
 # Render with Graphviz (if graphviz is installed)
-out_png = design.render_graphviz(model, out_path="motion/out/classes", fmt="png")
+out_png = design.render_graphviz(model, out_path="motion_kinematics/out/classes", fmt="png")
 
 # Or use pyreverse, if pylint is available
-design.generate_pyreverse(package="motion", out_dir="motion/out", fmt="png")
+design.generate_pyreverse(package="motion_kinematics", out_dir="motion_kinematics/out", fmt="png")
 
 # Emit textual diagrams
-design.emit_plantuml(model, "motion/out/classes.puml")
-design.emit_mermaid(model, "motion/out/classes.mmd")
+design.emit_plantuml(model, "motion_kinematics/out/classes.puml")
+design.emit_mermaid(model, "motion_kinematics/out/classes.mmd")
 
 # Save JSON model for testing
-design.save_model_json(model, "motion/out/classes.json")
+design.save_model_json(model, "motion_kinematics/out/classes.json")
 
 Testing tips
 -----------
@@ -53,8 +53,8 @@ import sys
 
 @dataclass(frozen=True)
 class ClassInfo:
-    qualname: str     # "motion.core.SE3"
-    modname: str      # "motion.core"
+    qualname: str     # "motion_kinematics.core.SE3"
+    modname: str      # "motion_kinematics.core"
     name: str         # "SE3"
     bases: Tuple[str, ...]  # fully-qualified base names under same package (filtered)
     doc: str = ""
@@ -68,9 +68,9 @@ class Model:
 
 # ------------------------------ Discovery API --------------------------------
 
-def discover(package: str = "motion") -> Model:
+def discover(package: str = "motion_kinematics") -> Model:
     """
-    Discover classes under a given top-level package (e.g., 'motion').
+    Discover classes under a given top-level package (e.g., 'motion_kinematics').
 
     Returns
     -------
@@ -116,7 +116,7 @@ def _collect_module_classes(modname: str, root_pkg: str, out: List[ClassInfo]) -
 
 def render_graphviz(
     model: Model,
-    out_path: str = "motion/out/classes",
+    out_path: str = "motion_kinematics/out/classes",
     fmt: str = "png",
     rankdir: str = "LR",
 ) -> str:
@@ -170,7 +170,7 @@ def render_graphviz(
 
 # ------------------------------ pyreverse wrapper ----------------------------
 
-def generate_pyreverse(package: str = "motion", out_dir: str = "motion/out", fmt: str = "png") -> List[str]:
+def generate_pyreverse(package: str = "motion_kinematics", out_dir: str = "motion_kinematics/out", fmt: str = "png") -> List[str]:
     """
     Run pyreverse (from pylint) to generate UML diagrams.
 
@@ -267,34 +267,34 @@ def save_model_json(model: Model, path: str) -> str:
 
 def _build_cli():
     import argparse
-    p = argparse.ArgumentParser(prog="motion.design", description="Motion class diagram tools")
+    p = argparse.ArgumentParser(prog="motion_kinematics.design", description="Motion class diagram tools")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     d = sub.add_parser("discover", help="Print JSON model to stdout")
-    d.add_argument("--package", default="motion")
+    d.add_argument("--package", default="motion_kinematics")
 
     g = sub.add_parser("graphviz", help="Render with Graphviz")
-    g.add_argument("--package", default="motion")
-    g.add_argument("--out", default="motion/out/classes")
+    g.add_argument("--package", default="motion_kinematics")
+    g.add_argument("--out", default="motion_kinematics/out/classes")
     g.add_argument("--fmt", default="png", choices=["png", "svg", "pdf"])
     g.add_argument("--rankdir", default="LR", choices=["LR", "TB"])
 
     r = sub.add_parser("pyreverse", help="Run pyreverse (pylint)")
-    r.add_argument("--package", default="motion")
-    r.add_argument("--out", default="motion/out")
+    r.add_argument("--package", default="motion_kinematics")
+    r.add_argument("--out", default="motion_kinematics/out")
     r.add_argument("--fmt", default="png")
 
     u = sub.add_parser("plantuml", help="Emit PlantUML file")
-    u.add_argument("--package", default="motion")
-    u.add_argument("--out", default="motion/out/classes.puml")
+    u.add_argument("--package", default="motion_kinematics")
+    u.add_argument("--out", default="motion_kinematics/out/classes.puml")
 
     m = sub.add_parser("mermaid", help="Emit Mermaid file")
-    m.add_argument("--package", default="motion")
-    m.add_argument("--out", default="motion/out/classes.mmd")
+    m.add_argument("--package", default="motion_kinematics")
+    m.add_argument("--out", default="motion_kinematics/out/classes.mmd")
 
     j = sub.add_parser("json", help="Save JSON model")
-    j.add_argument("--package", default="motion")
-    j.add_argument("--out", default="motion/out/classes.json")
+    j.add_argument("--package", default="motion_kinematics")
+    j.add_argument("--out", default="motion_kinematics/out/classes.json")
 
     return p
 

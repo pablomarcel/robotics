@@ -1,4 +1,4 @@
-# motion/utils.py
+# motion_kinematics/utils.py
 """
 Utility helpers for the Motion kinematics toolkit.
 

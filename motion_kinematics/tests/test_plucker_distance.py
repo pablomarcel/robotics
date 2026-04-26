@@ -1,9 +1,9 @@
-# motion/tests/test_plucker_distance.py
+# motion_kinematics/tests/test_plucker_distance.py
 import math
 import numpy as np
 import pytest
 
-from motion.core import PluckerLine, SE3, Rotation
+from motion_kinematics.core import PluckerLine, SE3, Rotation
 
 
 def _angle_and_distance(l1: PluckerLine, l2: PluckerLine):

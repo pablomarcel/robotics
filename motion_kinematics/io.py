@@ -1,4 +1,4 @@
-# motion/io.py
+# motion_kinematics/io.py
 """
 I/O utilities for the Motion Kinematics toolkit.
 
@@ -11,16 +11,16 @@ Design goals
   • JSON payloads (dicts / dataclasses / numpy arrays)
   • Matrices (.npy), point clouds (.csv), DH tables (.csv/.json)
   • SE(3) transforms (both .npy and .json flavors)
-- All relative paths are resolved under motion/{in,out}.
+- All relative paths are resolved under motion_kinematics/{in,out}.
 
 Typical usage
 -------------
-from motion.io import IO, IOConfig
+from motion_kinematics.io import IO, IOConfig
 
-io = IO()  # defaults to motion/in and motion/out (relative to this package)
+io = IO()  # defaults to motion_kinematics/in and motion_kinematics/out (relative to this package)
 path = io.save_json({"hello": "world"}, "example.json")
 T = np.eye(4); io.save_transform(T, "pose_A")  # writes pose_A.npy and pose_A.json
-P = io.load_points_csv("cloud.csv")            # reads motion/in/cloud.csv by default
+P = io.load_points_csv("cloud.csv")            # reads motion_kinematics/in/cloud.csv by default
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ class IOConfig:
     Attributes
     ----------
     base_dir : Path
-        Root of the motion package (defaults to directory of this file).
+        Root of the motion_kinematics package (defaults to directory of this file).
     in_dir : Path
         Directory for inputs (defaults to <base_dir>/in).
     out_dir : Path
@@ -120,7 +120,7 @@ class IO:
         """
         Save any JSON-serializable object (dataclasses & numpy supported).
 
-        If `name_or_path` is relative, it is written under motion/out/.
+        If `name_or_path` is relative, it is written under motion_kinematics/out/.
         Returns the absolute path as a string.
         """
         path = self._resolve_out(name_or_path)
@@ -130,7 +130,7 @@ class IO:
 
     def load_json(self, name_or_path: Union[str, Path]) -> Any:
         """
-        Load JSON from motion/in (if relative) or an absolute path.
+        Load JSON from motion_kinematics/in (if relative) or an absolute path.
         """
         path = self._resolve_in(name_or_path)
         with path.open("r", encoding="utf-8") as f:
@@ -139,10 +139,10 @@ class IO:
     # ------------------------------ matrices -----------------------------
     def save_matrix(self, M: np.ndarray, name_stem: str) -> str:
         """
-        Save a numpy array to .npy under motion/out/.
+        Save a numpy array to .npy under motion_kinematics/out/.
 
         Example:
-            save_matrix(T, "pose_A") -> motion/out/pose_A.npy
+            save_matrix(T, "pose_A") -> motion_kinematics/out/pose_A.npy
         """
         path = self._resolve_out(f"{name_stem}.npy")
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -154,7 +154,7 @@ class IO:
 
     def load_matrix(self, name_or_path: Union[str, Path]) -> np.ndarray:
         """
-        Load a .npy array from motion/in (if relative) or absolute path.
+        Load a .npy array from motion_kinematics/in (if relative) or absolute path.
         """
         path = self._resolve_in(name_or_path)
         return np.load(str(path))
@@ -202,7 +202,7 @@ class IO:
     # ---------------------------- point clouds ---------------------------
     def save_points_csv(self, P: np.ndarray, name_or_path: Union[str, Path]) -> str:
         """
-        Save Nx3 points as CSV (no header) under motion/out/.
+        Save Nx3 points as CSV (no header) under motion_kinematics/out/.
         """
         path = self._resolve_out(name_or_path)
         if path.suffix.lower() != ".csv":
@@ -218,7 +218,7 @@ class IO:
 
     def load_points_csv(self, name_or_path: Union[str, Path]) -> np.ndarray:
         """
-        Load Nx3 points from CSV in motion/in/ (if relative) or absolute path.
+        Load Nx3 points from CSV in motion_kinematics/in/ (if relative) or absolute path.
         """
         path = self._resolve_in(name_or_path)
         rows: List[List[float]] = []
@@ -250,7 +250,7 @@ class IO:
 
     def load_dh_csv(self, name_or_path: Union[str, Path]) -> List[Tuple[float, float, float, float]]:
         """
-        Load a DH table from CSV under motion/in/.
+        Load a DH table from CSV under motion_kinematics/in/.
         """
         path = self._resolve_in(name_or_path)
         out: List[Tuple[float, float, float, float]] = []
@@ -271,7 +271,7 @@ class IO:
 
     def load_dh_json(self, name_or_path: Union[str, Path]) -> List[Tuple[float, float, float, float]]:
         """
-        Load a DH table from JSON under motion/in/.
+        Load a DH table from JSON under motion_kinematics/in/.
         """
         rows = self.load_json(name_or_path)
         return [(float(a), float(alpha), float(d), float(theta)) for a, alpha, d, theta in rows]
@@ -279,12 +279,12 @@ class IO:
     # --------------------------- directory listings -----------------------
     def list_inputs(self, pattern: str = "*") -> List[str]:
         """
-        List files under motion/in matching a glob pattern.
+        List files under motion_kinematics/in matching a glob pattern.
         """
         return sorted(str(p) for p in self.cfg.in_dir.glob(pattern))
 
     def list_outputs(self, pattern: str = "*") -> List[str]:
         """
-        List files under motion/out matching a glob pattern.
+        List files under motion_kinematics/out matching a glob pattern.
         """
         return sorted(str(p) for p in self.cfg.out_dir.glob(pattern))

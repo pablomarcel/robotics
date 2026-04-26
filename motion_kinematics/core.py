@@ -1,14 +1,14 @@
-# motion/core.py
+# motion_kinematics/core.py
 from __future__ import annotations
 
 """
-Core math primitives for rigid-body motion kinematics (Chapter 4 scope).
+Core math primitives for rigid-body motion_kinematics kinematics (Chapter 4 scope).
 
 Classes
 -------
 Rotation     : SO(3) rotation_kinematics with axis–angle factories (Rodrigues).
 SE3          : Homogeneous transform (R, t) with composition/inverse/apply.
-Screw        : Screw motion parameterization {u, s, h, phi} → SE3.
+Screw        : Screw motion_kinematics parameterization {u, s, h, phi} → SE3.
 PluckerLine  : Plücker line [u; rho], angle & distance, 6×6 action via SE3.
 Plane        : Plane n·x = s (point distance).
 DHLink       : Standard DH link (a, alpha, d, theta) → SE3.
@@ -22,7 +22,7 @@ Key equation coverage (non-exhaustive)
 --------------------------------------
 Rotations/SE(3): 4.1–4.66, 4.75–4.90
 Rodrigues:      4.221 (and classic 3.187, used in §4)
-Screw motion:   4.206, 4.220–4.224 (û, s, h, φ → (R, t))
+Screw motion_kinematics:   4.206, 4.220–4.224 (û, s, h, φ → (R, t))
 Plücker:        4.344–4.346 (build), 4.382 (SE3 action),
                 4.388–4.390 (reciprocal product, angle, distance)
 Planes:         4.391–4.397
@@ -181,7 +181,7 @@ class SE3:
 @dataclass(frozen=True)
 class Screw:
     """
-    Screw motion parameterization {u, s, h, phi} with transform builder.
+    Screw motion_kinematics parameterization {u, s, h, phi} with transform builder.
 
     Parameters
     ----------

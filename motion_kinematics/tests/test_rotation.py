@@ -1,10 +1,10 @@
-# motion/tests/test_rotation.py
+# motion_kinematics/tests/test_rotation.py
 import math
 import numpy as np
 import pytest
 
-from motion.core import Rotation
-from motion.utils import is_rotation_matrix
+from motion_kinematics.core import Rotation
+from motion_kinematics.utils import is_rotation_matrix
 
 
 def test_rz_90_matches_axis_angle():

@@ -1,4 +1,4 @@
-# motion/apis.py
+# motion_kinematics/apis.py
 """
 Public computation facade for Motion Kinematics.
 
@@ -126,7 +126,7 @@ class APIs:
         degrees: bool = False,
     ) -> Dict[str, object]:
         """
-        General screw motion homogeneous transform (eqs. 4.206 and 4.220–4.222).
+        General screw motion_kinematics homogeneous transform (eqs. 4.206 and 4.220–4.222).
 
         Using unit axis û, location vector s, pitch h and rotation_kinematics φ:
             R = I cosφ + û ûᵀ (1 - cosφ) + [û]ₓ sinφ  (Rodrigues, 4.221)

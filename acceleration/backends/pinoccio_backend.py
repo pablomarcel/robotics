@@ -215,7 +215,7 @@ class PinocchioBackend(Backend):
         pin.updateFramePlacements(self.model, self.data)
 
         # Get spatial acceleration in desired reference
-        a_frame = pin.getFrameAcceleration(self.model, self.data, fid, ref)  # motion object (6,)
+        a_frame = pin.getFrameAcceleration(self.model, self.data, fid, ref)  # motion_kinematics object (6,)
         # `a_frame.vector` is 6D: angular (ω̇) then linear (v̇ in frame conv.)
         a_vec = np.asarray(a_frame.vector, float).reshape(6,)
 

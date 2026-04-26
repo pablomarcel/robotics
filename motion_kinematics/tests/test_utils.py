@@ -1,4 +1,4 @@
-# motion/tests/test_utils.py
+# motion_kinematics/tests/test_utils.py
 import json
 import math
 import time
@@ -6,7 +6,7 @@ import types
 import numpy as np
 import pytest
 
-from motion import utils
+from motion_kinematics import utils
 
 
 def test_timing_on_dict_adds_elapsed_ms():

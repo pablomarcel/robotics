@@ -100,7 +100,7 @@ applied/out/
 control/out/
 forward/out/
 inverse/out/
-motion/out/
+motion_kinematics/out/
 orientation_kinematics/out/
 path/out/
 robot/out/

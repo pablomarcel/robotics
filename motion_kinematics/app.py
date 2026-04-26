@@ -1,4 +1,4 @@
-# motion/app.py
+# motion_kinematics/app.py
 """
 Top-level application orchestrator for Motion Kinematics.
 
@@ -7,12 +7,12 @@ This module provides a small facade (`App`) around the public APIs exposed by
 straightforward while still being convenient for production use.
 
 Usage (programmatic):
-    from motion.app import App, Config
-    app = App()  # default config uses ./motion/in and ./motion/out
+    from motion_kinematics.app import App, Config
+    app = App()  # default config uses ./motion_kinematics/in and ./motion_kinematics/out
     T = app.screw(u=(0, 0, 1), s=(0, 0, 0), h=0.1, phi=1.0)
 
 Usage (CLI):
-    python -m motion.cli  # (app.py delegates to cli.py when run as __main__)
+    python -m motion_kinematics.cli  # (app.py delegates to cli.py when run as __main__)
 
 Design notes:
 - Pure OOP: the `App` manages configuration, logging, directory hygiene, and
@@ -45,7 +45,7 @@ except Exception as exc:  # pragma: no cover
     class _MissingAPIs:  # minimal sentinel to fail with guidance
         def __getattr__(self, name):
             raise RuntimeError(
-                f"motion.apis.APIs is not available yet. "
+                f"motion_kinematics.apis.APIs is not available yet. "
                 f"Add apis.py next. Missing attribute: {name}"
             ) from exc
 
@@ -61,11 +61,11 @@ class Config:
     Attributes
     ----------
     base_dir : Path
-        Root directory of the motion package (default: directory containing this file).
+        Root directory of the motion_kinematics package (default: directory containing this file).
     in_dir : Path
-        Directory where input files are read from (`motion/in`).
+        Directory where input files are read from (`motion_kinematics/in`).
     out_dir : Path
-        Directory where output files are written (`motion/out`).
+        Directory where output files are written (`motion_kinematics/out`).
     log_level : int
         Python logging level (default: logging.INFO).
     """
@@ -88,7 +88,7 @@ class App:
     ----------
     config : Config, optional
         Application configuration. Defaults to `Config()` which uses
-        `motion/in` and `motion/out`.
+        `motion_kinematics/in` and `motion_kinematics/out`.
     apis : APIs, optional
         Dependency-injected facade for computations; defaults to `APIs()`.
     logger : logging.Logger, optional
@@ -217,7 +217,7 @@ class App:
 
     @staticmethod
     def _build_logger(level: int) -> logging.Logger:
-        logger = logging.getLogger("motion.app")
+        logger = logging.getLogger("motion_kinematics.app")
         if not logger.handlers:
             handler = logging.StreamHandler(stream=sys.stdout)
             fmt = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
@@ -232,7 +232,7 @@ class App:
         output_path: Optional[Union[str, Path]],
     ) -> Dict[str, Any]:
         """
-        Optionally write a JSON payload to `motion/out` (or custom path).
+        Optionally write a JSON payload to `motion_kinematics/out` (or custom path).
         """
         if output_path is None:
             return payload
@@ -269,7 +269,7 @@ def main() -> None:
     """
     Delegate to the package CLI when app.py is executed directly.
 
-    Having the delegation here makes `python -m motion.app` work for folks who
+    Having the delegation here makes `python -m motion_kinematics.app` work for folks who
     discover this module first.
     """
     try:
@@ -277,7 +277,7 @@ def main() -> None:
         from .cli import main as cli_main  # type: ignore
     except Exception as exc:  # pragma: no cover
         sys.stderr.write(
-            "The CLI is not available yet (missing motion/cli.py). "
+            "The CLI is not available yet (missing motion_kinematics/cli.py). "
             "Either add cli.py or use App() programmatically.\n"
         )
         raise
