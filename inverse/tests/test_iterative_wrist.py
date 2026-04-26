@@ -12,7 +12,7 @@ from inverse.utils import rpy_to_R, homogeneous
 
 
 def _orientation_only_target(roll: float, pitch: float, yaw: float) -> np.ndarray:
-    """Build a 4x4 pose with desired rotation and zero translation."""
+    """Build a 4x4 pose with desired rotation_kinematics and zero translation."""
     R = rpy_to_R(roll, pitch, yaw)
     return homogeneous(R, np.zeros(3))
 

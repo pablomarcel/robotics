@@ -15,29 +15,29 @@ Features
 - Output ASCII, Unicode, or both                 (--style ascii|unicode|both)
 - Pretty table with Rich (optional)              (--rich)
 - Big ASCII banner with PyFiglet (optional)      (--figlet)
-- Read one spec from YAML                        (--from-yaml intro/in/manipulator.yaml)
+- Read one spec from YAML                        (--from-yaml introduction/in/manipulator.yaml)
 - Write results to files                         (--out, --export-json, --export-csv)
 
 Examples (from repo root)
 =========================
   # 1) Show ALL 72 in a pretty table (Unicode), also save to text/JSON/CSV
-  python intro/manipulator.py --all --rich --style unicode \
-      --out intro/out/all_72.txt \
-      --export-json intro/out/all_72.json \
-      --export-csv intro/out/all_72.csv
+  python introduction/manipulator.py --all --rich --style unicode \
+      --out introduction/out/all_72.txt \
+      --export-json introduction/out/all_72.json \
+      --export-csv introduction/out/all_72.csv
 
   # 2) All configs that START with R
-  python intro/manipulator.py --j1 R --rich
+  python introduction/manipulator.py --j1 R --rich
 
   # 3) Second joint = P, any other
-  python intro/manipulator.py --j2 P
+  python introduction/manipulator.py --j2 P
 
   # 4) Third joint = R, first axis parallel, second axis orthogonal
-  python intro/manipulator.py --j3 R --a12 parallel --a23 orthogonal --style both
+  python introduction/manipulator.py --j3 R --a12 parallel --a23 orthogonal --style both
 
   # 5) Read a manipulator spec from YAML and validate/print it
-  #    (expects intro/in/manipulator.yaml)
-  python intro/manipulator.py --from-yaml intro/in/manipulator.yaml --style both --rich
+  #    (expects introduction/in/manipulator.yaml)
+  python introduction/manipulator.py --from-yaml introduction/in/manipulator.yaml --style both --rich
 
 YAML format
 ===========

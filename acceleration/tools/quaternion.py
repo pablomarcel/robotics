@@ -30,7 +30,7 @@ What this module provides
 
 Conventions & Frames
 --------------------
-- Quaternions are [w, x, y, z] and represent the active rotation body→world.
+- Quaternions are [w, x, y, z] and represent the active rotation_kinematics body→world.
 - ω, α returned here are **world-frame**. For body-frame, rotate back with R(q)ᵀ.
 
 Shapes
@@ -124,7 +124,7 @@ def R_from_q(q: Sequence[float] | np.ndarray) -> np.ndarray:
 
 @ensure_shape(4,)
 def q_from_R(Rm: Sequence[Sequence[float]] | np.ndarray) -> np.ndarray:
-    """Unit quaternion from rotation matrix (w≥0 canonical)."""
+    """Unit quaternion from rotation_kinematics matrix (w≥0 canonical)."""
     Rm = np.asarray(Rm, float).reshape(3, 3)
     tr = float(np.trace(Rm))
     if tr > 0.0:

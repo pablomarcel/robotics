@@ -332,7 +332,7 @@ class IterativeIK(SolverBase):
       - The Jacobian stacks columns as [ω; v], so e must be [w; dp] in that order.
       - Use **space**-consistent error with the space Jacobian, and **body**-consistent
         error with the body Jacobian.
-      - If the target rotation is identity and the chain is low-DOF (e.g., 2R planar),
+      - If the target rotation_kinematics is identity and the chain is low-DOF (e.g., 2R planar),
         we automatically use **position-only** error to match typical usage in tests.
     """
     def __init__(self, lambda_damp: float = 1e-3, tol: float = 1e-6, itmax: int = 200, *, space: str = "space"):
@@ -369,7 +369,7 @@ class IterativeIK(SolverBase):
     @staticmethod
     def _position_only_task(T_goal: np.ndarray, chain: SerialChain) -> bool:
         """
-        Heuristic used by tests: for low-DOF chains (≤3) and identity target rotation,
+        Heuristic used by tests: for low-DOF chains (≤3) and identity target rotation_kinematics,
         treat IK as **position-only**.
         """
         return chain.n() <= 3 and np.allclose(T_goal[:3, :3], np.eye(3), atol=1e-12)
@@ -386,7 +386,7 @@ class IterativeIK(SolverBase):
             # Task error matching the Jacobian frame & stacking
             e_full = self._pose_error(T, T_goal)
 
-            # Optional position-only mode for low-DOF + identity rotation targets
+            # Optional position-only mode for low-DOF + identity rotation_kinematics targets
             if self._position_only_task(T_goal, chain):
                 J = J_full[3:, :]       # linear rows
                 e = e_full[3:]          # dp only

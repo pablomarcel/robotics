@@ -1,5 +1,5 @@
 # =============================
-# File: rotation/rot_cli.py  (upgraded)
+# File: rotation_kinematics/rot_cli.py  (upgraded)
 # =============================
 from __future__ import annotations
 import argparse
@@ -18,13 +18,13 @@ from . import rot_closedform as cf
 # ---------------------------------------------------------
 # Defaults and I/O conveniences ("dirty trick" upgrade)
 # ---------------------------------------------------------
-OUT_DIR = os.path.join("rotation", "out")
-IN_DIR  = os.path.join("rotation", "in")
+OUT_DIR = os.path.join("rotation_kinematics", "out")
+IN_DIR  = os.path.join("rotation_kinematics", "in")
 ensure_dir(OUT_DIR); ensure_dir(IN_DIR)
 
 def _resolve_in(path_like: str) -> str:
     """
-    Resolve an input file by searching rotation/in, then rotation/out,
+    Resolve an input file by searching rotation_kinematics/in, then rotation_kinematics/out,
     then using the provided path as-is.
     """
     cands = [
@@ -40,7 +40,7 @@ def _resolve_in(path_like: str) -> str:
 def _resolve_out(path_like: str | None, default_name: str) -> str:
     """
     Resolve an output path. If 'path_like' is None or a bare filename,
-    write under rotation/out. Parents are created as needed.
+    write under rotation_kinematics/out. Parents are created as needed.
     """
     if not path_like:
         out = os.path.join(OUT_DIR, default_name)
@@ -154,20 +154,20 @@ def cli(argv: List[str] | None = None) -> int:
     sp = p.add_subparsers(dest="cmd", required=True)
 
     # compose
-    pc = sp.add_parser("compose", help="Build a rotation matrix from a sequence and angles")
+    pc = sp.add_parser("compose", help="Build a rotation_kinematics matrix from a sequence and angles")
     pc.add_argument("mode", choices=["global","local"], help="Global/extrinsic or Local/intrinsic rotations")
     pc.add_argument("seq", help=HELP_SEQ)
     pc.add_argument("angles", type=str, help="comma list of three angles")
     pc.add_argument("--degrees", action="store_true", help="Angles are degrees (default radians)")
-    pc.add_argument("--save", type=str, default=None, help="CSV filename or path to save matrix (defaults to rotation/out)")
+    pc.add_argument("--save", type=str, default=None, help="CSV filename or path to save matrix (defaults to rotation_kinematics/out)")
 
     # decompose
-    pd = sp.add_parser("decompose", help="Extract angles from a rotation matrix for a given sequence")
+    pd = sp.add_parser("decompose", help="Extract angles from a rotation_kinematics matrix for a given sequence")
     pd.add_argument("mode", choices=["global","local"])
     pd.add_argument("seq", help=HELP_SEQ)
     g = pd.add_mutually_exclusive_group(required=True)
     g.add_argument("--from-angles", type=str, help="If provided, first compose from these angles (same seq/mode)")
-    g.add_argument("--from-csv", type=str, help="Matrix CSV filename (resolved via rotation/in → rotation/out → literal)")
+    g.add_argument("--from-csv", type=str, help="Matrix CSV filename (resolved via rotation_kinematics/in → rotation_kinematics/out → literal)")
     pd.add_argument("--degrees", action="store_true")
 
     # transform
@@ -177,7 +177,7 @@ def cli(argv: List[str] | None = None) -> int:
     pt.add_argument("angles", type=str)
     pt.add_argument("--degrees", action="store_true")
     pt.add_argument("--points", type=str, help="CSV of Nx3 points (resolved via in/out) or rows 'x;y;z|...'", default=None)
-    pt.add_argument("--save", type=str, default=None, help="CSV filename/path to save transformed points (defaults to rotation/out)")
+    pt.add_argument("--save", type=str, default=None, help="CSV filename/path to save transformed points (defaults to rotation_kinematics/out)")
 
     # passive
     ppv = sp.add_parser("passive", help="Passive coordinate change: rB = R^T rG")
@@ -188,7 +188,7 @@ def cli(argv: List[str] | None = None) -> int:
     ppv.add_argument("--points", type=str, default=None, help="CSV filename (resolved via in/out) or inline rows")
 
     # repeat
-    pr = sp.add_parser("repeat", help="Repeat/Exponentiate a rotation (R^m)")
+    pr = sp.add_parser("repeat", help="Repeat/Exponentiate a rotation_kinematics (R^m)")
     pr.add_argument("mode", choices=["global","local"])
     pr.add_argument("seq", help=HELP_SEQ)
     pr.add_argument("angles", type=str)
@@ -217,7 +217,7 @@ def cli(argv: List[str] | None = None) -> int:
 
     # Batch jobs
     pb = sp.add_parser("batch", help="Run a JSON/YAML job file with multiple tasks")
-    pb.add_argument("file", type=str, help="Filename under rotation/in (resolver also checks rotation/out and literal)")
+    pb.add_argument("file", type=str, help="Filename under rotation_kinematics/in (resolver also checks rotation_kinematics/out and literal)")
 
     # angvel from rates
     pv = sp.add_parser("angvel", help="Compute ω from angle rates for any sequence")
@@ -240,7 +240,7 @@ def cli(argv: List[str] | None = None) -> int:
                      help="Interpret BOTH angles and ω in degrees/deg·s⁻¹ (default radians/rad·s⁻¹)")
 
     # Sphinx skeleton
-    ps = sp.add_parser("sphinx-skel", help="Create a minimal Sphinx docs skeleton (rotation/docs)")
+    ps = sp.add_parser("sphinx-skel", help="Create a minimal Sphinx docs skeleton (rotation_kinematics/docs)")
     ps.add_argument("dest", nargs="?", default="docs", help="Destination directory (default: docs)")
     ps.add_argument("--force", action="store_true", help="Overwrite existing files if present")
 
@@ -374,16 +374,16 @@ def cli(argv: List[str] | None = None) -> int:
         os.makedirs(out_dir, exist_ok=True)
 
         conf = (
-            '# Generated by rotation.rot_cli\n'
-            'project = "rotation"\n'
+            '# Generated by rotation_kinematics.rot_cli\n'
+            'project = "rotation_kinematics"\n'
             'extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon", "sphinx.ext.viewcode"]\n'
             'templates_path = ["_templates"]\n'
             'exclude_patterns = []\n'
             'html_theme = "furo"\n'
         )
         index = (
-            ".. rotation documentation master file\n\n"
-            "Welcome to rotation's docs!\n"
+            ".. rotation_kinematics documentation master file\n\n"
+            "Welcome to rotation_kinematics's docs!\n"
             "===========================\n\n"
             ".. toctree::\n"
             "   :maxdepth: 2\n"
@@ -393,10 +393,10 @@ def cli(argv: List[str] | None = None) -> int:
         api = (
             "API Reference\n"
             "=============\n\n"
-            ".. automodule:: rotation.rot_core\n   :members:\n   :undoc-members:\n\n"
-            ".. automodule:: rotation.rot_io\n   :members:\n   :undoc-members:\n\n"
-            ".. automodule:: rotation.rot_design\n   :members:\n   :undoc-members:\n\n"
-            ".. automodule:: rotation.rot_closedform\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: rotation_kinematics.rot_core\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: rotation_kinematics.rot_io\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: rotation_kinematics.rot_design\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: rotation_kinematics.rot_closedform\n   :members:\n   :undoc-members:\n\n"
         )
         makefile = (
             "# Minimal Sphinx Makefile\n"

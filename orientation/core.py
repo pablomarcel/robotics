@@ -8,7 +8,7 @@ This module defines four primary classes:
 - AxisAngle       : φ about unit axis û   (Rodrigues / Euler axis–angle)
 - RodriguesVector : w = û * tan(φ/2)
 - Quaternion      : unit quaternion (Euler parameters) [e0, e1, e2, e3] (scalar-first)
-- SO3             : rotation group element with a 3x3 matrix representation
+- SO3             : rotation_kinematics group element with a 3x3 matrix representation
 
 All classes are immutable-ish (dataclasses with tuples/np arrays) and provide
 clear conversion methods so they are easy to unit-test.
@@ -65,7 +65,7 @@ def _skew(u: np.ndarray) -> np.ndarray:
 
 
 def _project_to_so3(R: np.ndarray) -> np.ndarray:
-    """Project near-rotation matrix to SO(3) via SVD: closest in Frobenius norm."""
+    """Project near-rotation_kinematics matrix to SO(3) via SVD: closest in Frobenius norm."""
     U, _, Vt = np.linalg.svd(R)
     Rproj = U @ Vt
     if np.linalg.det(Rproj) < 0:  # enforce det +1
@@ -385,7 +385,7 @@ class Quaternion:
 
 @dataclass(frozen=True)
 class SO3:
-    """SO(3) rotation class with a 3×3 matrix representation.
+    """SO(3) rotation_kinematics class with a 3×3 matrix representation.
 
     Construct directly from a 3×3 (validated and projected), or use the
     convenience constructors.

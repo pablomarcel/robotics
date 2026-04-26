@@ -1,5 +1,5 @@
-# intro/in/mobius.yaml
-# Defaults for intro/mobius.py (CLI flags override these)
+# introduction/in/mobius.yaml
+# Defaults for introduction/mobius.py (CLI flags override these)
 
 backend: plotly         # mpl | plotly | pyvista
 R: 1.0                  # ring radius

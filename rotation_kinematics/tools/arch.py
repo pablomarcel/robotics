@@ -1,8 +1,8 @@
-# rotation/tools/arch.py
+# rotation_kinematics/tools/arch.py
 from __future__ import annotations
 import ast, os, sys, argparse
 
-PKG = "rotation"
+PKG = "rotation_kinematics"
 
 def find_py_files(root: str):
     for dirpath, _, filenames in os.walk(root):
@@ -11,7 +11,7 @@ def find_py_files(root: str):
                 yield os.path.join(dirpath, fn)
 
 def module_name_from_path(path: str) -> str:
-    # e.g. rotation/rot_core.py -> rotation.rot_core
+    # e.g. rotation_kinematics/rot_core.py -> rotation_kinematics.rot_core
     rel = os.path.relpath(path).replace(os.sep, "/")
     if not rel.startswith(PKG + "/"):
         return None
@@ -75,7 +75,7 @@ def main():
     ap = argparse.ArgumentParser(description="Lightweight architecture graph")
     ap.add_argument("--format", choices=["mermaid","ascii"], default="ascii")
     ap.add_argument("--out", help="Output file (optional)")
-    ap.add_argument("--root", default=PKG, help="Package root (default: rotation)")
+    ap.add_argument("--root", default=PKG, help="Package root (default: rotation_kinematics)")
     args = ap.parse_args()
 
     mods, edges = build_graph(args.root)

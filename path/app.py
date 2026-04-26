@@ -114,7 +114,7 @@ class PathPlannerApp:
     # ---- Rotation (SO(3), 12.251–12.283) -----------------------------------
 
     def angle_axis_path(self, R0: np.ndarray, Rf: np.ndarray) -> AngleAxisPath:
-        """Axis-angle path between two rotation matrices (Rodrigues / linear in angle)."""
+        """Axis-angle path between two rotation_kinematics matrices (Rodrigues / linear in angle)."""
         return AngleAxisPath(np.asarray(R0, float), np.asarray(Rf, float))
 
     # ---- Sampling helpers ---------------------------------------------------

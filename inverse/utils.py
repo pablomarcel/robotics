@@ -18,7 +18,7 @@ This module mirrors the forward toolkit’s style but adds IK-oriented helpers:
     * hat_xi(ω, v)                  → 4×4 se(3) from screw
     * adjoint(T)                    → 6×6 Ad_T
     * homogeneous(R, t)             → 4×4 from (R, t)
-    * so3_log(R)                    → rotation vector (axis-angle in R^3)
+    * so3_log(R)                    → rotation_kinematics vector (axis-angle in R^3)
     * se3_log(T)                    → 6×1 twist (approximate; good for small motions)
 
 - IK helpers:
@@ -212,7 +212,7 @@ def homogeneous(R: np.ndarray, t: np.ndarray) -> np.ndarray:
 
 def so3_log(R: np.ndarray, *, eps: float = 1e-12) -> np.ndarray:
     """
-    Map SO(3) → R^3 (rotation vector). Returns ω such that exp([ω]^)=R.
+    Map SO(3) → R^3 (rotation_kinematics vector). Returns ω such that exp([ω]^)=R.
 
     For small angles, this reduces to vex(R - R^T)/2 (small-angle approx).
     """
@@ -249,7 +249,7 @@ def se3_log(T: np.ndarray) -> np.ndarray:
 
 def rpy_to_R(roll: float, pitch: float, yaw: float) -> np.ndarray:
     """
-    Construct rotation R = Rz(yaw) * Ry(pitch) * Rx(roll).
+    Construct rotation_kinematics R = Rz(yaw) * Ry(pitch) * Rx(roll).
     """
     cr, sr = math.cos(roll), math.sin(roll)
     cp, sp = math.cos(pitch), math.sin(pitch)
@@ -299,7 +299,7 @@ def pose_error(
     T_curr, T_des : (4,4) ndarray
         Current and desired transforms.
     mode : {"small", "so3"}
-        - "small": uses small-angle rotation vector: 0.5 * vee(Rerr - Rerr^T)
+        - "small": uses small-angle rotation_kinematics vector: 0.5 * vee(Rerr - Rerr^T)
         - "so3":   uses full SO(3) log for orientation
 
     Returns

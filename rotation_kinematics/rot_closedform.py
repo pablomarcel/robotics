@@ -1,5 +1,5 @@
 # =============================
-# File: rotation/rot_closedform.py
+# File: rotation_kinematics/rot_closedform.py
 # =============================
 from __future__ import annotations
 from typing import Tuple

@@ -1,5 +1,5 @@
 # =============================
-# File: rotation/rot_io.py
+# File: rotation_kinematics/rot_io.py
 # =============================
 from __future__ import annotations
 import json

@@ -148,7 +148,7 @@ def test_body_vs_inertial_frame_projection():
     Conversely, projecting back with Rᵀ should recover a_B.
     """
     rng = np.random.default_rng(8)
-    # Random rotation
+    # Random rotation_kinematics
     ang = rng.uniform(-np.pi, np.pi, size=3)
     cz, sz = math.cos(ang[0]), math.sin(ang[0])
     cy, sy = math.cos(ang[1]), math.sin(ang[1])

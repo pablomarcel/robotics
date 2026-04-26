@@ -62,7 +62,7 @@ def _num_R_derivatives(seq, q, qd, qdd, dt=1e-6):
     return R0, Rdot, Rddot
 
 # ---------------------------------------------------------------------------
-# Euler: rotation orthogonality & det
+# Euler: rotation_kinematics orthogonality & det
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("seq", ["ZYX", "XYZ", "ZXZ", "ZYZ"])
@@ -154,7 +154,7 @@ def test_quaternion_composition_matches_rotation_product():
 def _finite_diff_quat(q_minus, q_plus, dt):
     """
     Central difference q̇ ≈ (q+ - q-) / (2dt), adjusted for sign continuity
-    to avoid jumps at antipodes (since q and -q represent same rotation).
+    to avoid jumps at antipodes (since q and -q represent same rotation_kinematics).
     """
     qm = quat_normalize(q_minus)
     qp = quat_normalize(q_plus)
@@ -218,7 +218,7 @@ def test_quat_kinematics_matrix_consistency():
     Check q̇ ≈ 0.5 Q(q) ω and inverse ω(q, q̇) round-trip for small motions.
     """
     rng = np.random.default_rng(20)
-    # random rotation → quaternion
+    # random rotation_kinematics → quaternion
     ang = rng.uniform(-np.pi, np.pi, size=3)
     # build R from ZYX and convert to q
     cz, sz = math.cos(ang[0]), math.sin(ang[0])

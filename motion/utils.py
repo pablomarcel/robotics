@@ -147,7 +147,7 @@ def almost_equal(a: np.ndarray, b: np.ndarray, atol: float = 1e-8) -> bool:
 
 def is_rotation_matrix(R: np.ndarray, atol: float = 1e-8) -> bool:
     """
-    Check if a 3x3 matrix is a proper rotation:
+    Check if a 3x3 matrix is a proper rotation_kinematics:
       RᵀR = I  and det(R) = +1
     """
     R = np.asarray(R, float)
@@ -162,7 +162,7 @@ def is_rotation_matrix(R: np.ndarray, atol: float = 1e-8) -> bool:
 def is_se3(T: np.ndarray, atol: float = 1e-8) -> bool:
     """
     Check if a 4x4 matrix is a valid homogeneous transform:
-      top-left 3x3 is rotation and last row is [0 0 0 1]
+      top-left 3x3 is rotation_kinematics and last row is [0 0 0 1]
     """
     T = np.asarray(T, float)
     if T.shape != (4, 4):

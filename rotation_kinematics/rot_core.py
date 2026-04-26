@@ -1,5 +1,5 @@
 # =============================
-# File: rotation/rot_core.py
+# File: rotation_kinematics/rot_core.py
 # =============================
 from __future__ import annotations
 from typing import Dict, Sequence
@@ -64,7 +64,7 @@ def _vee(S: np.ndarray) -> np.ndarray:
 
 def _rotation_matrix(seq: str, q_rad: Sequence[float], convention: str = 'global') -> np.ndarray:
     """
-    Build a 3x3 rotation matrix for given sequence and angles (radians).
+    Build a 3x3 rotation_kinematics matrix for given sequence and angles (radians).
     convention: 'global' (extrinsic) or 'local' (intrinsic).
     """
     convention = convention.lower()
@@ -189,7 +189,7 @@ def rates_from_angvel(
 
 
 # ---------------------------------------------------------------------
-# Equations 2.84/2.85 style repeat (power of a rotation)
+# Equations 2.84/2.85 style repeat (power of a rotation_kinematics)
 # ---------------------------------------------------------------------
 
 def repeat_rotation(Robj: R, m: int) -> R:
@@ -211,10 +211,10 @@ def align_body_x(u: Sequence[float]) -> R:
 # ---------------------------------------------------------------------
 
 def save_R(path: str, Robj: R) -> None:
-    """Save a rotation matrix to CSV at rotation/out/<path>."""
+    """Save a rotation_kinematics matrix to CSV at rotation_kinematics/out/<path>."""
     save_matrix_csv(path, Robj)
 
 
 def save_series(path: str, t: np.ndarray, data: np.ndarray, header: str) -> None:
-    """Save a time series (t, data[*,3]) to CSV at rotation/out/<path> with a header."""
+    """Save a time series (t, data[*,3]) to CSV at rotation_kinematics/out/<path> with a header."""
     save_series_csv(path, t, data, header)

@@ -50,7 +50,7 @@ def test_revolute_then_prismatic_columns():
     J = robot.jacobian_geometric(q)
 
     # Column 1 (revolute): [k1 × (pe - p1) ; k1]
-    # For standard DH, k1 is base z rotated by Rz(theta1) -> still base z (since rotation about z).
+    # For standard DH, k1 is base z rotated by Rz(theta1) -> still base z (since rotation_kinematics about z).
     # But p1 is at end of joint 1 frame after T1; compute expected numerically via small motion check
     # to stay robust to any modeling nuances.
     eps = 1e-8

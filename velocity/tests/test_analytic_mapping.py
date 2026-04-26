@@ -4,7 +4,7 @@ Analytic Jacobian mapping tests.
 
 We verify that the implementation of the analytic Jacobian J_A agrees with the
 independent construction JA = [ Jv ; G(φ)^{-1} Jw ], where φ are Euler angles
-extracted from the current end-effector rotation.
+extracted from the current end-effector rotation_kinematics.
 
 Two cases:
   1) ZYX (yaw-pitch-roll) for the planar 2R arm (non-singular: pitch=0).
@@ -23,7 +23,7 @@ from velocity import design
 
 def _euler_from_R_zyx(R: np.ndarray) -> tuple[bool, np.ndarray]:
     """
-    Extract ZYX (yaw, pitch, roll) from rotation matrix.
+    Extract ZYX (yaw, pitch, roll) from rotation_kinematics matrix.
     Returns (ok, angles); ok=False indicates gimbal lock (pitch ≈ ±pi/2).
     """
     sy = -float(R[2, 0])  # -sin(pitch)
@@ -103,7 +103,7 @@ def test_analytic_vs_geometric_mapping_zyx_planar2r():
     Jg = robot.jacobian_geometric(q)
     JA = robot.jacobian_analytic(q, euler="ZYX")
 
-    # Extract Euler angles from current EE rotation
+    # Extract Euler angles from current EE rotation_kinematics
     R = robot.fk(q)["T_0e"][:3, :3]
     ok, ang = _euler_from_R_zyx(R)
     assert ok  # planar case has pitch=0, safely away from ZYX singularity

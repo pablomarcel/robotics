@@ -86,7 +86,7 @@ def test_newton_ik_orientation_only_on_wrist_converges():
     R_sol = wrist.fk(q_sol)["T_0e"][:3, :3]
     # Reconstruct target R for ZXZ:
     alpha, beta, gamma = target_angles
-    # Build ZXZ rotation
+    # Build ZXZ rotation_kinematics
     ca, sa = np.cos(alpha), np.sin(alpha)
     cb, sb = np.cos(beta), np.sin(beta)
     cg, sg = np.cos(gamma), np.sin(gamma)

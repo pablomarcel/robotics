@@ -118,7 +118,7 @@ def normalize(v: Array, eps: float = 1e-12) -> Array:
 # ------------------------------- SO(3) / SE(3) ------------------------------- #
 
 def rotx(alpha: float) -> Array:
-    """SO(3) rotation about x-axis."""
+    """SO(3) rotation_kinematics about x-axis."""
     c, s = np.cos(alpha), np.sin(alpha)
     return np.array([[1.0, 0.0, 0.0],
                      [0.0,   c,  -s],
@@ -126,7 +126,7 @@ def rotx(alpha: float) -> Array:
 
 
 def roty(beta: float) -> Array:
-    """SO(3) rotation about y-axis."""
+    """SO(3) rotation_kinematics about y-axis."""
     c, s = np.cos(beta), np.sin(beta)
     return np.array([[  c, 0.0,   s],
                      [0.0, 1.0, 0.0],
@@ -134,7 +134,7 @@ def roty(beta: float) -> Array:
 
 
 def rotz(theta: float) -> Array:
-    """SO(3) rotation about z-axis."""
+    """SO(3) rotation_kinematics about z-axis."""
     c, s = np.cos(theta), np.sin(theta)
     return np.array([[  c,  -s, 0.0],
                      [  s,   c, 0.0],
@@ -176,21 +176,21 @@ def t2r(T: Array) -> Tuple[Array, Array]:
 
 
 def trotx(alpha: float) -> Array:
-    """SE(3) rotation about x-axis."""
+    """SE(3) rotation_kinematics about x-axis."""
     T = np.eye(4, dtype=float)
     T[:3, :3] = rotx(alpha)
     return T
 
 
 def troty(beta: float) -> Array:
-    """SE(3) rotation about y-axis."""
+    """SE(3) rotation_kinematics about y-axis."""
     T = np.eye(4, dtype=float)
     T[:3, :3] = roty(beta)
     return T
 
 
 def trotz(theta: float) -> Array:
-    """SE(3) rotation about z-axis."""
+    """SE(3) rotation_kinematics about z-axis."""
     T = np.eye(4, dtype=float)
     T[:3, :3] = rotz(theta)
     return T

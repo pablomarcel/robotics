@@ -122,7 +122,7 @@ def spherical_wrist(*, wrist_type: int, d_tool: float = 0.0, name: str = "wrist"
     """
     Build a **3-DOF spherical wrist** preset with a tool offset ``Tz(d_tool)``.
 
-    The three types differ by the **effective** rotation order, realized via DH
+    The three types differ by the **effective** rotation_kinematics order, realized via DH
     link twists (α) that reorient each joint's local z-axis:
 
         Type 1 (Roll–Pitch–Roll ≈ Z–X–Z): α = [-π/2, +π/2, 0]
@@ -134,7 +134,7 @@ def spherical_wrist(*, wrist_type: int, d_tool: float = 0.0, name: str = "wrist"
     Parameters
     ----------
     wrist_type : {1, 2, 3}
-        Select rotation-order preset (see above).
+        Select rotation_kinematics-order preset (see above).
     d_tool : float
         Tool offset along final +z (distance from wrist center to TCP).
     name : str
@@ -183,7 +183,7 @@ def six_dof_spherical(
     l1, l2 : float
         Arm link lengths (shoulder→elbow, elbow→wrist center).
     wrist_type : {1, 2, 3}
-        Spherical wrist rotation-order preset (see :func:`spherical_wrist`).
+        Spherical wrist rotation_kinematics-order preset (see :func:`spherical_wrist`).
     d_tool : float
         Tool offset along wrist +z (TCP distance from wrist center).
     name : str

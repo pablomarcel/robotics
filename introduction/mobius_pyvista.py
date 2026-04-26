@@ -7,15 +7,15 @@ Fix for "Nothing to screenshot": we render with plotter.show(screenshot=...)
 and (optionally) run off-screen to avoid opening a window.
 
 Examples (from repo root):
-  # Headless render (no window), PNG to intro/out/
-  python intro/mobius_pyvista.py
+  # Headless render (no window), PNG to introduction/out/
+  python introduction/mobius_pyvista.py
 
   # Show an interactive window AND save a screenshot
-  python intro/mobius_pyvista.py --show
+  python introduction/mobius_pyvista.py --show
 
   # Custom geometry, resolution, window size, output
-  python intro/mobius_pyvista.py --R 1.0 --w 0.35 --nu 500 --nv 120 \
-      --window 1280 900 --out intro/out/mobius_custom.png
+  python introduction/mobius_pyvista.py --R 1.0 --w 0.35 --nu 500 --nv 120 \
+      --window 1280 900 --out introduction/out/mobius_custom.png
 """
 import argparse
 import os
@@ -86,7 +86,7 @@ def parse_args():
     p.add_argument("--w", type=float, default=0.35, help="Half-width of strip")
     p.add_argument("--nu", type=int, default=400, help="Samples along u (angle)")
     p.add_argument("--nv", type=int, default=80, help="Samples along v (width)")
-    p.add_argument("--out", type=str, default="intro/out/mobius_pyvista.png",
+    p.add_argument("--out", type=str, default="introduction/out/mobius_pyvista.png",
                    help="Output image path (.png recommended)")
     p.add_argument("--window", type=int, nargs=2, metavar=("W", "H"),
                    default=(1024, 768), help="Render window size (pixels)")

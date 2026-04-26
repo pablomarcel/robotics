@@ -182,7 +182,7 @@ def cmd_quat_sb(q: Iterable[float], qd: Iterable[float], qdd: Iterable[float], o
 
 @cli.command("mixed")
 @click.option("--R-path", "r_path", type=click.Path(exists=True, path_type=Path), required=True,
-              help="JSON path to a 3x3 rotation matrix.")
+              help="JSON path to a 3x3 rotation_kinematics matrix.")
 @click.option("--omega", type=float, multiple=True, required=True, help="ω of B in G (3).")
 @click.option("--alpha", type=float, multiple=True, required=True, help="α of B in G (3).")
 @click.option("--r", type=float, multiple=True, required=True, help="Position vector r (3).")

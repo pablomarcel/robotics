@@ -18,7 +18,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="cmd", required=True)
 
     # from-euler
-    s = sub.add_parser("from-euler", help="Build rotation from Euler angles")
+    s = sub.add_parser("from-euler", help="Build rotation_kinematics from Euler angles")
     s.add_argument("--order", required=True, help="e.g., ZYX")
     s.add_argument("--angles", required=True, type=numpy3, help="phi,theta,psi (rad)")
     s.add_argument("--save", help="filename.npy in angular/out")

@@ -33,7 +33,7 @@ _mc_root() {
 runroot() { ( cd "$(_mc_root)" && "$@" ); }
 
 # Ensure out/ exists where the app expects to write
-runroot mkdir -p rotation/out
+runroot mkdir -p rotation_kinematics/out
 # -----------------------------------------------------------------------------
 ```
 
@@ -60,7 +60,7 @@ You can invoke via module or the console script (if installed as a package).
 
 ### Compose a rotation matrix
 ```bash
-runroot python -m rotation.rot_cli compose local zyz "10,20,30" --degrees
+runroot python -m rotation_kinematics.rot_cli compose local zyz "10,20,30" --degrees
 ```
 
 # or
@@ -72,82 +72,82 @@ rot-cli compose local zyz "10,20,30" --degrees
 ### Decompose a matrix back to angles
 ```bash
 # Compose then decompose (degrees)
-runroot python -m rotation.rot_cli decompose local zyz --from-angles "10,20,30" --degrees
+runroot python -m rotation_kinematics.rot_cli decompose local zyz --from-angles "10,20,30" --degrees
 ```
 
 # Decompose from CSV
 ```bash
-runroot python -m rotation.rot_cli decompose global zyx --from-csv rotation/in/R.csv
+runroot python -m rotation_kinematics.rot_cli decompose global zyx --from-csv rotation_kinematics/in/R.csv
 ```
 
 ### Active transform of points
 ```bash
 # Inline points: "x;y;z|x;y;z|..."
-runroot python -m rotation.rot_cli transform local zyz "10,20,30"   --degrees --points "1;0;0|0;1;0|0;0;1"
+runroot python -m rotation_kinematics.rot_cli transform local zyz "10,20,30"   --degrees --points "1;0;0|0;1;0|0;0;1"
 ```
 
 # From CSV under rotation/in/
 ```bash
-runroot python -m rotation.rot_cli transform local zyz "10,20,30"   --degrees --points basis.csv --save P_transformed.csv
+runroot python -m rotation_kinematics.rot_cli transform local zyz "10,20,30"   --degrees --points basis.csv --save P_transformed.csv
 ```
 
 ### Passive transform (coordinate change)
 ```bash
-runroot python -m rotation.rot_cli passive local zyz "10,20,30" --degrees   --points "1;0;0|0;1;0|0;0;1"
+runroot python -m rotation_kinematics.rot_cli passive local zyz "10,20,30" --degrees   --points "1;0;0|0;1;0|0;0;1"
 ```
 
 ### Repeat/exponentiate a rotation
 ```bash
-runroot python -m rotation.rot_cli repeat local zyz "10,20,30" 12 --degrees
+runroot python -m rotation_kinematics.rot_cli repeat local zyz "10,20,30" 12 --degrees
 ```
 
 ### Align body x-axis to a vector
 ```bash
-runroot python -m rotation.rot_cli align "0.2, 0.3, 0.9"
+runroot python -m rotation_kinematics.rot_cli align "0.2, 0.3, 0.9"
 ```
 
 ### Orthogonality check
 ```bash
-runroot python -m rotation.rot_cli check --from-angles "10,20,30"   --mode local --seq zyz --degrees
+runroot python -m rotation_kinematics.rot_cli check --from-angles "10,20,30"   --mode local --seq zyz --degrees
 # Or from CSV:
 ```
 
 ```bash
-runroot python -m rotation.rot_cli check --from-csv rotation/in/R.csv
+runroot python -m rotation_kinematics.rot_cli check --from-csv rotation_kinematics/in/R.csv
 ```
 
 ### Closed-form `E(q)` matrices (symbolic)
 ```bash
 # General proper/TB sequences
-runroot python -m rotation.rot_cli E zyz --convention local --frame body
+runroot python -m rotation_kinematics.rot_cli E zyz --convention local --frame body
 ```
 
 # RPY convenience (ZYX) + RPY column reordering
 ```bash
-runroot python -m rotation.rot_cli E zyx --convention local --frame body --rpy-order
+runroot python -m rotation_kinematics.rot_cli E zyx --convention local --frame body --rpy-order
 ```
 
 ### ω ↔ q̇ mappings
 ```bash
 # ω from rates (units follow --degrees)
-runroot python -m rotation.rot_cli angvel local zyz "10,20,30" "0.1,0.2,0.3"   --degrees --frame body
+runroot python -m rotation_kinematics.rot_cli angvel local zyz "10,20,30" "0.1,0.2,0.3"   --degrees --frame body
 ```
 
 # rates from ω
 ```bash
-runroot python -m rotation.rot_cli rates local zyz "10,20,30" "0.7,0.2,0.1"   --degrees --frame body
+runroot python -m rotation_kinematics.rot_cli rates local zyz "10,20,30" "0.7,0.2,0.1"   --degrees --frame body
 ```
 
 ### Batch jobs (JSON/YAML or simple key=value)
 ```bash
-# rotation/in/job.yaml must define a top-level 'tasks' list
-runroot python -m rotation.rot_cli batch job.yaml
+# rotation_kinematics/in/job.yaml must define a top-level 'tasks' list
+runroot python -m rotation_kinematics.rot_cli batch job.yaml
 ```
 
 ### Dump runtime-traced edges (from decorators)
 ```bash
 # From the CLI itself
-runroot python -m rotation.rot_cli uml --out rotation/out/runtime_sequence.puml
+runroot python -m rotation_kinematics.rot_cli uml --out rotation_kinematics/out/runtime_sequence.puml
 ```
 
 ---
@@ -158,17 +158,17 @@ Exports the Facade + APIs class diagram, and dumps any runtime trace captured by
 
 ```bash
 # PlantUML
-runroot python -m rotation.app puml    -o rotation/out/app_class.puml
+runroot python -m rotation_kinematics.app puml    -o rotation_kinematics/out/app_class.puml
 ```
 
 # Mermaid
 ```bash
-runroot python -m rotation.app mermaid -o rotation/out/app_class.mmd
+runroot python -m rotation_kinematics.app mermaid -o rotation_kinematics/out/app_class.mmd
 ```
 
 # Dump runtime sequence edges (same sink the CLI uses)
 ```bash
-runroot python -m rotation.app runtime -o rotation/out/runtime_sequence.puml
+runroot python -m rotation_kinematics.app runtime -o rotation_kinematics/out/runtime_sequence.puml
 ```
 
 ---
@@ -179,17 +179,17 @@ We use `pydeps` to write JSON and our helper to convert to Mermaid.
 
 ```bash
 # JSON of intra-package imports
-pydeps rotation --only rotation --noshow --no-output   --deps-output rotation/out/arch.json
+pydeps rotation_kinematics --only rotation_kinematics --noshow --no-output   --deps-output rotation_kinematics/out/arch.json
 ```
 
 ```bash
-# Convert to Mermaid (requires rotation/tools/deps_to_mermaid.py)
-runroot python -m rotation.tools.deps_to_mermaid rotation/out/arch.json   > out/deps_imports.mmd
+# Convert to Mermaid (requires rotation_kinematics/tools/deps_to_mermaid.py)
+runroot python -m rotation_kinematics.tools.deps_to_mermaid rotation_kinematics/out/arch.json   > out/deps_imports.mmd
 ```
 
 Optional ASCII import listing (pure runroot python):
 ```bash
-runroot python -m rotation.tools.arch_ascii rotation > rotation/out/imports_ascii.txt
+runroot python -m rotation_kinematics.tools.arch_ascii rotation_kinematics > rotation_kinematics/out/imports_ascii.txt
 ```
 
 ---
@@ -198,7 +198,7 @@ runroot python -m rotation.tools.arch_ascii rotation > rotation/out/imports_asci
 
 ```bash
 # Writes a Mermaid flowchart of static call edges it can infer
-runroot python -m rotation.tools.ast_callgraph rotation   > out/callgraph_ast.mmd
+runroot python -m rotation_kinematics.tools.ast_callgraph rotation_kinematics   > out/callgraph_ast.mmd
 ```
 
 ---
@@ -209,22 +209,22 @@ Profile one CLI run and view in the browser or export HTML.
 
 ```bash
 # JSON trace
-runroot viztracer -o rotation/out/trace.json -m rotation.rot_cli   angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+runroot viztracer -o rotation_kinematics/out/trace.json -m rotation_kinematics.rot_cli   angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
 ```
 
 # Open viewer (served on http://localhost:9001)
 ```bash
-runroot vizviewer rotation/out/trace.json
+runroot vizviewer rotation_kinematics/out/trace.json
 ```
 
 # Self-contained HTML report
 ```bash
-runroot viztracer -o rotation/out/trace.html --html -m rotation.rot_cli   compose local zyz "10,20,30" --degrees
+runroot viztracer -o rotation_kinematics/out/trace.html --html -m rotation_kinematics.rot_cli   compose local zyz "10,20,30" --degrees
 ```
 
 **Tip:** to include more/less detail:
 ```bash
-runroot viztracer -o rotation/out/trace.json   --min_duration 0.0005 --max_stack_depth 20   -m rotation.rot_cli compose local zyz "10,20,30" --degrees
+runroot viztracer -o rotation_kinematics/out/trace.json   --min_duration 0.0005 --max_stack_depth 20   -m rotation_kinematics.rot_cli compose local zyz "10,20,30" --degrees
 ```
 
 ---
@@ -243,7 +243,7 @@ runroot viztracer -o rotation/out/trace.json   --min_duration 0.0005 --max_stack
 - **`viztracer ... invalid choice: 'runroot python'`** — when using `viztracer`, prefer the `-m package.module` form (see examples).
 - **Missing output dirs** — they are auto-created by the CLI and exporters, but you can pre-create with:
   ```bash
-  mkdir -p rotation/out rotation/in
+  mkdir -p rotation_kinematics/out rotation_kinematics/in
   ```
 - **Unicode in terminal** — Some outputs print ω, φ, θ; ensure your terminal’s UTF‑8 encoding is set.
 
@@ -253,14 +253,14 @@ runroot viztracer -o rotation/out/trace.json   --min_duration 0.0005 --max_stack
 
 ```bash
 # Class diagrams (both formats)
-runroot python -m rotation.app puml -o rotation/out/app_class.puml && runroot python -m rotation.app mermaid -o rotation/out/app_class.mmd
+runroot python -m rotation_kinematics.app puml -o rotation_kinematics/out/app_class.puml && runroot python -m rotation_kinematics.app mermaid -o rotation_kinematics/out/app_class.mmd
 
 # Import graph (Mermaid)
-pydeps rotation --only rotation --noshow --no-output   --deps-output rotation/out/arch.json && runroot python -m rotation.tools.deps_to_mermaid rotation/out/arch.json   > rotation/out/deps_imports.mmd
+pydeps rotation_kinematics --only rotation_kinematics --noshow --no-output   --deps-output rotation_kinematics/out/arch.json && runroot python -m rotation_kinematics.tools.deps_to_mermaid rotation_kinematics/out/arch.json   > rotation_kinematics/out/deps_imports.mmd
 
 # Static call graph
-runroot python -m rotation.tools.ast_callgraph rotation   > rotation/out/callgraph_ast.mmd
+runroot python -m rotation_kinematics.tools.ast_callgraph rotation_kinematics   > rotation_kinematics/out/callgraph_ast.mmd
 
 # Quick ω from rates demo + trace
-viztracer -o rotation/out/trace.json -m rotation.rot_cli   angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
+viztracer -o rotation_kinematics/out/trace.json -m rotation_kinematics.rot_cli   angvel local zyz "10,20,30" "0.1,0.2,0.3" --degrees --frame body
 ```

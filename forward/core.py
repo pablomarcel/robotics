@@ -60,7 +60,7 @@ class Rotation:
     @staticmethod
     def axis_angle(R: np.ndarray) -> Tuple[float, np.ndarray]:
         """
-        Compute axis–angle (φ, u) from a rotation matrix.
+        Compute axis–angle (φ, u) from a rotation_kinematics matrix.
 
         Returns
         -------

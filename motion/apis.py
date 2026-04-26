@@ -58,7 +58,7 @@ def _skew(v: np.ndarray) -> np.ndarray:
 
 def _rodrigues(axis: np.ndarray, angle: float) -> np.ndarray:
     """
-    Rodrigues rotation (eq. 3.187), used throughout Chapter 4.
+    Rodrigues rotation_kinematics (eq. 3.187), used throughout Chapter 4.
     R = I + sin(phi)[u]_x + (1 - cos(phi))[u]_x^2
     """
     u = _normalize(axis)
@@ -95,7 +95,7 @@ class APIs:
         degrees: bool = False,
     ) -> Dict[str, object]:
         """
-        Build a 3×3 rotation using Rodrigues (eq. 3.187).
+        Build a 3×3 rotation_kinematics using Rodrigues (eq. 3.187).
 
         Parameters
         ----------
@@ -128,7 +128,7 @@ class APIs:
         """
         General screw motion homogeneous transform (eqs. 4.206 and 4.220–4.222).
 
-        Using unit axis û, location vector s, pitch h and rotation φ:
+        Using unit axis û, location vector s, pitch h and rotation_kinematics φ:
             R = I cosφ + û ûᵀ (1 - cosφ) + [û]ₓ sinφ  (Rodrigues, 4.221)
             g_d = s - R s + h û                           (4.220 / 4.222)
             T = [[R, g_d],
