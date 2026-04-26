@@ -4,31 +4,34 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="refactored packages names.">
-      <change beforePath="$PROJECT_DIR$/timeopt/.coveragerc" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/.coveragerc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/RUNS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/apis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/commands/coverage-commands.txt" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/commands/coverage-commands.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/core.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/design.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/design.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/docs/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/docs/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/docs/api.rst" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/docs/api.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/docs/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/docs/conf.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/docs/index.rst" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/docs/index.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/in/dummy.json" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/in/dummy.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/io.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/io.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/tests/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/tests/test_cli_smoke.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/tests/test_cli_smoke.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/tests/test_core_double_integrator.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/tests/test_core_double_integrator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/tests/test_toppraline.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/tests/test_toppraline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/tools/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/tools/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/tools/diagram.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/tools/diagram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/tools/trace_uml.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/tools/trace_uml.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeopt/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_optimal_control/utils.py" afterDir="false" />
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="added docs">
+      <change afterPath="$PROJECT_DIR$/acceleration_kinematics/docs/_static/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/acceleration_kinematics/docs/_templates/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular_velocity/docs/_static/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular_velocity/docs/_templates/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/applied_dynamics/docs/_static/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/applied_dynamics/docs/_templates/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control_techniques/docs/_static/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control_techniques/docs/_templates/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward_kinematics/docs/_static/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/forward_kinematics/docs/_templates/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/introduction/cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/introduction/docs/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/introduction/docs/_static/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/introduction/docs/_templates/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/introduction/docs/api.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/introduction/docs/conf.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/introduction/docs/index.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/introduction/docs/usage.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/_static/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/_templates/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/api.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/conf.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rotation_kinematics/docs/index.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_kinematics/RUNS.md" beforeDir="false" afterPath="$PROJECT_DIR$/rotation_kinematics/RUNS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_kinematics/rot_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/rotation_kinematics/rot_cli.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,32 +68,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/pablomontijo/Control/robotics/velocity&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "develop",
+    "last_opened_file_path": "/Users/pablomontijo/Control/robotics/rotation_kinematics",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/rotation_kinematics" />
+      <recent name="$PROJECT_DIR$/introduction" />
       <recent name="$PROJECT_DIR$/velocity" />
       <recent name="$PROJECT_DIR$/timeopt" />
       <recent name="$PROJECT_DIR$/rotation" />
-      <recent name="$PROJECT_DIR$/robot" />
-      <recent name="$PROJECT_DIR$/path" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/inverse" />
@@ -166,23 +169,7 @@
       <workItem from="1761358714403" duration="2098000" />
       <workItem from="1761366916714" duration="8000" />
       <workItem from="1777054208682" duration="657000" />
-      <workItem from="1777160072152" duration="2380000" />
-    </task>
-    <task id="LOCAL-00021" summary="implemented the velocity kinematics module. 9 tests failed">
-      <option name="closed" value="true" />
-      <created>1758407219595</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1758407219595</updated>
-    </task>
-    <task id="LOCAL-00022" summary="fixed all tests but 1 in the velocity module">
-      <option name="closed" value="true" />
-      <created>1758421057899</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1758421057899</updated>
+      <workItem from="1777160072152" duration="7568000" />
     </task>
     <task id="LOCAL-00023" summary="fixed all tests in the velocity module">
       <option name="closed" value="true" />
@@ -560,7 +547,23 @@
       <option name="project" value="LOCAL" />
       <updated>1777164760121</updated>
     </task>
-    <option name="localTasksCounter" value="70" />
+    <task id="LOCAL-00070" summary="refactored packages names.">
+      <option name="closed" value="true" />
+      <created>1777164947327</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1777164947327</updated>
+    </task>
+    <task id="LOCAL-00071" summary="added docs">
+      <option name="closed" value="true" />
+      <created>1777168130185</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1777168130185</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -581,7 +584,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="implemente the time optimal control module. all 3 tests passed" />
     <MESSAGE value="implemente the control techniques module. 1 test fails" />
     <MESSAGE value="implemented the control techniques module. all tests pass" />
     <MESSAGE value="Created README.md and LICENSE" />
@@ -606,6 +608,7 @@
     <MESSAGE value="Updated README.md to include section about documentation" />
     <MESSAGE value="Updated README.md to order documentation topics" />
     <MESSAGE value="refactored packages names." />
-    <option name="LAST_COMMIT_MESSAGE" value="refactored packages names." />
+    <MESSAGE value="added docs" />
+    <option name="LAST_COMMIT_MESSAGE" value="added docs" />
   </component>
 </project>

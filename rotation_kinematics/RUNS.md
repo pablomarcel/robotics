@@ -267,7 +267,7 @@ viztracer -o rotation_kinematics/out/trace.json -m rotation_kinematics.rot_cli  
 
 ### Sphinx
 
-python -m rotation_kinematics.cli sphinx-skel rotation_kinematics/docs
+python -m rotation_kinematics.rot_cli sphinx-skel rotation_kinematics/docs
 python -m sphinx -b html docs docs/_build/html
 open docs/_build/html/index.html
 sphinx-autobuild docs docs/_build/html
