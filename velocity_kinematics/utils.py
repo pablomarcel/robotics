@@ -101,7 +101,7 @@ def pinv_damped(A: Array, lam: float = 0.0) -> Array:
     A = np.asarray(A, dtype=float)
     U, s, Vt = np.linalg.svd(A, full_matrices=False)
     lam2 = float(lam) ** 2
-    # s / (s^2 + lam^2) applied along singular values
+    # s / (s^2 + lam^2) applied_dynamics along singular values
     s_damped = s / (s**2 + lam2) if lam2 > 0.0 else np.divide(
         1.0, s, out=np.zeros_like(s), where=(s != 0.0)
     )

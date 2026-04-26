@@ -7,7 +7,7 @@ Ops (use with --op):
   unit, magnitude, natural, decompose, dircos, dot, cross, add, laws,
   triple_scalar, triple_vector, nd_scalar_det, ortho_check, gram_schmidt,
   transform, rotmat, euler_from_R, norm,
-  vfunc, velocity_kinematics, acceleration, jerk
+  vfunc, velocity_kinematics, acceleration_kinematics, jerk
 
 Robust zsh-friendly parsing:
   Pass vectors as  --v1 1 2 3  or  --v1 "1,2,3"  or  --v1=1,2,3
@@ -538,7 +538,7 @@ def do_task(op: str, args: argparse.Namespace) -> Dict[str, Any]:
     elif op == "velocity_kinematics":
         show_symbolic_vec("v(t) = dr/dt", v_sub)
         res.update({"vx":str(v_sub[0]), "vy":str(v_sub[1]), "vz":str(v_sub[2])})
-    elif op == "acceleration":
+    elif op == "acceleration_kinematics":
         show_symbolic_vec("a(t) = d²r/dt²", a_sub)
         res.update({"ax":str(a_sub[0]), "ay":str(a_sub[1]), "az":str(a_sub[2])})
     elif op == "jerk":
@@ -550,7 +550,7 @@ def do_task(op: str, args: argparse.Namespace) -> Dict[str, Any]:
     # Numeric evaluation
     t_scalar = args.t
     grid = parse_t_grid(args.t_grid) if args.t_grid is not None else None
-    comp_map = {"vfunc": r_sub, "velocity_kinematics": v_sub, "acceleration": a_sub, "jerk": j_sub}
+    comp_map = {"vfunc": r_sub, "velocity_kinematics": v_sub, "acceleration_kinematics": a_sub, "jerk": j_sub}
     comps = comp_map[op]
 
     if t_scalar is not None:
@@ -610,7 +610,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--op", type=str,
         help=("Operation keyword: unit, magnitude, natural, decompose, dircos, dot, cross, add, laws, "
               "triple_scalar, triple_vector, nd_scalar_det, ortho_check, gram_schmidt, transform, "
-              "rotmat, euler_from_R, norm, vfunc, velocity_kinematics, acceleration, jerk. "
+              "rotmat, euler_from_R, norm, vfunc, velocity_kinematics, acceleration_kinematics, jerk. "
               "If omitted with --from-yaml, YAML tasks drive runs."))
 
     # vectors (zsh-friendly)

@@ -22,7 +22,7 @@ def test_quintic_rest2rest_coeffs_example():
 def test_septic_zero_jerk():
     """
     Septic is constructed to have zero jerk at both endpoints.
-    Jerk is the first derivative of acceleration (third derivative of position).
+    Jerk is the first derivative of acceleration_kinematics (third derivative of position).
     We check with a symmetric first derivative of qdd, not a second derivative.
     """
     bc = BoundaryConditions(0, 1, 10, 45, 0, 0, 0, 0)
@@ -31,7 +31,7 @@ def test_septic_zero_jerk():
     dt = 1e-5  # small step for numerical differentiation
 
     def jerk(tt: float) -> float:
-        # central difference for first derivative of acceleration (jerk)
+        # central difference for first derivative of acceleration_kinematics (jerk)
         return float((p.qdd(tt + dt) - p.qdd(tt - dt)) / (2 * dt))
 
     assert abs(jerk(0.0)) < 1e-5

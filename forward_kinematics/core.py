@@ -311,7 +311,7 @@ class SerialChain:
     links : Sequence[Link]
         Ordered links from base (0) to tip (n-1).
     M : (4,4) ndarray, optional
-        Fixed tool transform applied at the end (home/tool offset).
+        Fixed tool transform applied_dynamics at the end (home/tool offset).
     name : str
         Identifier.
 

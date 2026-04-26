@@ -4,7 +4,7 @@ Preset builders for common manipulators (SCARA, spherical wrists, planar arms).
 
 All presets are expressed with **standard DH** links so they remain compatible
 with the rest of the toolkit (FK, space/body Jacobians). Tool offsets are
-applied as the fixed terminal transform ``M`` in :class:`forward_kinematics.core.SerialChain`.
+applied_dynamics as the fixed terminal transform ``M`` in :class:`forward_kinematics.core.SerialChain`.
 
 Notes on spherical wrists
 -------------------------
@@ -130,7 +130,7 @@ def spherical_wrist(*, wrist_type: int, d7: float = 0.0, name: str = "wrist") ->
         Type 2 (Roll–Pitch–Yaw ≈ Z–Y–Z):  α = [+π/2, -π/2, 0]
         Type 3 (Pitch–Yaw–Roll ≈ X–Y–Z):  α = [-π/2, -π/2, 0]
 
-    All links have a=0 and d=0; the tool offset is applied as M = Tz(d7).
+    All links have a=0 and d=0; the tool offset is applied_dynamics as M = Tz(d7).
 
     Parameters
     ----------
