@@ -244,7 +244,7 @@ class APIs:
         dh_params: Iterable[Iterable[float]],
     ) -> Dict[str, object]:
         """
-        Standard Denavit–Hartenberg forward kinematics (product of Aᵢ matrices).
+        Standard Denavit–Hartenberg forward_kinematics kinematics (product of Aᵢ matrices).
 
         Each row is [a_i, alpha_i, d_i, theta_i] in radians.  The individual link
         transform A_i is:

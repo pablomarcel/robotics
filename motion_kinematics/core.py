@@ -7,12 +7,12 @@ Core math primitives for rigid-body motion_kinematics kinematics (Chapter 4 scop
 Classes
 -------
 Rotation     : SO(3) rotation_kinematics with axis–angle factories (Rodrigues).
-SE3          : Homogeneous transform (R, t) with composition/inverse/apply.
+SE3          : Homogeneous transform (R, t) with composition/inverse_kinematics/apply.
 Screw        : Screw motion_kinematics parameterization {u, s, h, phi} → SE3.
 PluckerLine  : Plücker line [u; rho], angle & distance, 6×6 action via SE3.
 Plane        : Plane n·x = s (point distance).
 DHLink       : Standard DH link (a, alpha, d, theta) → SE3.
-KinematicChain : Product of DH links (forward kinematics).
+KinematicChain : Product of DH links (forward_kinematics kinematics).
 
 Helpers
 -------
@@ -344,7 +344,7 @@ class DHLink:
 @dataclass
 class KinematicChain:
     """
-    Product of DH links (forward kinematics).
+    Product of DH links (forward_kinematics kinematics).
     """
     links: Tuple[DHLink, ...] | List[DHLink]
 

@@ -6,7 +6,7 @@ Covers:
 - FK & geometric Jacobian for planar 2R (matches textbook)
 - Jacobian columns helper (design.jacobian_columns)
 - Spherical-wrist zero-block check (with wrist center as TCP)
-- Resolved-rates inverse velocity (least-squares consistency)
+- Resolved-rates inverse_kinematics velocity (least-squares consistency)
 - Newton–Raphson IK (position-only) convergence
 - Analytic Jacobian basic shape / fallback-safety
 """

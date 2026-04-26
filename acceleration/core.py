@@ -10,7 +10,7 @@ What’s inside
 - MixedAcceleration                   — representative mixed-derivative helpers
 - EulerKinematics (ZYX)               — α from Euler angles (9.127–9.131)
 - QuaternionKinematics                — quaternion-based acceleration S_B
-- ChainKinematics                     — forward/inverse acceleration via backends
+- ChainKinematics                     — forward_kinematics/inverse_kinematics acceleration via backends
 
 Design notes
 ------------
@@ -31,7 +31,7 @@ from .backends.base import Backend, ChainState
 
 
 # -----------------------------------------------------------------------------
-# SO(3) / SE(3) helpers (standalone; mirror style of inverse/core.py)
+# SO(3) / SE(3) helpers (standalone; mirror style of inverse_kinematics/core.py)
 # -----------------------------------------------------------------------------
 
 @dataclass(frozen=True)
@@ -285,7 +285,7 @@ class QuaternionKinematics:
 @dataclass
 class ChainKinematics:
     """
-    Thin façade over a `Backend` that provides Jacobian-based forward/inverse
+    Thin façade over a `Backend` that provides Jacobian-based forward_kinematics/inverse_kinematics
     acceleration in a frame (e.g., an end-effector).
 
     Forward acceleration (9.283):
@@ -297,7 +297,7 @@ class ChainKinematics:
     backend: Backend
     frame: str = "ee"
 
-    # ------ forward: ẍ = J q̈ + J̇ q̇ ------
+    # ------ forward_kinematics: ẍ = J q̈ + J̇ q̇ ------
 
     def forward_accel(self, q: Sequence[float], qd: Sequence[float], qdd: Sequence[float]) -> np.ndarray:
         state = ChainState(q=np.asarray(q, float).reshape(-1),
@@ -305,7 +305,7 @@ class ChainKinematics:
                            qdd=np.asarray(qdd, float).reshape(-1))
         return np.asarray(self.backend.spatial_accel(self.frame, state), float).reshape(-1)
 
-    # ------ inverse: q̈ = J⁺ (ẍ − J̇ q̇) ------
+    # ------ inverse_kinematics: q̈ = J⁺ (ẍ − J̇ q̇) ------
 
     def inverse_accel(self, q: Sequence[float], qd: Sequence[float], xdd: Sequence[float], *, damp: float = 1e-8) -> np.ndarray:
         q = np.asarray(q, float).reshape(-1)

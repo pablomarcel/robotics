@@ -97,7 +97,7 @@ def cmd_problem_solve(problem_path: Path, out: Optional[Path]):
       {
         "op": "...",
         "payload": {...},
-        "model": {...}   # only required for forward/inverse (e.g., {'kind':'planar2r','l1':1,'l2':1})
+        "model": {...}   # only required for forward_kinematics/inverse_kinematics (e.g., {'kind':'planar2r','l1':1,'l2':1})
       }
     """
     problem = _read_json(problem_path)
@@ -110,7 +110,7 @@ def cmd_problem_solve(problem_path: Path, out: Optional[Path]):
 
 # ------------------------------ Core commands ---------------------------
 
-@cli.command("forward")
+@cli.command("forward_kinematics")
 @click.option("--l1", type=float, required=True, help="Planar2R: link 1 length.")
 @click.option("--l2", type=float, required=True, help="Planar2R: link 2 length.")
 @click.option("--q", type=float, multiple=True, required=True, help="Joint positions (repeat per joint).")
@@ -125,7 +125,7 @@ def cmd_forward(l1: float, l2: float, q: Iterable[float], qd: Iterable[float], q
     _write_json({"xdd": np.asarray(xdd).tolist()}, out, "xdd")
 
 
-@cli.command("inverse")
+@cli.command("inverse_kinematics")
 @click.option("--l1", type=float, required=True, help="Planar2R: link 1 length.")
 @click.option("--l2", type=float, required=True, help="Planar2R: link 2 length.")
 @click.option("--q", type=float, multiple=True, required=True, help="Joint positions.")

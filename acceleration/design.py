@@ -3,7 +3,7 @@
 Preset builders for **acceleration-kinematics** workflows.
 
 These presets return :class:`acceleration.core.ChainKinematics` instances
-so callers can immediately compute **forward** and **inverse** acceleration
+so callers can immediately compute **forward_kinematics** and **inverse_kinematics** acceleration
 (ẍ = J q̈ + J̇ q̇  and  q̈ = J⁺(ẍ − J̇ q̇)) in a consistent, testable way.
 
 What this module provides (lightweight, dependency-free):
@@ -16,7 +16,7 @@ Optional (future-friendly) stubs:
 Design notes
 ------------
 * We intentionally **do not** re-implement DH link objects here; that belongs in
-  the inverse-kinematics package. Acceleration workflows only need a `Backend`
+  the inverse_kinematics-kinematics package. Acceleration workflows only need a `Backend`
   providing J, J̇q̇, and FK-derived quantities — already abstracted by
   :class:`acceleration.backends.base.Backend`.
 * Presets keep names/frames minimal (`frame="ee"`), which is easy to test.
@@ -73,10 +73,10 @@ def planar_2r(l1: float, l2: float, *, name: str = "planar_2R") -> ChainKinemati
     Returns
     -------
     ChainKinematics
-        Drop-in façade for forward/inverse acceleration unit tests.
+        Drop-in façade for forward_kinematics/inverse_kinematics acceleration unit tests.
     """
     backend = Planar2R(float(l1), float(l2))
-    # `name` is kept for API symmetry with inverse/design, but ChainKinematics
+    # `name` is kept for API symmetry with inverse_kinematics/design, but ChainKinematics
     # does not currently store it; the backend may use it internally if needed.
     _ = name  # reserved / no-op to keep signature consistent and testable
     return from_backend(backend, frame="ee")
@@ -96,7 +96,7 @@ def from_pinocchio(model_or_path: object, *, frame: str = "ee") -> ChainKinemati
 
     Notes
     -----
-    This function is a stub to keep the design forward-compatible without
+    This function is a stub to keep the design forward_kinematics-compatible without
     introducing a hard dependency on Pinocchio in unit tests.
     """
     try:

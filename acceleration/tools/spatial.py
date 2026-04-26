@@ -64,7 +64,7 @@ def skew(v: Sequence[float] | np.ndarray) -> np.ndarray:
 
 
 def vex(S: np.ndarray) -> np.ndarray:
-    """Vee operator re-export (inverse of skew)."""
+    """Vee operator re-export (inverse_kinematics of skew)."""
     return _vex(S)
 
 
@@ -217,7 +217,7 @@ def motion_xform(T: np.ndarray) -> np.ndarray:
 
 def motion_xform_inv(T: np.ndarray) -> np.ndarray:
     """
-    X_BA from 4×4 SE(3) T_AB (A→B) by using the inverse pose:
+    X_BA from 4×4 SE(3) T_AB (A→B) by using the inverse_kinematics pose:
         X_BA = X( T_BA ) with  T_BA = T_AB^{-1}
     This avoids directly inverting a 6×6 matrix.
     """

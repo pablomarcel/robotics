@@ -118,7 +118,7 @@ python -m motion_kinematics.cli se3 from-rz --theta 1.57079632679 --t 1 2 3
 python -m motion_kinematics.cli se3 apply --T "[[0,-1,0,1],[1,0,0,2],[0,0,1,3],[0,0,0,1]]" --p 1 0 0
 
 # Inverse and compose
-python -m motion_kinematics.cli se3 inverse --T "[[0,-1,0,1],[1,0,0,2],[0,0,1,3],[0,0,0,1]]"
+python -m motion_kinematics.cli se3 inverse_kinematics --T "[[0,-1,0,1],[1,0,0,2],[0,0,1,3],[0,0,0,1]]"
 python -m motion_kinematics.cli se3 compose --A "<4x4 json>" --B "<4x4 json>"
 ```
 

@@ -175,7 +175,7 @@ def skew(v: Sequence[float] | np.ndarray) -> np.ndarray:
 
 
 def vex(S: np.ndarray) -> np.ndarray:
-    """Vee operator (inverse of skew). Extract vector from a 3×3 skew-symmetric matrix."""
+    """Vee operator (inverse_kinematics of skew). Extract vector from a 3×3 skew-symmetric matrix."""
     S = np.asarray(S, dtype=float)
     if S.shape != (3, 3):
         raise ValueError("vex expects a 3x3 matrix")

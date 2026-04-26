@@ -39,7 +39,7 @@ class AccelService:
     Testable Python facade around :class:`acceleration.app.AccelApp`.
 
     The service keeps a tiny surface that maps 1:1 to unit-testable actions:
-    forward acceleration, inverse acceleration, classic α×r + ω×(ω×r),
+    forward_kinematics acceleration, inverse_kinematics acceleration, classic α×r + ω×(ω×r),
     Euler/Quaternion helpers, and mixed-acceleration utilities.
     """
     app: AccelApp = AccelApp()
@@ -60,7 +60,7 @@ class AccelService:
             {"op": "...", "model": {...}, "payload": {...}}
 
         Supported ops:
-          forward, inverse, classic, euler_alpha, quat_sb, mixed
+          forward_kinematics, inverse_kinematics, classic, euler_alpha, quat_sb, mixed
         """
         ok, err = AccelService._require_keys(problem, ("op", "payload"), "problem")
         if not ok:
@@ -69,10 +69,10 @@ class AccelService:
         op = str(problem["op"]).lower()
         payload = problem["payload"]
 
-        # forward/inverse need a model
-        if op in {"forward", "inverse"}:
+        # forward_kinematics/inverse_kinematics need a model
+        if op in {"forward_kinematics", "inverse_kinematics"}:
             if "model" not in problem or not isinstance(problem["model"], dict):
-                return False, "model is required for 'forward' and 'inverse'."
+                return False, "model is required for 'forward_kinematics' and 'inverse_kinematics'."
             model = problem["model"]
             if model.get("kind", "").lower() != "planar2r":
                 return False, "Only model.kind='planar2r' is supported in this build."
@@ -81,10 +81,10 @@ class AccelService:
                     return False, f"model.{r} is required for planar2r."
 
         # per-op payload validation
-        if op == "forward":
-            return AccelService._require_keys(payload, ("q", "qd", "qdd"), "payload[forward]")
-        if op == "inverse":
-            return AccelService._require_keys(payload, ("q", "qd", "xdd"), "payload[inverse]")
+        if op == "forward_kinematics":
+            return AccelService._require_keys(payload, ("q", "qd", "qdd"), "payload[forward_kinematics]")
+        if op == "inverse_kinematics":
+            return AccelService._require_keys(payload, ("q", "qd", "xdd"), "payload[inverse_kinematics]")
         if op == "classic":
             return AccelService._require_keys(payload, ("alpha", "omega", "r"), "payload[classic]")
         if op == "euler_alpha":
@@ -181,7 +181,7 @@ class ProblemModel(BaseModel):
     @classmethod
     def _op_ok(cls, v: str) -> str:
         v2 = str(v).lower()
-        allowed = {"forward", "inverse", "classic", "euler_alpha", "quat_sb", "mixed"}
+        allowed = {"forward_kinematics", "inverse_kinematics", "classic", "euler_alpha", "quat_sb", "mixed"}
         if v2 not in allowed:
             raise ValueError(f"op must be one of {sorted(allowed)}")
         return v2

@@ -2,7 +2,7 @@
 """
 Class diagram generator for the **applied dynamics** module.
 
-Parity with `inverse.tools.diagram`:
+Parity with `inverse_kinematics.tools.diagram`:
 - OOP façade: DiagramTool + DiagramConfig
 - Backends: DOT (Graphviz) text, PlantUML text, optional python-graphviz render
 - JSON model export

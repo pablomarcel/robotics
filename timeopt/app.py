@@ -93,7 +93,7 @@ class MinTimeDoubleIntegrator(TimeOptimalProblem):
             lbx[idx_U(k)] = -self.F
             ubx[idx_U(k)] =  self.F
 
-        # Dynamics constraints (forward Euler for compactness)
+        # Dynamics constraints (forward_kinematics Euler for compactness)
         gcons = []
         lbg = []
         ubg = []

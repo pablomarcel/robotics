@@ -96,7 +96,7 @@ class OrientationUtils:
                          [-y,  x,  0.0]])
 
     def vex(self, S: np.ndarray) -> np.ndarray:
-        """Vee operator (inverse hat) for a 3×3 skew matrix."""
+        """Vee operator (inverse_kinematics hat) for a 3×3 skew matrix."""
         S = np.asarray(S, dtype=float).reshape(3, 3)
         return np.array([S[2, 1], S[0, 2], S[1, 0]], dtype=float)
 
