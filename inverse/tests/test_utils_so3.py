@@ -65,7 +65,7 @@ def test_pose_error_orientation_small_vs_so3():
     e_small = U.pose_error(T_curr, T_des, mode="small")
     e_so3 = U.pose_error(T_curr, T_des, mode="so3")
 
-    # Pure orientation error; position components zero
+    # Pure orientation_kinematics error; position components zero
     assert np.allclose(e_small[:3], 0.0, atol=1e-12)
     assert np.allclose(e_so3[:3], 0.0, atol=1e-12)
     # Orientation components nearly equal for small angles

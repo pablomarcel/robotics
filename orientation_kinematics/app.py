@@ -1,15 +1,15 @@
 """
-orientation.app (OO orchestrator)
+orientation_kinematics.app (OO orchestrator)
 ---------------------------------
 Top-level application object that wires together the service layer and CLI.
 
 Usage
 -----
-# run the CLI through the app (same verbs as orientation.cli)
-python -m orientation.app matrix-from-axis --axis 0 0 1 --phi 1.57
+# run the CLI through the app (same verbs as orientation_kinematics.cli)
+python -m orientation_kinematics.app matrix-from-axis --axis 0 0 1 --phi 1.57
 
 # programmatic use
-from orientation.app import Application
+from orientation_kinematics.app import Application
 app = Application()                 # uses default singletons
 svc = app.service                   # OrientationService
 R = svc.euler_to_matrix([0.1,0.2,0.3], order="ZYX")

@@ -1,23 +1,23 @@
-# orientation/tools/gen_diagram.py
+# orientation_kinematics/tools/gen_diagram.py
 """
 Generate class diagrams (PlantUML / DOT / Mermaid) by introspecting the
-orientation.* package. We infer relationships from:
+orientation_kinematics.* package. We infer relationships from:
 - inheritance (subclass -> baseclass)
 - composition ("has"): class attributes/fields typed as another in-project class
 - usage ("uses"): method parameter/return type annotations referencing another in-project class
 
 Examples
 --------
-# Default: PlantUML to orientation/out/class_diagram.puml
-python -m orientation.tools.gen_diagram
+# Default: PlantUML to orientation_kinematics/out/class_diagram.puml
+python -m orientation_kinematics.tools.gen_diagram
 
 # Mermaid instead, with fewer modules and no members (cleaner map)
-python -m orientation.tools.gen_diagram --format mmd \
-  --modules orientation.core orientation.utils orientation.io \
+python -m orientation_kinematics.tools.gen_diagram --format mmd \
+  --modules orientation_kinematics.core orientation_kinematics.utils orientation_kinematics.io \
   --no-members
 
 # Graphviz DOT and show private members
-python -m orientation.tools.gen_diagram --format dot --show-private
+python -m orientation_kinematics.tools.gen_diagram --format dot --show-private
 """
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ from typing import Dict, List, Optional, Sequence, Tuple, get_type_hints
 try:
     from ..io import OUT_DIR  # type: ignore
 except Exception:
-    OUT_DIR = Path(__file__).resolve().parents[2] / "orientation" / "out"
+    OUT_DIR = Path(__file__).resolve().parents[2] / "orientation_kinematics" / "out"
 
 
 # ---------------------- model ----------------------
@@ -74,7 +74,7 @@ class Config:
     filename: Optional[str] = None   # auto from fmt if None
     include_private: bool = False
     include_members: bool = True     # show attrs+methods blocks
-    project_prefix: str = "orientation."
+    project_prefix: str = "orientation_kinematics."
 
     def output_path(self) -> Path:
         self.out_dir.mkdir(parents=True, exist_ok=True)
@@ -325,13 +325,13 @@ class RenderMMD:
 # ---------------------- CLI app ----------------------
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Generate class diagrams for orientation.*")
+    p = argparse.ArgumentParser(description="Generate class diagrams for orientation_kinematics.*")
     p.add_argument("--modules", nargs="*", default=[
-        "orientation.core", "orientation.utils", "orientation.io",
-        "orientation.apis", "orientation.cli", "orientation.design", "orientation.app"
+        "orientation_kinematics.core", "orientation_kinematics.utils", "orientation_kinematics.io",
+        "orientation_kinematics.apis", "orientation_kinematics.cli", "orientation_kinematics.design", "orientation_kinematics.app"
     ], help="Root modules/packages to scan.")
     p.add_argument("--format", dest="fmt", choices=["puml", "dot", "mmd"], default="puml")
-    p.add_argument("--out", type=str, help="Output directory (default orientation/out).")
+    p.add_argument("--out", type=str, help="Output directory (default orientation_kinematics/out).")
     p.add_argument("--name", type=str, help="Output filename (default based on format).")
     p.add_argument("--show-private", action="store_true", help="Include private methods (prefixed with _).")
     p.add_argument("--no-members", action="store_true", help="Hide attributes and methods blocks, show only relations.")

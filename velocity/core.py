@@ -404,7 +404,7 @@ class URDFRobot(_BaseRobot):
           - k_i (world) = R_world @ axis_i (joint axis in joint frame)
           - p_i (world) = position of the joint origin (after fixed transforms and
             preceding joints). We use the pose just BEFORE applying this joint's
-            own motion (axis orientation is invariant to its own rotation_kinematics).
+            own motion (axis orientation_kinematics is invariant to its own rotation_kinematics).
           - J_i = [ k_i × (p_e - p_i) ; k_i ] for revolute/continuous
                   [ k_i               ; 0   ] for prismatic
         """
@@ -494,7 +494,7 @@ class solvers:
         Solve q̇ from Ẋ = J q̇ using **masked** damped least squares.
 
         We only fit rows whose desired components are non-zero (|Ẋ_i|>eps).
-        This prevents orientation (or other) rows with zero targets from
+        This prevents orientation_kinematics (or other) rows with zero targets from
         polluting a translation-only task.
 
         Unweighted:
@@ -561,12 +561,12 @@ class solvers:
         euler: str = "ZYX",
     ) -> Tuple[np.ndarray, Dict[str, Any]]:
         """
-        Newton–Raphson inverse kinematics on pose x = [p; orientation].
+        Newton–Raphson inverse kinematics on pose x = [p; orientation_kinematics].
 
         Task selection (static mask built from x_target):
           - If 'p' in x_target, include translational rows (0..2).
-          - If 'R' or 'euler' in x_target, include orientation rows (3..5).
-          - If neither, defaults to position-only with current orientation held.
+          - If 'R' or 'euler' in x_target, include orientation_kinematics rows (3..5).
+          - If neither, defaults to position-only with current orientation_kinematics held.
         """
         q = np.asarray(q0, dtype=float).ravel()
         p_des: Optional[np.ndarray] = None
@@ -589,7 +589,7 @@ class solvers:
             ori_active = False
 
         if R_des is None:
-            # Hold the initial orientation if none provided
+            # Hold the initial orientation_kinematics if none provided
             _, Tn0 = robot._fk_all(q)
             R_des = Tn0[:3, :3]
 

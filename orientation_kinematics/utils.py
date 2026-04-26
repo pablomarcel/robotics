@@ -1,7 +1,7 @@
 """
-orientation.utils (OO version)
+orientation_kinematics.utils (OO version)
 ------------------------------
-Object-oriented utilities for SO(3) math used across the orientation package.
+Object-oriented utilities for SO(3) math used across the orientation_kinematics package.
 
 Design
 ------

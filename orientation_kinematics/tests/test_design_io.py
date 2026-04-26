@@ -1,9 +1,9 @@
 from pathlib import Path
 import numpy as np
 
-from orientation.design import DiagramGenerator, DiagramConfig
-from orientation import core
-from orientation.io import IOManager, PathConfig
+from orientation_kinematics.design import DiagramGenerator, DiagramConfig
+from orientation_kinematics import core
+from orientation_kinematics.io import IOManager, PathConfig
 
 def test_diagram_generation(tmp_path: Path):
     cfg = DiagramConfig(out_dir=tmp_path, modules=(core,), include_prefixes=(core.__name__,))

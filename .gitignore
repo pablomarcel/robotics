@@ -101,7 +101,7 @@ control/out/
 forward/out/
 inverse/out/
 motion/out/
-orientation/out/
+orientation_kinematics/out/
 path/out/
 robot/out/
 time/out/

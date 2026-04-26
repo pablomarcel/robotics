@@ -1,5 +1,5 @@
 import numpy as np
-from orientation.core import SO3
+from orientation_kinematics.core import SO3
 
 def test_group_ops_and_conversions():
     a1 = SO3.from_axis_angle(0.2, [1,0,0])

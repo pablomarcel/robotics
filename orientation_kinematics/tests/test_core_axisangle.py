@@ -1,5 +1,5 @@
 import numpy as np
-from orientation.core import AxisAngle, SO3
+from orientation_kinematics.core import AxisAngle, SO3
 
 def test_axisangle_roundtrip_general():
     u = np.array([0.3, -0.4, 0.5]); u = u/np.linalg.norm(u)

@@ -1,5 +1,5 @@
 # inverse/tests/test_iterative_wrist.py
-# Iterative IK orientation-tracking tests on a 3-DOF spherical wrist.
+# Iterative IK orientation_kinematics-tracking tests on a 3-DOF spherical wrist.
 
 from __future__ import annotations
 
@@ -20,9 +20,9 @@ def _orientation_only_target(roll: float, pitch: float, yaw: float) -> np.ndarra
 def test_iterative_tracks_orientation_spherical_wrist_type1():
     """
     For a pure 3-DOF spherical wrist, the iterative solver should match an
-    arbitrary orientation closely (no translation component).
+    arbitrary orientation_kinematics closely (no translation component).
     """
-    wrist = D.spherical_wrist(wrist_type=1, d_tool=0.0)  # orientation only
+    wrist = D.spherical_wrist(wrist_type=1, d_tool=0.0)  # orientation_kinematics only
     Tdes = _orientation_only_target(0.25, -0.40, 0.15)
     q0 = np.zeros(3)
 

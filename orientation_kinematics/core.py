@@ -1,7 +1,7 @@
 """
-orientation.core
+orientation_kinematics.core
 ----------------
-Object-oriented core math for orientation kinematics (SO(3)).
+Object-oriented core math for orientation_kinematics kinematics (SO(3)).
 
 This module defines four primary classes:
 

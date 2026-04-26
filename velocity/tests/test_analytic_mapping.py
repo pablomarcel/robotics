@@ -95,7 +95,7 @@ def _G_zxz(angles: np.ndarray) -> np.ndarray:
 
 def test_analytic_vs_geometric_mapping_zyx_planar2r():
     """
-    For a planar 2R, orientation is a pure yaw; pitch=0 (non-singular for ZYX).
+    For a planar 2R, orientation_kinematics is a pure yaw; pitch=0 (non-singular for ZYX).
     Check JA lower block equals G^{-1} Jw.
     """
     robot = design.planar_2r(1.0, 1.0)

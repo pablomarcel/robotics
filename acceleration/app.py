@@ -90,7 +90,7 @@ class AccelApp:
     * Build robot backends (Planar 2R out of the box; backends pluggable).
     * Forward & inverse acceleration for chains (9.283 / 9.291 / 9.327).
     * Classic tangential+centripetal term (α×r + ω×(ω×r)).
-    * Euler/Quaternion helpers (orientation kinematics).
+    * Euler/Quaternion helpers (orientation_kinematics kinematics).
     * Mixed accelerations (representative helpers for 9.400–9.426).
     * Problem-API utilities used by CLI/tests (solve / batch / from-file).
     * Class diagram export (DOT text) and Mermaid markdown emitter.

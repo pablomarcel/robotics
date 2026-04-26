@@ -1,5 +1,5 @@
 import numpy as np
-from orientation.core import AxisAngle, Quaternion, SO3
+from orientation_kinematics.core import AxisAngle, Quaternion, SO3
 
 def test_quaternion_matrix_equivalence():
     u = np.array([0.3,-0.4,0.2]); u = u/np.linalg.norm(u)

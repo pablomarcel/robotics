@@ -1,4 +1,4 @@
-from orientation.cli import OrientationCLI
+from orientation_kinematics.cli import OrientationCLI
 
 def run_cli(argv):
     cli = OrientationCLI()
@@ -16,7 +16,7 @@ def test_cli_matrix_from_axis_and_to_quat(capsys):
 
 def test_cli_matrix_to_rodrigues_identity(capsys):
     # Rodrigues of identity should be (0,0,0)
-    from orientation.cli import OrientationCLI
+    from orientation_kinematics.cli import OrientationCLI
     OrientationCLI().run(["matrix-to-rodrigues", "--matrix",
                           "1","0","0","0","1","0","0","0","1"])
     out = capsys.readouterr().out.strip()

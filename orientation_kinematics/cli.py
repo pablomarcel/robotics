@@ -1,13 +1,13 @@
 """
-orientation.cli (OO version)
+orientation_kinematics.cli (OO version)
 ----------------------------
 Command-line interface for the Orientation Kinematics toolkit, implemented
 with a Command pattern so each subcommand is a class.
 
 File-friendly upgrades:
 - Any command that consumes a 3x3 matrix now supports --matrix-file <csv>.
-  Files are resolved via IOManager (prefers orientation/in, falls back to out).
-- All outputs still support --save <csv> to write into orientation/out.
+  Files are resolved via IOManager (prefers orientation_kinematics/in, falls back to out).
+- All outputs still support --save <csv> to write into orientation_kinematics/out.
 - NEW: `sphinx-skel` subcommand writes a minimal Sphinx docs skeleton.
 
 Design
@@ -61,7 +61,7 @@ class CLIContext:
 
     @staticmethod
     def read_matrix_file(name: str) -> np.ndarray:
-        # Uses IOManager: prefers orientation/in, falls back to orientation/out
+        # Uses IOManager: prefers orientation_kinematics/in, falls back to orientation_kinematics/out
         return IO.read_matrix_csv(name)
 
     def maybe_save_matrix(self, name: str | None, M: np.ndarray) -> None:
@@ -95,7 +95,7 @@ class BaseCommand(ABC):
     # small utility for --save option reuse
     @staticmethod
     def add_save_option(p: argparse.ArgumentParser) -> None:
-        p.add_argument("--save", type=str, help="Save 3x3 matrix as CSV in orientation/out.")
+        p.add_argument("--save", type=str, help="Save 3x3 matrix as CSV in orientation_kinematics/out.")
 
 
 # ---------------------------------------------------------------------------
@@ -140,7 +140,7 @@ class ToQuat(BaseCommand):
         g = p.add_mutually_exclusive_group(required=True)
         g.add_argument("--matrix", nargs=9, help="3x3 rotation_kinematics matrix, row-major.")
         g.add_argument("--matrix-file", type=str,
-                       help="CSV filename under orientation/in (fallback: orientation/out).")
+                       help="CSV filename under orientation_kinematics/in (fallback: orientation_kinematics/out).")
 
     def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
         if args.matrix_file:
@@ -185,7 +185,7 @@ class MatrixToRodrigues(BaseCommand):
         g = p.add_mutually_exclusive_group(required=True)
         g.add_argument("--matrix", nargs=9, help="3x3 rotation_kinematics matrix, row-major.")
         g.add_argument("--matrix-file", type=str,
-                       help="CSV filename under orientation/in (fallback: orientation/out).")
+                       help="CSV filename under orientation_kinematics/in (fallback: orientation_kinematics/out).")
 
     def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
         if args.matrix_file:
@@ -227,7 +227,7 @@ class MatrixToEuler(BaseCommand):
         g = p.add_mutually_exclusive_group(required=True)
         g.add_argument("--matrix", nargs=9, help="3x3 rotation_kinematics matrix, row-major.")
         g.add_argument("--matrix-file", type=str,
-                       help="CSV filename under orientation/in (fallback: orientation/out).")
+                       help="CSV filename under orientation_kinematics/in (fallback: orientation_kinematics/out).")
         p.add_argument("--order", type=str, default="ZYX")
         p.add_argument("--deg", action="store_true", help="Print angles in degrees.")
 
@@ -287,7 +287,7 @@ class RandomSO3(BaseCommand):
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         p.add_argument("--n", type=int, default=1)
-        p.add_argument("--out", type=str, help="Write JSON to orientation/out/<out>.")
+        p.add_argument("--out", type=str, help="Write JSON to orientation_kinematics/out/<out>.")
 
     def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
         n = int(args.n)
@@ -315,16 +315,16 @@ class Diagram(BaseCommand):
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
         p.add_argument("--out", type=str, default=str(OUT_DIR),
-                       help="Output directory (default orientation/out).")
+                       help="Output directory (default orientation_kinematics/out).")
 
     def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
         """
-        Try the rich renderer in orientation.design first.
+        Try the rich renderer in orientation_kinematics.design first.
         Handle both return signatures:
           - old: (dot_path, mmd_path)
           - new: (puml_path, dot_path, mmd_path)
         If that fails (or design.py was rolled back), fallback to the
-        standalone PlantUML generator in orientation.tools.gen_diagram.
+        standalone PlantUML generator in orientation_kinematics.tools.gen_diagram.
         """
         out_dir = Path(args.out)
         try:
@@ -368,16 +368,16 @@ class SphinxSkel(BaseCommand):
 
         # NOTE: Use real newlines here (not escaped \n) so files are valid RST/py.
         conf = (
-            '# Generated by orientation.cli\n'
-            'project = "orientation"\n'
+            '# Generated by orientation_kinematics.cli\n'
+            'project = "orientation_kinematics"\n'
             'extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon", "sphinx.ext.viewcode"]\n'
             'templates_path = ["_templates"]\n'
             'exclude_patterns = []\n'
             'html_theme = "furo"\n'
         )
         index = (
-            ".. orientation documentation master file\n\n"
-            "Welcome to orientation's docs!\n"
+            ".. orientation_kinematics documentation master file\n\n"
+            "Welcome to orientation_kinematics's docs!\n"
             "===============================\n\n"
             ".. toctree::\n"
             "   :maxdepth: 2\n"
@@ -387,10 +387,10 @@ class SphinxSkel(BaseCommand):
         api = (
             "API Reference\n"
             "=============\n\n"
-            ".. automodule:: orientation.core\n   :members:\n   :undoc-members:\n\n"
-            ".. automodule:: orientation.utils\n   :members:\n   :undoc-members:\n\n"
-            ".. automodule:: orientation.io\n   :members:\n   :undoc-members:\n\n"
-            ".. automodule:: orientation.design\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: orientation_kinematics.core\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: orientation_kinematics.utils\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: orientation_kinematics.io\n   :members:\n   :undoc-members:\n\n"
+            ".. automodule:: orientation_kinematics.design\n   :members:\n   :undoc-members:\n\n"
         )
         makefile = (
             "# Minimal Sphinx Makefile\n"
@@ -414,11 +414,11 @@ class SphinxSkel(BaseCommand):
 
 
 class Batch(BaseCommand):
-    name, help = "batch", "Run a JSON batch of operations from orientation/in."
+    name, help = "batch", "Run a JSON batch of operations from orientation_kinematics/in."
 
     def add_arguments(self, p: argparse.ArgumentParser) -> None:
-        p.add_argument("--in", dest="infile", required=True, help="Input JSON in orientation/in/")
-        p.add_argument("--out", dest="outfile", required=True, help="Output JSON in orientation/out/")
+        p.add_argument("--in", dest="infile", required=True, help="Input JSON in orientation_kinematics/in/")
+        p.add_argument("--out", dest="outfile", required=True, help="Output JSON in orientation_kinematics/out/")
 
     def run(self, args: argparse.Namespace, ctx: CLIContext) -> None:
         jobs = json.loads((ctx.in_dir / args.infile).read_text())
@@ -483,7 +483,7 @@ class OrientationCLI:
     def __init__(self, ctx: CLIContext | None = None):
         self.ctx = ctx or CLIContext()
         self.parser = argparse.ArgumentParser(
-            prog="orientation",
+            prog="orientation_kinematics",
             description="Orientation Kinematics CLI (OO)"
         )
         self.subparsers = self.parser.add_subparsers(dest="cmd", required=True)

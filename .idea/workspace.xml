@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="Updated README.md to order documentation topics">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="351982cc-36aa-43f9-9d65-5d1b004b9eef" name="Changes" comment="refactored packages names." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -143,15 +141,7 @@
       <workItem from="1761358714403" duration="2098000" />
       <workItem from="1761366916714" duration="8000" />
       <workItem from="1777054208682" duration="657000" />
-      <workItem from="1777160072152" duration="868000" />
-    </task>
-    <task id="LOCAL-00014" summary="implemented the motion module">
-      <option name="closed" value="true" />
-      <created>1758256301309</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1758256301309</updated>
+      <workItem from="1777160072152" duration="1192000" />
     </task>
     <task id="LOCAL-00015" summary="implemented diagrams in the motion module">
       <option name="closed" value="true" />
@@ -537,7 +527,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760463952446</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="refactored packages names.">
+      <option name="closed" value="true" />
+      <created>1777163519906</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1777163519906</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -558,7 +556,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="all tests pass in the path module" />
     <MESSAGE value="implemente the time optimal control module. all 3 tests passed" />
     <MESSAGE value="implemente the control techniques module. 1 test fails" />
     <MESSAGE value="implemented the control techniques module. all tests pass" />
@@ -583,6 +580,7 @@
     <MESSAGE value="committed docs files" />
     <MESSAGE value="Updated README.md to include section about documentation" />
     <MESSAGE value="Updated README.md to order documentation topics" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated README.md to order documentation topics" />
+    <MESSAGE value="refactored packages names." />
+    <option name="LAST_COMMIT_MESSAGE" value="refactored packages names." />
   </component>
 </project>

@@ -107,7 +107,7 @@ class InverseApp:
         return ClosedFormIK.planar_2r(x, y, l1, l2)
 
     def solve_closed_form_wrist(self, R: np.ndarray) -> List[np.ndarray]:
-        """Closed-form spherical wrist orientation."""
+        """Closed-form spherical wrist orientation_kinematics."""
         return ClosedFormIK.spherical_wrist(R)
 
     # ---------- IK: iterative (general chains) ----------

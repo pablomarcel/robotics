@@ -1,7 +1,7 @@
 """
-orientation.apis (OO version)
+orientation_kinematics.apis (OO version)
 -----------------------------
-High-level, object-oriented facade for orientation kinematics operations.
+High-level, object-oriented facade for orientation_kinematics kinematics operations.
 
 Design
 ------
@@ -149,7 +149,7 @@ class NumpyGNDecompositionSolver:
 
 @dataclass
 class OrientationService:
-    """High-level facade for orientation operations.
+    """High-level facade for orientation_kinematics operations.
 
     Parameters
     ----------

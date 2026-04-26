@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-from orientation.utils import normalize, skew, vex, vers, safe_acos, expm_so3, project_to_so3
+from orientation_kinematics.utils import normalize, skew, vex, vers, safe_acos, expm_so3, project_to_so3
 
 def test_normalize_and_eps():
     u = np.array([3.0, 4.0, 0.0])

@@ -1,6 +1,6 @@
 import numpy as np
-from orientation.apis import OrientationService
-from orientation.core import SO3
+from orientation_kinematics.apis import OrientationService
+from orientation_kinematics.core import SO3
 
 def test_euler_in_out_orders():
     svc = OrientationService()

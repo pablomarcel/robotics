@@ -1,7 +1,7 @@
 """
-orientation.design (OO version)
+orientation_kinematics.design (OO version)
 -------------------------------
-Object-oriented class diagram generator for the orientation package.
+Object-oriented class diagram generator for the orientation_kinematics package.
 
 Design
 ------
@@ -199,7 +199,7 @@ class DiagramGenerator:
 # --------------------------------------------------------------------------
 
 def generate_diagram(out_dir: Path) -> Tuple[Path, Path]:
-    """Generate both DOT and Mermaid diagrams for orientation.core."""
+    """Generate both DOT and Mermaid diagrams for orientation_kinematics.core."""
     # Local import to avoid cycles if design is imported early
     from . import core
     cfg = DiagramConfig(

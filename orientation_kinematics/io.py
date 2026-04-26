@@ -1,7 +1,7 @@
 """
-orientation.io (OO version)
+orientation_kinematics.io (OO version)
 ---------------------------
-Object-oriented I/O utilities for the orientation package.
+Object-oriented I/O utilities for the orientation_kinematics package.
 
 Design
 ------
@@ -41,7 +41,7 @@ class PathConfig:
     Parameters
     ----------
     base_dir : Path
-        The directory containing the `orientation` package files.
+        The directory containing the `orientation_kinematics` package files.
     in_subdir : str
         Subdirectory (relative to base_dir) for inputs.
     out_subdir : str
